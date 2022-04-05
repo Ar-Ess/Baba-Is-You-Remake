@@ -6,7 +6,6 @@
 #include "DynArray.h"
 
 #include "Spline.h"
-#include "Physics.h"
 #include "EasingFunctions.h"
 
 struct SDL_Texture;
@@ -79,8 +78,6 @@ private:
 private: //BUTTONS
 	bool OnGuiMouseClickEvent(GuiControl* control);
 
-	//TEST, for deleting
-	DynamicBody* test = nullptr;
 };
 
 #endif // __SCENE_H__

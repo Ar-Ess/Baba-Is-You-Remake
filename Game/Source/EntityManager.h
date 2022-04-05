@@ -28,11 +28,7 @@ public:
 
 public:
 
-	List<Player*> players;
-	List<Enemy*> enemies;
-	List<Boss*> bosses;
-	List<NPC*> NPCs;
-	List<Item*> items;
+	List<Entity*> entities;
 
 	float accumulatedTime = 0.0f;
 	float updateMsCycle = 0.0f;

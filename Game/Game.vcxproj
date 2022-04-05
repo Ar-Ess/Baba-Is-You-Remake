@@ -117,7 +117,6 @@
     <ClCompile Include="Source\ParticlePool.cpp" />
     <ClCompile Include="Source\ParticleSystem.cpp" />
     <ClCompile Include="Source\PerfTimer.cpp" />
-    <ClCompile Include="Source\Physics.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\Render.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
@@ -154,7 +153,6 @@
     <ClInclude Include="Source\ParticlePool.h" />
     <ClInclude Include="Source\ParticleSystem.h" />
     <ClInclude Include="Source\PerfTimer.h" />
-    <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PQueue.h" />
     <ClInclude Include="Source\Queue.h" />
@@ -162,6 +160,7 @@
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\App.h" />
     <ClInclude Include="Source\Module.h" />
+    <ClInclude Include="Source\Rect.h" />
     <ClInclude Include="Source\Render.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Spline.h" />

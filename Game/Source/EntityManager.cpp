@@ -40,24 +40,24 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	switch (type)
 	{
 		case EntityType::PLAYER: 
-			ret = new Player(); 
-			players.Add((Player*)ret);
+			ret = new Player(app->render, app->input); 
+			entities.Add((Player*)ret);
 			break;
 		case EntityType::NPC: 
 			ret = new NPC();
-			NPCs.Add((NPC*)ret);
+			entities.Add((NPC*)ret);
 			break;
 		case EntityType::ENEMY: 
 			ret = new Enemy();
-			enemies.Add((Enemy*)ret);
+			entities.Add((Enemy*)ret);
 			break;
 		case EntityType::BOSS:
 			ret = new Boss();
-			bosses.Add((Boss*)ret);
+			entities.Add((Boss*)ret);
 			break;
 		case EntityType::ITEM: 
 			ret = new Item();  
-			items.Add((Item*)ret);
+			entities.Add((Item*)ret);
 			break;
 		default: 
 			break;

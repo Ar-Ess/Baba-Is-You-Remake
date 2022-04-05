@@ -35,7 +35,7 @@ bool Scene::Awake()
 bool Scene::Start()
 {
 	player1 = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
-	level = new LevelScene(app->render, app->input, app->win->GetWindowSize());
+	level = new LevelScene(app->render, app->input, player1, app->win->GetWindowSize());
 
 	//DEBUG BOOLS
 	app->guiManager->debugGui = false;
@@ -144,7 +144,7 @@ void Scene::UpdateLogoScene(float dt)
 
 void Scene::SetLevelScene()
 {
-	level->Start(1);
+	level->Start(0);
 }
 
 void Scene::UpdateLevelScene(float dt)

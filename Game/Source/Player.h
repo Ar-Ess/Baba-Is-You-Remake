@@ -2,11 +2,10 @@
 #define __PLAYER_H__
 
 #include "App.h"
-
 #include "Entity.h"
-#include "Animation.h"
 
 #include "Point.h"
+#include "Rect.h"
 #include "Log.h"
 
 #include "SDL/include/SDL.h"
@@ -17,46 +16,23 @@ class Player : public Entity
 {
 public:
 
-    Player();
+    Player(Render* render, Input* input);
+
+    bool Start(fPoint position, float size);
 
     bool Update(float dt);
 
-    bool Draw();
+    bool Draw(float dt);
+
+    bool DebugDraw();
 
     void SetTexture(SDL_Texture *tex);
 
-    void Refill();
+private:
 
-    void RestartPlayer();
+    SDL_Texture* texture = nullptr;
+    Rect collider = {};
 
-    SDL_Rect GetCollisionBounds()
-    {
-        return rect;
-    }
-
-public:
-
-    int health = 0;
-    int maxHealth = 0;
-
-    int healthStat = 1;
-    int defenseStat = 1;
-    int strengthStat = 1;
-    int velocityStat = 1;
-    
-    int lvl = 1;
-    int exp = 0;
-
-    int playerSpeed = 8;
-
-public:
-    SDL_Texture* texture;
-
-    SDL_Rect rect;
-    SDL_Rect wCollider;
-
-public:
-    bool godMode = false;
 };
 
 #endif // __PLAYER_H__

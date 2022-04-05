@@ -200,6 +200,37 @@ bool Render::DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled, b
 	return ret;
 }
 
+bool Render::DrawRectangle(Rect rect, SDL_Color color, bool filled, bool useCamera) const
+{
+	bool ret = true;
+
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+	Rect rec(rect);
+	if (useCamera)
+	{
+		rec.x = camera.x + rect.x;
+		rec.y = camera.y + rect.y;
+	}
+
+	rec.w *= scale;
+	rec.h *= scale;
+
+	SDL_Rect rectangle = {(int)rec.x, (int)rec.y, (int)rec.w, (int)rec.h};
+
+	int result = (filled) ? SDL_RenderFillRect(renderer, &rectangle) : SDL_RenderDrawRect(renderer, &rectangle);
+
+	if (result != 0)
+	{
+		LOG("Cannot draw quad to screen. SDL_RenderFillRect error: %s", SDL_GetError());
+		ret = false;
+	}
+
+	return ret;
+}
+
+
 bool Render::DrawLine(float x1, float y1, float x2, float y2, SDL_Color color, bool useCamera) const
 {
 	bool ret = true;

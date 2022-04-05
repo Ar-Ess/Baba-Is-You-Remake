@@ -8,6 +8,7 @@
 
 #include "SDL/include/SDL.h"
 #include "Collider.h"
+#include "Rect.h"
 
 class Render : public Module
 {
@@ -41,6 +42,7 @@ public:
 	bool DrawTexture(SDL_Texture* texture, int x, int y, float sX, float sY, SDL_Rect* section = NULL, bool scaleModCoords = true, bool staticPos = true, double angle = 0, SDL_RendererFlip flip = SDL_FLIP_NONE) const;
 
 	bool DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled = true, bool useCamera = true) const;
+	bool DrawRectangle(Rect rect, SDL_Color color = { 255, 255, 255, 255 }, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(float x1, float y1, float x2, float y2, SDL_Color color = { 255, 255, 255, 255}, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int radius, SDL_Color color, bool filled = false, bool useCamera = true) const;
 	bool DrawCircle(CircleCollider circle, SDL_Color color, bool filled = false, bool useCamera = true) const;

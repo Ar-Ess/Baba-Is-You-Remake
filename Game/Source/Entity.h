@@ -1,6 +1,9 @@
 #ifndef __ENTITY_H__
 #define __ENTITY_H__
 
+#include "Render.h"
+#include "Input.h"
+
 class Enemy;
 class Player;
 class Boss;
@@ -14,7 +17,6 @@ enum class EntityType
 	BOSS,
     ITEM,
     NPC,
-    MAP,
     UNKNOWN
 };
 
@@ -24,6 +26,8 @@ public:
 
     Entity(EntityType type) : type(type) {}
 
+    Entity(EntityType type, Render* render, Input* input) : type(type), render(render), input(input) {}
+
     virtual bool Update(float dt)
     {
         return true;
@@ -31,6 +35,8 @@ public:
 
 public:
     EntityType type;
+    Render* render = nullptr;
+    Input* input = nullptr;
 };
 
 #endif // __ENTITY_H__
