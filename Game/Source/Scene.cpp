@@ -20,7 +20,6 @@
 
 Scene::Scene() : Module()
 {
-
 }
 
 Scene::~Scene()
@@ -145,7 +144,7 @@ void Scene::UpdateLogoScene(float dt)
 
 void Scene::SetLevelScene()
 {
-	level->Start(0);
+	level->Start(1);
 }
 
 void Scene::UpdateLevelScene(float dt)

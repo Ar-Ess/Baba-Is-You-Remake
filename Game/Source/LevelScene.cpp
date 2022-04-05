@@ -13,17 +13,24 @@ LevelScene::~LevelScene()
 
 bool LevelScene::Start(suint index)
 {
-	tileSize = level[index].GetTileSize(winSize);
+	if (NUM_OF_LEVELS <= index)
+	{
+		LOG("Accessing a non existent level - [ NUM_OF_LEVELS <= index ]");
+		return false;
+	}
+
+	lvl = index;
+	tileSize = level[lvl].GetTileSize(winSize);
 
 	return true;
 }
 
 bool LevelScene::Update(float dt)
 {
-	if (input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) table.x > 0 ? --table.x : table.x = 0;
-	if (input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) ++table.x;
-	if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN) table.y > 0 ? --table.y : table.y = 0;
-	if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++table.y;
+	if (input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) level[lvl].rows > 0 ? --level[lvl].rows : level[lvl].rows = 0;
+	if (input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) ++level[lvl].rows;
+	if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN) level[lvl].columns > 0 ? --level[lvl].columns : level[lvl].columns = 0;
+	if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++level[lvl].columns;
 
 	return true;
 }
@@ -45,15 +52,16 @@ bool LevelScene::CleanUp()
 bool LevelScene::DebugDraw()
 {
 	// Grid
+	tileSize = level[lvl].GetTileSize(winSize);
 
-	for (suint i = 0; i < table.x + 1; ++i) // Rows
+	for (suint i = 0; i < level[lvl].rows + 1; ++i) // Rows
 	{
-		render->DrawLine(0, tileSize * i, tileSize * table.y, tileSize * i);
+		render->DrawLine(0, tileSize * i, tileSize * level[lvl].columns, tileSize * i);
 	}
 
-	for (suint i = 0; i < table.y + 1; ++i) // Columns
+	for (suint i = 0; i < level[lvl].columns + 1; ++i) // Columns
 	{
-		render->DrawLine(tileSize * i, 0, tileSize * i, tileSize * table.x);
+		render->DrawLine(tileSize * i, 0, tileSize * i, tileSize * level[lvl].rows);
 	}
 
 	return true;

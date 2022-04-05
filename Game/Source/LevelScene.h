@@ -7,6 +7,8 @@
 #include "Scene.h"
 #include <vector>
 
+#define NUM_OF_LEVELS 2
+
 struct SDL_Texture;
 
 struct LevelConfig
@@ -58,12 +60,14 @@ private: // Variables
 	Render* render = nullptr;
 	Input* input = nullptr;
 
-	iPoint winSize = {0, 0};
-	iPoint table = {0, 0};
+	iPoint winSize = { 0, 0 };
 
 	float tileSize = 0;
+	suint lvl = 0;
 
-	std::vector<LevelConfig> level;
+	LevelConfig level[NUM_OF_LEVELS] = {
+		{2, 2}, {3, 3} 
+	};
 
 };
 
