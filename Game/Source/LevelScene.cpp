@@ -20,17 +20,21 @@ bool LevelScene::Start(suint index)
 	}
 
 	lvl = index;
-	tileSize = level[lvl].GetTileSize(winSize);
+
+	iPoint windowLvl = winSize;
+	windowLvl -= level[lvl].offset;
+	tileSize = level[lvl].GetTileSize(windowLvl);
+	center = level[lvl].GetCenterParam(tileSize, windowLvl);
 
 	return true;
 }
 
 bool LevelScene::Update(float dt)
 {
-	if (input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) level[lvl].rows > 0 ? --level[lvl].rows : level[lvl].rows = 0;
-	if (input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) ++level[lvl].rows;
-	if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN) level[lvl].columns > 0 ? --level[lvl].columns : level[lvl].columns = 0;
-	if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++level[lvl].columns;
+	//if (input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) level[lvl].rows > 0 ? --level[lvl].rows : level[lvl].rows = 0;
+	//if (input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) ++level[lvl].rows;
+	//if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN) level[lvl].columns > 0 ? --level[lvl].columns : level[lvl].columns = 0;
+	//if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++level[lvl].columns;
 
 	return true;
 }
@@ -52,16 +56,14 @@ bool LevelScene::CleanUp()
 bool LevelScene::DebugDraw()
 {
 	// Grid
-	tileSize = level[lvl].GetTileSize(winSize);
-
 	for (suint i = 0; i < level[lvl].rows + 1; ++i) // Rows
 	{
-		render->DrawLine(0, tileSize * i, tileSize * level[lvl].columns, tileSize * i);
+		render->DrawLine(center.x + (level[lvl].offset.x / 2), (tileSize * i) + center.y + (level[lvl].offset.y / 2), (tileSize * level[lvl].columns) + center.x + (level[lvl].offset.x / 2), (tileSize * i) + center.y + (level[lvl].offset.y / 2));
 	}
 
 	for (suint i = 0; i < level[lvl].columns + 1; ++i) // Columns
 	{
-		render->DrawLine(tileSize * i, 0, tileSize * i, tileSize * level[lvl].rows);
+		render->DrawLine((tileSize * i) + center.x + (level[lvl].offset.x / 2), center.y + (level[lvl].offset.y / 2), (tileSize * i) + center.x + (level[lvl].offset.x / 2), (tileSize * level[lvl].rows) + center.y + (level[lvl].offset.y / 2));
 	}
 
 	return true;

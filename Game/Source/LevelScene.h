@@ -13,14 +13,16 @@ struct SDL_Texture;
 
 struct LevelConfig
 {
-	LevelConfig(suint rows, suint columns)
+	LevelConfig(suint rows, suint columns, iPoint offset)
 	{
 		this->rows = rows;
 		this->columns = columns;
+		this->offset = offset;
 	}
 
 	~LevelConfig() {}
 
+	// Function: Algorithm that returns the value of a tile width & height given window width & height.
 	float GetTileSize(iPoint winSize)
 	{
 		float ret = 0;
@@ -31,8 +33,17 @@ struct LevelConfig
 		return ret;
 	}
 
+	// Function: Algorithm that returns half of the distance between the grid end (right) and the window end (right).
+	// This parameter helps to center the grid to avoid having it aligned to de left.
+	fPoint GetCenterParam(float tileSize, iPoint windowLvl)
+	{
+		return fPoint{ ((tileSize * columns) - windowLvl.x) / -2, ((tileSize * rows) - windowLvl.y) / -2 };
+	}
+
 	suint rows = 0;
 	suint columns = 0;
+
+	iPoint offset = {0, 0};
 };
 
 class LevelScene
@@ -61,12 +72,15 @@ private: // Variables
 	Input* input = nullptr;
 
 	iPoint winSize = { 0, 0 };
+	fPoint center = { 0, 0 };
 
 	float tileSize = 0;
 	suint lvl = 0;
 
 	LevelConfig level[NUM_OF_LEVELS] = {
-		{2, 2}, {3, 3} 
+	// Rows  Columns  Offset
+	{   2,     2,    {30, 20} }, 
+	{   3,     3,    {50, 40} }
 	};
 
 };
