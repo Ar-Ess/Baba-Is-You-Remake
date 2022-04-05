@@ -200,7 +200,7 @@ bool Render::DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled, b
 	return ret;
 }
 
-bool Render::DrawLine(int x1, int y1, int x2, int y2, SDL_Color color, bool useCamera) const
+bool Render::DrawLine(float x1, float y1, float x2, float y2, SDL_Color color, bool useCamera) const
 {
 	bool ret = true;
 	uint scale = app->win->GetScale();

@@ -2,29 +2,16 @@
 
 #include "App.h"
 #include "Scene.h"
-
 #include "Input.h"
 #include "Textures.h"
 #include "Audio.h"
 #include "Render.h"
 #include "Window.h"
-#include "EntityManager.h"
-#include "Entity.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "DialogueManager.h"
-#include "Transition.h"
-#include "Map.h"
-#include "Boss.h"
-#include "Physics.h"
 
+#include "Player.h"
+#include "EntityManager.h"
+#include "LevelScene.h"
 #include "GuiManager.h"
-#include "GuiString.h"
-#include "GuiControl.h"
-#include "GuiButton.h"
-#include "GuiCheckBox.h"
-#include "GuiSlider.h"
-#include "FontTTF.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -49,7 +36,7 @@ bool Scene::Awake()
 bool Scene::Start()
 {
 	player1 = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
-	physics = new Physics();
+	level = new LevelScene(app->render, app->input, app->win->GetWindowSize());
 
 	//DEBUG BOOLS
 	app->guiManager->debugGui = false;
@@ -81,7 +68,17 @@ bool Scene::PreUpdate()
 
 bool Scene::Update(float dt)
 {
-	if (currScene == LOGO_SCENE) UpdateLogoScene(dt);
+	switch (currScene)
+	{
+	case LOGO_SCENE:
+		UpdateLogoScene(dt);
+		break;
+
+	case LEVEL_SCENE:
+		UpdateLevelScene(dt);
+		break;
+	}
+
 	return true;
 }
 
@@ -101,8 +98,14 @@ bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
 
-	if (currScene == LOGO_SCENE)
+	switch (currScene)
 	{
+	case LOGO_SCENE:
+		break;
+
+	case LEVEL_SCENE:
+		level->CleanUp();
+		break;
 	}
 
 	return true;
@@ -117,102 +120,38 @@ void Scene::SetScene(Scenes scene)
 	prevScene = currScene;
 	currScene = scene;
 
-	if (scene == LOGO_SCENE) SetLogoScene();
+	switch (currScene)
+	{
+	case LOGO_SCENE:
+		SetLogoScene();
+		break;
+
+	case LEVEL_SCENE:
+		SetLevelScene();
+		break;
+	}
 
 	easing.ResetIterations();
 }
 
 void Scene::SetLogoScene()
 {	
-	physics->SetPhysicsPreset(PhysicsPreset::PLATFORMER_PHYSICS_PRESET);
-	physics->SetScenarioPreset(ScenarioPreset::PLATFORMER_1280x720_SCENARIO_PRESET);
 }
 
 void Scene::UpdateLogoScene(float dt)
 {
-	int mouseX, mouseY;
-	app->input->GetMousePosition(mouseX, mouseY);
-	float x = (float)mouseX;
-	float y = (float)mouseY;
+	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) SetScene(Scenes::LEVEL_SCENE);
+}
 
-	if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
-	{
-		test = nullptr;
-		//test = (DynamicBody*)physics->CreateBody(BodyType::DYNAMIC_BODY, fPoint{ x, y }, CircleCollider{ x, y, 40,}, { 0, 0 }, { 0, 0 }, 1.5f);
-		test = (DynamicBody*)physics->CreateBody(BodyType::DYNAMIC_BODY, fPoint{ x, y }, { mouseX, mouseY, 20, 40 }, { 0, 0 }, { 0, 0 }, 1.5f);
-		test->ResetForces();
-	}
+void Scene::SetLevelScene()
+{
+	level->Start(0);
+}
 
-	physics->Update(dt);
-
-	// BUG SOLVINGS
-	// (Known problem, dt++ when frame frozzen, then y++++ for gravity/velocity (and for x forces/velocity too)) / Death limit bug - Not solved but info: It happens in the function "Death limit". When camera is mover, y axis of body boost the hell out and it detects outside the limits
-	// End static body bug - When a dinamic body approaches the limits of a static body, it automatically teleports to the limit	
-	// (trerballar amb velocity * massa) Wall jump bugg - Gravity affects a lot on walljump, so at the 2/3rd jump you can not wall jump more because the force applied is so low. How to solve that?
-
-	// NEW BUG
-	// Double jump jank. If double jump fast, going higher, else, not higher
-	// SPHERE COLLISION GROUND
-
-	// TO IMPLEMENT
-	// Wall friction when walljump active
-	// RPG physics/scenario
-
-	// FUTURE IMPLEMENTATION
-	// Implement join: "Rope", fero si o si ELASTIC -> Future Bug, Elastic + Velocity 8 = the end of the actual game :) + feature
-	// Velocity Limit library, + boleans per activar/desactivar cada un per utilitzarlos a la vegada si vull
-	// Wall jump library (real (com el que tinc ara), no realistic...)
-	// Add raycasing
-	// Add water rect (onWater / onAir bools)
-
-	physics->DeathLimit({ 0,0,1280,720 });
-
-	if (test != nullptr)
-	{
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			test->Jump(-300.0f, true);
-			test->WallJump({ 300.0f, 350.0f });
-		}
-
-		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		{
-			if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) test->Move(5.0f, Direction::LEFT, 300.0f);
-			else test->Move(5.0f, Direction::LEFT, 200.0f);
-
-			if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN)
-			{
-				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) test->Dash(400.0f, DashDirection::UPLEFT, 1);
-				else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) test->Dash(400.0f, DashDirection::DOWNLEFT, 1);
-				else test->Dash(400.0f, DashDirection::LEFT, 1);
-			}
-		}
-
-		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		{
-			if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) test->Move(5.0f, Direction::RIGHT, 300.0f);
-			else test->Move(5.0f, Direction::RIGHT, 200.0f);
-
-			if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN)
-			{
-				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) test->Dash(400.0f, DashDirection::UPRIGHT, 1);
-				else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) test->Dash(400.0f, DashDirection::DOWNRIGHT, 1);
-				else test->Dash(400.0f, DashDirection::RIGHT, 1);
-			}
-		}
-
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN) test->Dash(400.0f, DashDirection::DOWN, 1);
-
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN) test->Dash(400.0f, DashDirection::UP, 1);
-	}
-
-	physics->Draw(test);
-
-	//if (test != nullptr)
-	//{
-	//	fPoint pos = test->GetPosition();
-	//	LOG("BodyX: %.3f BodyY: %.3f", pos.x, pos.y);
-	//}
+void Scene::UpdateLevelScene(float dt)
+{
+	level->Update(dt);
+	level->Draw(dt);
 }
 
 // GUI CONTROLS

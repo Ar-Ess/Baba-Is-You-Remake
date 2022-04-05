@@ -2,6 +2,7 @@
 #define __WINDOW_H__
 
 #include "Module.h"
+#include "Point.h"
 
 struct SDL_Window;
 struct SDL_Surface;
@@ -21,6 +22,8 @@ public:
 	bool CleanUp();
 
 	void SetTitle(const char* title);
+
+	iPoint GetWindowSize() const;
 
 	void GetWindowSize(uint& width, uint& height) const;
 

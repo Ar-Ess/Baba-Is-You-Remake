@@ -10,14 +10,16 @@
 #include "EasingFunctions.h"
 
 struct SDL_Texture;
-class Map;
+class LevelScene;
 class Player;
-class Physics;
+
+typedef short unsigned int suint;
 
 enum Scenes
 {
-	NO_BODY = -1,
+	NO_SCENE = -1,
 	LOGO_SCENE,
+	LEVEL_SCENE,
 };
 
 class Scene : public Module
@@ -52,9 +54,8 @@ private: //DEBUG
 	bool activeContinue = false;
 
 private: //Pointers
-	friend class Map;
 	Player* player1 = nullptr;
-	Physics* physics = nullptr;
+	LevelScene* level = nullptr;
 
 private: //SPLINES
 	Spline spline;
@@ -64,14 +65,16 @@ public://Scene Manager
 	void SetScene(Scenes scene);
 
 private:
-	Scenes currScene = NO_BODY;
-	Scenes prevScene = NO_BODY;
+	Scenes currScene = NO_SCENE;
+	Scenes prevScene = NO_SCENE;
 
 	//Setters
 	void SetLogoScene();
+	void SetLevelScene();
 
 	//Updaters
 	void UpdateLogoScene(float dt);
+	void UpdateLevelScene(float dt);
 
 private: //BUTTONS
 	bool OnGuiMouseClickEvent(GuiControl* control);
