@@ -4,7 +4,6 @@
 #include "GuiManager.h"
 #include "Audio.h"
 #include "Textures.h"
-#include "DialogueManager.h"
 
 GuiButton::GuiButton(SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::BUTTON)
 {

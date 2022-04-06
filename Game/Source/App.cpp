@@ -5,14 +5,11 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Audio.h"
-#include "EntityManager.h"
 #include "GuiManager.h"
 #include "FontTTF.h"
-#include "DialogueManager.h"
 #include "AssetsManager.h"
 #include "Scene.h"
 #include "Transition.h"
-#include "Player.h"
 #include "ParticleSystem.h"
 #include <time.h>
 
@@ -32,11 +29,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	render = new Render();
 	tex = new Textures();
 	audio = new AudioManager();
-	entityManager = new EntityManager();
 	guiManager = new GuiManager();
 	fontTTF = new FontTTF();
 	scene = new Scene();
-	dialogueManager = new DialogueManager();
 	transition = new Transition();
 	psystem = new ParticleSystem();
 
@@ -47,11 +42,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(assetsManager);
 	AddModule(tex);
 	AddModule(audio);
-	AddModule(entityManager);
 	AddModule(guiManager);
 	AddModule(fontTTF);
 	AddModule(scene);
-	AddModule(dialogueManager);
 	AddModule(transition);
 	AddModule(psystem);
 

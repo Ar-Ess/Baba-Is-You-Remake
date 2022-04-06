@@ -36,18 +36,6 @@
     <ClCompile Include="Source\GuiManager.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EntityManager.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Player.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Enemy.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Item.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Font.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -63,14 +51,8 @@
     <ClCompile Include="Source\FontTTF.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DialogueManager.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Dialogue.cpp">
       <Filter>Dialogues</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\NPC.cpp">
-      <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Source\Spline.cpp">
       <Filter>Utils</Filter>
@@ -80,9 +62,6 @@
     </ClCompile>
     <ClCompile Include="Source\EasingFunctions.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss.cpp">
-      <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Source\AssetsManager.cpp">
       <Filter>Modules</Filter>
@@ -104,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="Source\LevelScene.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlayerTile.cpp">
+      <Filter>Tiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,23 +120,11 @@
     <ClInclude Include="Source\PQueue.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Enemy.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Entity.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Player.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Audio.h">
       <Filter>Modules</Filter>
     </ClInclude>
     <ClInclude Include="Source\Input.h">
       <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Item.h">
-      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Source\Module.h">
       <Filter>Modules</Filter>
@@ -183,9 +153,6 @@
     <ClInclude Include="Source\GuiManager.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EntityManager.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Font.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -204,9 +171,6 @@
     <ClInclude Include="Source\Collider.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DialogueManager.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Dialogue.h">
       <Filter>Dialogues</Filter>
     </ClInclude>
@@ -219,9 +183,6 @@
     <ClInclude Include="Source\Animation.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\NPC.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Spline.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -230,9 +191,6 @@
     </ClInclude>
     <ClInclude Include="Source\EasingFunctions.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss.h">
-      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Source\AssetsManager.h">
       <Filter>Modules</Filter>
@@ -258,6 +216,15 @@
     <ClInclude Include="Source\Rect.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Tile.h">
+      <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BlockTile.h">
+      <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlayerTile.h">
+      <Filter>Tiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -272,9 +239,6 @@
     <Filter Include="Modules">
       <UniqueIdentifier>{bfe4e094-9e73-4cb6-9027-deaaa69e9993}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entities">
-      <UniqueIdentifier>{181a0403-1c29-4140-9889-f2865e448060}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GuiControls">
       <UniqueIdentifier>{4d3153ed-57fc-4feb-a588-da24db86de8d}</UniqueIdentifier>
     </Filter>
@@ -286,6 +250,9 @@
     </Filter>
     <Filter Include="Particles">
       <UniqueIdentifier>{e325deaa-5a4a-4eac-bb2a-4a60bc8d88c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tiles">
+      <UniqueIdentifier>{24e4a680-5236-4eb5-a970-6d35a604463d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -2,9 +2,6 @@
 #include "Textures.h"
 
 #include "GuiManager.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "Boss.h"
 
 #include "Log.h"
 

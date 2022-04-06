@@ -1,6 +1,5 @@
 #include "GuiString.h"
 #include "Textures.h"
-#include "DialogueManager.h"
 #include "App.h"
 
 GuiString::GuiString() : GuiControl(GuiControlType::TEXT), textFont(app->fontTTF->defaultFont)
@@ -45,27 +44,4 @@ void GuiString::CenterAlign()
 
 	bounds.x += (bounds.w / 2) - (width / 2);
 	bounds.y += (bounds.h / 2) - (height / 2);
-}
-
-void GuiString::CenterDialogue()
-{
-	int width = 0, height = 0, endLine = app->dialogueManager->endLine;
-	app->fontTTF->CalcSize(text.GetString(), width, height, textFont);
-
-	int lineScale = static_cast<int>(ceil(width / endLine));
-	
-	width = endLine;
-	height *= lineScale;
-
-	bounds.x += (bounds.w / 2) - (width / 2);
-	bounds.y += (bounds.h / 2) - (height / 2);
-}
-
-void GuiString::NodePlacing()
-{
-	uint w, h;
-	app->win->GetWindowSize(w, h);
-	
-	bounds.x = (w / 2) - (bounds.w / 2);
-	bounds.y = 5 * (h / 8);	
 }

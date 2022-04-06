@@ -5,7 +5,7 @@
 #include "Render.h"
 #include "Input.h"
 #include "Scene.h"
-#include "Player.h"
+#include "Tile.h"
 #include <vector>
 
 #define NUM_OF_LEVELS 2
@@ -14,18 +14,42 @@ struct SDL_Texture;
 
 struct LevelConfig
 {
-	LevelConfig(suint rows, suint columns, iPoint playerInitPos = {0, 0}, iPoint offset = { 50, 40 })
+	LevelConfig(suint rows, suint columns, iPoint winSize, iPoint playerInitPos = {0, 0}, iPoint offset = { 50, 40 })
 	{
 		this->rows = rows;
 		this->columns = columns;
 		this->playerInitPos = playerInitPos;
 		this->offset = offset;
+		
+		winSize -= offset;
+		tileSize = GenerateTileSize(winSize);
+		center = GenerateCenterParam(winSize);
 	}
 
 	~LevelConfig() {}
 
+	// Function: Algorithm that returns the value in pixels of the initial position of the player
+	fPoint GetPlayerInitialPosition()
+	{
+		return fPoint{ (tileSize * playerInitPos.x) + (offset.x / 2) + center.x, (tileSize * playerInitPos.y) + (offset.y / 2) + center.y };
+	}
+
+	fPoint GetMapOffset()
+	{
+		return fPoint{ (offset.x / 2) + center.x, (offset.y / 2) + center.y };
+	}
+
+	suint rows = 0;
+	suint columns = 0;
+	iPoint offset = {0, 0};
+	fPoint center = {0, 0};
+	iPoint playerInitPos = {0, 0};
+	float tileSize = 0;
+
+private: // Methods
+
 	// Function: Algorithm that returns the value of a tile width & height given window width & height.
-	float GetTileSize(iPoint winSize)
+	float GenerateTileSize(iPoint winSize)
 	{
 		float ret = 0;
 
@@ -37,29 +61,17 @@ struct LevelConfig
 
 	// Function: Algorithm that returns half of the distance between the grid end (right) and the window end (right).
 	// This parameter helps to center the grid to avoid having it aligned to de left.
-	fPoint GetCenterParam(float tileSize, iPoint windowLvl)
+	fPoint GenerateCenterParam(iPoint windowLvl)
 	{
 		return fPoint{ ((tileSize * columns) - windowLvl.x) / -2, ((tileSize * rows) - windowLvl.y) / -2 };
 	}
-
-	// Function: Algorithm that returns the value in pixels of the initial position of the player
-	fPoint GetPlayerInitialPosition(fPoint center)
-	{
-		return {(offset.x / 2) + center.x, (offset.y / 2) + center.y };
-	}
-
-	suint rows = 0;
-	suint columns = 0;
-	iPoint offset = {0, 0};
-	iPoint playerInitPos = {0, 0};
-
 };
 
 class LevelScene
 {
 public: // Methods
 
-	LevelScene(Render* render, Input* input, Player* player, const iPoint winSize);
+	LevelScene(Render* render, Input* input, Tile* player, const iPoint winSize);
 
 	~LevelScene();
 
@@ -79,19 +91,14 @@ private: // Variables
 
 	Render* render = nullptr;
 	Input* input = nullptr;
-	Player* player = nullptr;
+	Tile* player = nullptr;
 
 	iPoint winSize = { 0, 0 };
-	fPoint center = { 0, 0 };
-
-	float tileSize = 0;
 	suint lvl = 0;
 
-	LevelConfig level[NUM_OF_LEVELS] = {
-	// Rows  Columns  PlayerInitPos  Offset
-	{   14,     26}, 
-	{    3,      3}
-	};
+	LevelConfig* level[NUM_OF_LEVELS] = {};
+
+	std::vector<Tile*> tiles;
 
 };
 
