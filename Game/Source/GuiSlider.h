@@ -19,7 +19,7 @@ public:
 
     bool Update(float dt);
     bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
-    void SetTexture(const char* path, iPoint barMagnitude, iPoint sMagnitude);
+    void SetTexture(const char* path, Point barMagnitude, Point sMagnitude);
     void Delete();
 
     void SetMinValue(int val);
@@ -53,7 +53,7 @@ public:
     bool sliderFocus = false;
 
 private:
-    void UpdateDimensions(iPoint barMagnitudes, iPoint sMagnitudes);
+    void UpdateDimensions(Point barMagnitudes, Point sMagnitudes);
 
 private:
 
@@ -67,25 +67,25 @@ private:
 
     bool sliderClicked = false;
 
-    iPoint locked = { 0, 0};
-    iPoint normal = { 0, 0 };
-    iPoint focused = { 0, 0 };
-    iPoint pressed = { 0, 0 };
+    Point locked = { 0, 0};
+    Point normal = { 0, 0 };
+    Point focused = { 0, 0 };
+    Point pressed = { 0, 0 };
 
-    iPoint sLocked = { 0, 0 };
-    iPoint sNormal = { 0, 0 };
-    iPoint sFocused = { 0, 0 };
-    iPoint sPressed = { 0, 0 };
+    Point sLocked = { 0, 0 };
+    Point sNormal = { 0, 0 };
+    Point sFocused = { 0, 0 };
+    Point sPressed = { 0, 0 };
 
-    iPoint sLowLocked = { 0, 0 };
-    iPoint sLowNormal = { 0, 0 };
-    iPoint sLowFocused = { 0, 0 };
-    iPoint sLowPressed = { 0, 0 };
+    Point sLowLocked = { 0, 0 };
+    Point sLowNormal = { 0, 0 };
+    Point sLowFocused = { 0, 0 };
+    Point sLowPressed = { 0, 0 };
 
-    iPoint sMuteLocked = { 0, 0 };
-    iPoint sMuteNormal = { 0, 0 };
-    iPoint sMuteFocused = { 0, 0 };
-    iPoint sMutePressed = { 0, 0 };
+    Point sMuteLocked = { 0, 0 };
+    Point sMuteNormal = { 0, 0 };
+    Point sMuteFocused = { 0, 0 };
+    Point sMutePressed = { 0, 0 };
 };
 
 #endif // __GUISLIDER_H__

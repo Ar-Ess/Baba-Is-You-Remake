@@ -5,7 +5,7 @@
 #include <time.h>
 
 
-Emitter::Emitter(fPoint pos, EmitterData data)
+Emitter::Emitter(Point pos, EmitterData data)
 {
 	srand(time(NULL));
 
@@ -165,12 +165,12 @@ void Emitter::StopEmission(double timer)
 	}
 }
 
-void Emitter::MoveEmitter(fPoint newPos)
+void Emitter::MoveEmitter(Point newPos)
 {
 	pos = newPos;
 }
 
-fPoint Emitter::GetEmitterPos() const
+Point Emitter::GetEmitterPos() const
 {
 	return pos;
 }

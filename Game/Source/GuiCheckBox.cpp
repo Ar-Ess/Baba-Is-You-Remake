@@ -162,7 +162,7 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
     return false;
 }
 
-void GuiCheckBox::SetTexture(const char* path, iPoint magnitude)
+void GuiCheckBox::SetTexture(const char* path, Point magnitude)
 {
     app->tex->UnLoad(spritesheet);
     spritesheet = nullptr;
@@ -179,7 +179,7 @@ void GuiCheckBox::Delete()
     text.Clear();
 }
 
-void GuiCheckBox::UpdateDimensions(iPoint magnitude)
+void GuiCheckBox::UpdateDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
     bounds.h = magnitude.y;

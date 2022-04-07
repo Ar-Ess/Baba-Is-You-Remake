@@ -2,6 +2,7 @@
 #define __PARTICLE_H__
 
 #include "Point.h"
+#include "Defs.h"
 #include "SDL/include/SDL.h"
 
 #define MIN_LIFE_TO_INTERPOLATE 15
@@ -18,7 +19,7 @@ private:
 
 	struct Vortex
 	{
-		fPoint pos = { 0.0f, 0.0f };
+		Point pos = { 0.0f, 0.0f };
 		float speed = 0.0f;
 		float scale = 0.0f;
 	} vortex;
@@ -30,10 +31,10 @@ private:
 		struct ParticleState
 		{
 			uint startLife;
-			fPoint pos;
-			fPoint startVel;
-			fPoint endVel;
-			fPoint currentVel;
+			Point pos;
+			Point startVel;
+			Point endVel;
+			Point currentVel;
 			float currentSize, startSize, endSize;
 			float ageRatio;
 			float angle;
@@ -65,7 +66,7 @@ public:
 	Particle();
 
 	// Initializes new generated particle
-	void Init(fPoint pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive);
+	void Init(Point pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive);
 
 	// Generic methods
 	void Update();
@@ -82,7 +83,7 @@ public:
 	float InterpolateBetweenRange(float min, float timeStep, float max);
 
 	// Adds a vortex to the system
-	void AddVortex(fPoint pos, float speed, float scale);
+	void AddVortex(Point pos, float speed, float scale);
 
 	/* Calculates particle position considering its velocity
 	   and if there's a vortex in the system */

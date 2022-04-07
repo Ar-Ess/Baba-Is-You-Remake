@@ -15,7 +15,7 @@ public:
 
     bool Update(float dt);
     bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
-    void SetTexture(const char* path, iPoint magnitude);
+    void SetTexture(const char* path, Point magnitude);
     void Delete();
     
     bool checkBoxFocus = false;
@@ -26,18 +26,18 @@ public:
     }
 
 private:
-    void UpdateDimensions(iPoint magnitudes);
+    void UpdateDimensions(Point magnitudes);
     bool checked = false;
     SDL_Texture* spritesheet = nullptr;
     //options menu
 
-    iPoint checkNormal = {0, 0};
-    iPoint checkFocused = { 0, 0 };
-    iPoint checkPressed = { 0, 0 };
-    iPoint uncheckNormal = { 0, 0 };
-    iPoint uncheckFocused = { 0, 0 };
-    iPoint uncheckPressed = { 0, 0 };
-    iPoint locked = {0, 0};
+    Point checkNormal = {0, 0};
+    Point checkFocused = { 0, 0 };
+    Point checkPressed = { 0, 0 };
+    Point uncheckNormal = { 0, 0 };
+    Point uncheckFocused = { 0, 0 };
+    Point uncheckPressed = { 0, 0 };
+    Point locked = {0, 0};
 };
 
 #endif // __GUICHECKBOX_H__

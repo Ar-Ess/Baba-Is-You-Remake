@@ -5,9 +5,9 @@
 #include "Defs.h"
 
 
-Particle::Particle() :life(0) { }
+Particle::Particle() : life(0) { }
 
-void Particle::Init(fPoint pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive)
+void Particle::Init(Point pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive)
 {
 	// Movement properties
 	pState.pLive.pos = pos;
@@ -127,7 +127,7 @@ float Particle::InterpolateBetweenRange(float min, float timeStep, float max)
 	return min + (max - min) * timeStep;
 }
 
-void Particle::AddVortex(fPoint pos, float speed, float scale)
+void Particle::AddVortex(Point pos, float speed, float scale)
 {
 	vortex.pos = pos;
 	vortex.speed = speed;

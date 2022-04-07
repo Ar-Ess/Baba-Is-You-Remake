@@ -130,7 +130,7 @@ bool GuiButton::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPo
     return false;
 }
 
-void GuiButton::SetTexture(const char* path, iPoint magnitude)
+void GuiButton::SetTexture(const char* path, Point magnitude)
 {
     app->tex->UnLoad(spritesheet);
     spritesheet = app->tex->Load(path);
@@ -146,7 +146,7 @@ void GuiButton::Delete()
     text.Clear();
 }
 
-void GuiButton::UpdateDimensions(iPoint magnitude)
+void GuiButton::UpdateDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
     bounds.h = magnitude.y;

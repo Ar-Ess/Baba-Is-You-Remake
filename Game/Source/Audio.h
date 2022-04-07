@@ -51,8 +51,8 @@ public:
 	void SetFx(Effect fx);
 
 	//Tools
-	uint GetAngle(iPoint player, iPoint enemy);
-	uint GetVolumeFromDistance(iPoint player, iPoint enemy);
+	uint GetAngle(Point player, Point enemy);
+	uint GetVolumeFromDistance(Point player, Point enemy);
 	void SetChannelAngles();
 	void TransitionVolumeMusic();
 	void ChangeVolumeMusic(int volume);
@@ -81,7 +81,7 @@ private:
 
 private:
 
-	const iPoint yAxis = { 0, 1 };
+	const Point yAxis = { 0, 1 };
 
 	_Mix_Music* music;
 	List<Mix_Chunk *> fx;

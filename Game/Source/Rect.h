@@ -22,7 +22,7 @@ public:
 		this->h = h;
 	}
 
-	Rect(fPoint position, float w = 0, float h = 0)
+	Rect(Point position, float w = 0, float h = 0)
 	{
 		this->x = position.x;
 		this->y = position.y;
@@ -30,15 +30,15 @@ public:
 		this->h = h;
 	}
 
-	void SetPosition(fPoint position)
+	void SetPosition(Point position)
 	{
 		x = position.x;
 		y = position.y;
 	}
 
-	fPoint GetPosition() const
+	Point GetPosition() const
 	{
-		return fPoint{x, y};
+		return Point{x, y};
 	}
 
 public:

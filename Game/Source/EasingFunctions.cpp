@@ -3,7 +3,7 @@
 
 //
 
-fPoint EasingFunctions::Ease(EasingType eType, iPoint posA, iPoint posB, bool repeat, int totalIterX, int totalIterY)
+Point EasingFunctions::Ease(EasingType eType, Point posA, Point posB, bool repeat, int totalIterX, int totalIterY)
 {
 
 	float valueX = 0.0f;

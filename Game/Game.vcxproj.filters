@@ -102,9 +102,6 @@
     <ClInclude Include="Source\Log.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Point.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\SString.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -224,6 +221,12 @@
     </ClInclude>
     <ClInclude Include="Source\PlayerTile.h">
       <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Point.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Multibool.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

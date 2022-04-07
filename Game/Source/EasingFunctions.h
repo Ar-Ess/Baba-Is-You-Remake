@@ -41,7 +41,7 @@ enum class EasingType
 class EasingFunctions 
 {
 public:
-	fPoint Ease(EasingType easeType, iPoint finalPosition, iPoint initialPosition, bool repeat, int totalIterX, int totalIterY);
+	Point Ease(EasingType easeType, Point finalPosition, Point initialPosition, bool repeat, int totalIterX, int totalIterY);
 	void ResetIterations();
 
 private:

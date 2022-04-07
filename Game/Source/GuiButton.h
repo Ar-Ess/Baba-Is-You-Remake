@@ -13,19 +13,19 @@ public:
 
     bool Update(float dt);
     bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
-    void SetTexture(const char* path, iPoint magnitude);
+    void SetTexture(const char* path, Point magnitude);
     void Delete();
 	bool buttonFocus = false;
 
 private:
-    void UpdateDimensions(iPoint magnitudes);
+    void UpdateDimensions(Point magnitudes);
 
 private:
     //Texture sections
-    iPoint locked = { 0, 0};
-    iPoint normal = { 0, 0};
-    iPoint focused = { 0, 0};
-    iPoint pressed = { 0, 0};
+    Point locked = { 0, 0};
+    Point normal = { 0, 0};
+    Point focused = { 0, 0};
+    Point pressed = { 0, 0};
     SDL_Texture* spritesheet = nullptr;
 };
 

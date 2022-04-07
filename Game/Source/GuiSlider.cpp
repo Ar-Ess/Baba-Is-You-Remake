@@ -296,7 +296,7 @@ void GuiSlider::SetSlider(SDL_Rect bounds)
     UpdateValue();
 }
 
-void GuiSlider::SetTexture(const char* path, iPoint barMagnitude, iPoint sMagnitude)
+void GuiSlider::SetTexture(const char* path, Point barMagnitude, Point sMagnitude)
 {
     app->tex->UnLoad(spritesheet);
     spritesheet = nullptr;
@@ -314,7 +314,7 @@ void GuiSlider::Delete()
     text.Clear();
 }
 
-void GuiSlider::UpdateDimensions(iPoint barMagnitude, iPoint sMagnitude)
+void GuiSlider::UpdateDimensions(Point barMagnitude, Point sMagnitude)
 {
     bounds.w = barMagnitude.x;
     bounds.h = barMagnitude.y;

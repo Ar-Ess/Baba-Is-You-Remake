@@ -41,7 +41,7 @@ public:
 		return (radius * 2.0f);
 	}
 
-	fPoint GetAltLeftPosition() const
+	Point GetAltLeftPosition() const
 	{
 		return {x - radius, y - radius};
 	}
@@ -54,7 +54,7 @@ public:
 
 	double Distance(int x1, int y1, int x2, int y2)
 	{
-		return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+		return sqrt(pow(double(x2 - x1), 2) + pow(double(y2 - y1), 2));
 	}
 
 	bool CheckCollision(SDL_Rect r1, SDL_Rect r2) const

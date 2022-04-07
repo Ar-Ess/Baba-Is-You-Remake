@@ -106,9 +106,9 @@ void AudioManager::SetFx(Effect fx)
 	PlayFx(((int)fx) + 1);
 }
 
-uint AudioManager::GetAngle(iPoint player, iPoint enemy)
+uint AudioManager::GetAngle(Point player, Point enemy)
 {
-	iPoint vec(enemy.x - player.x, enemy.y - player.y);
+	Point vec(enemy.x - player.x, enemy.y - player.y);
 
 	float dot = (yAxis.x * vec.x) + (yAxis.y * vec.y);
 	float det = (yAxis.x * vec.y) - (yAxis.y * vec.x);
@@ -124,9 +124,9 @@ uint AudioManager::GetAngle(iPoint player, iPoint enemy)
 	return a_ret;
 }
 
-uint AudioManager::GetVolumeFromDistance(iPoint player, iPoint enemy)
+uint AudioManager::GetVolumeFromDistance(Point player, Point enemy)
 {
-	iPoint vec(enemy.x - player.x, enemy.y - player.y);
+	Point vec(enemy.x - player.x, enemy.y - player.y);
 	float screen_dist = sqrt(pow(vec.x, 2) + pow(vec.y, 2));
 
 	if (screen_dist >= MUTE_DISTANCE)

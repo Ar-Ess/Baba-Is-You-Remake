@@ -1,159 +1,121 @@
 #ifndef __POINT_H__
 #define __POINT_H__
 
-#include "Defs.h"
-
 #include <math.h>
 
-template<class TYPE>
-class Point
+struct Point
 {
-public:
+	Point() {}
+	Point(int x, int y) { this->x = float(x); this->y = float(y); }
+	Point(float x, float y) { this->x = x; this->y = y; }
+	Point(double x, double y) { this->x = float(x); this->y = float(y); }
 
-	TYPE x, y;
-	float length = 0;
+	Point(int a) { x = float(a); y = float(a); }
+	Point(float a) { x = a; y = a; }
+	Point(double a) { x = float(a); y = float(a); }
 
-	Point()
-	{}
+	float x = 0, y = 0;
 
-	Point(const Point<TYPE>& v)
+	float Distance(Point to)
 	{
-		this->x = v.x;
-		this->y = v.y;
+		float x = pow(to.x - double(this->x), 2);
+		float y = pow(to.y - double(this->y), 2);
+
+		return sqrt(double(x) + y);
+	}
+	float Distance(float x, float y)
+	{
+		float xx = pow(x - double(this->x), 2);
+		float yy = pow(y - double(this->y), 2);
+
+		return sqrt(double(xx) + yy);
+	}
+	float Distance(double x, double y)
+	{
+		float xx = pow(x - double(this->x), 2);
+		float yy = pow(y - double(this->y), 2);
+
+		return sqrt(double(xx) + yy);
+	}
+	float Distance(int x, int y)
+	{
+		float xx = pow(double(x) - double(this->x), 2);
+		float yy = pow(double(y) - double(this->y), 2);
+
+		return sqrt(double(xx) + yy);
 	}
 
-	Point(const TYPE& x, const TYPE& y)
+	// Function: It applies the number inputed to the actual Point value and the result is the output.
+	// It does not modify the value stored in the class
+	Point Apply(Point sum) const
 	{
-		this->x = x;
-		this->y = y;
+		return Point{this->x + sum.x, this->y + sum.y};
+	}
+	Point Apply(float x, float y) const
+	{
+		return Point{ this->x + x, this->y + y };
+	}
+	Point Apply(double x, double y) const
+	{
+		return Point{ this->x + x, this->y + y };
+	}
+	Point Apply(int x, int y) const
+	{
+		return Point{ this->x + float(x), this->y + float(y) };
 	}
 
-	Point& Create(const TYPE& x, const TYPE& y)
+	float GetMax()
 	{
-		this->x = x;
-		this->y = y;
-
-		return(*this);
+		return fmax(x, y);
 	}
 
-	// Math ------------------------------------------------
-	Point operator -(const Point &v) const
+	float GetMaxAbs()
 	{
-		TYPE r;
-
-		r.x = x - v.x;
-		r.y = y - v.y;
-
-		return(r);
+		return fmax(fabsf(x), fabsf(y));
 	}
 
-	Point operator + (const Point &v) const
+	float operator[](int i) 
 	{
-		TYPE r;
+		float ret = 0;
 
-		r.x = x + v.x;
-		r.y = y + v.y;
+		//--Cond--  --True--  ------------False------------
+		//   ||        ||     --Cond--  --True--  --False--
+		//   \/        \/        \/        \/         \/
+		(i == 0) ? ret = x : ((i == 1) ? ret = y : ret = 0);
 
-		return(r);
+		return ret;
 	}
 
-	const Point& operator -=(const Point &v)
-	{
-		x -= v.x;
-		y -= v.y;
+	bool operator==(Point b) { return (x == b.x && y == b.y); }
+	bool operator==(int i) { return (x == i || y == i); }
+	bool operator!=(Point b) { return !(x == b.x && y == b.y); }
+	bool operator!=(int i) { return !(x == i && y == i); }
 
-		return(*this);
+	void operator+=(int i) { x += i; y += i; }
+	void operator-=(int i) { x -= i; y -= i; }
+	void operator*=(int i) { x *= i; y *= i; }
+	void operator/=(int i) { if (i == 0) return; x /= i; y /= i; }
+
+	void operator+=(Point i) { x += i.x; y += i.y; }
+	void operator-=(Point i) { x -= i.x; y -= i.y; }
+	void operator*=(Point i) { x *= i.x; y *= i.y; }
+	void operator/=(Point i) { if (i == 0) return; x /= i.x; y /= i.y; }
+
+	bool operator<(int i) { return (x < i&& y < i); }
+	bool operator<=(int i) { return (x <= i && y <= i); }
+	bool operator>(int i) { return (x > i && y > i); }
+	bool operator>=(int i) { return (x >= i && y >= i); }
+
+	bool operator<(Point b) { return (x < b.x&& y < b.y); }
+	bool operator<=(Point b) { return (x <= b.x && y <= b.y); }
+	bool operator>(Point b) { return (x > b.x && y > b.y); }
+	bool operator>=(Point b) { return (x >= b.x && y >= b.y); }
+
+	Point& operator = (const Point& u)
+	{
+		x = u.x; y = u.y; return *this;
 	}
 
-	const Point& operator +=(const Point &v)
-	{
-		x += v.x;
-		y += v.y;
-
-		return(*this);
-	}
-
-	const Point& operator *=(const int v)
-	{
-		x *= v;
-		y *= v;
-
-		return(*this);
-	}
-
-	const Point& operator /= (const int v)
-	{
-		if (v != 0)
-		{
-			x /= v;
-			y /= v;
-		}
-
-		return(*this);
-	}
-
-	bool operator ==(const Point& v) const
-	{
-		return (x == v.x && y == v.y);
-	}
-
-	bool operator !=(const Point& v) const
-	{
-		return (x != v.x || y != v.y);
-	}
-
-	// Utils ------------------------------------------------
-	bool IsZero() const
-	{
-		return (x == 0 && y == 0);
-	}
-
-	Point& SetToZero()
-	{
-		x = y = 0;
-		return(*this);
-	}
-
-	Point& Negate()
-	{
-		x = -x;
-		y = -y;
-
-		return(*this);
-	}
-
-	Point& Absolute()
-	{
-		if (x < 0) x = -x;
-		if (y < 0) y = -y;
-
-		return(*this);
-	}
-
-	// Distances ---------------------------------------------
-	TYPE DistanceTo(const Point& v) const
-	{
-		TYPE fx = x - v.x;
-		TYPE fy = y - v.y;
-
-		return sqrtf((fx*fx) + (fy*fy));
-	}
-
-	TYPE DistanceNoSqrt(const Point& v) const
-	{
-		TYPE fx = x - v.x;
-		TYPE fy = y - v.y;
-
-		return (fx*fx) + (fy*fy);
-	}
-
-	TYPE DistanceManhattan(const Point& v) const
-	{
-		return abs(v.x - x) + abs(v.y - y);
-	}
 };
 
-typedef Point<int> iPoint;
-typedef Point<float> fPoint;
-
-#endif // __POINT_H__
+#endif //__POINT_H__

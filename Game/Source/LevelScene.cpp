@@ -2,7 +2,7 @@
 #include "PlayerTile.h"
 #include "BlockTile.h"
 
-LevelScene::LevelScene(Render* render, Input* input, Tile* player, const iPoint winSize)
+LevelScene::LevelScene(Render* render, Input* input, Tile* player, const Point winSize)
 {
 	this->render = render;
 	this->input = input;
@@ -47,27 +47,50 @@ bool LevelScene::Update(float dt)
 	if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++level[lvl].columns;
 	*/
 
-	for (suint i = 0; i < tiles.size(); ++i)
+	suint size = tiles.size();
+	for (suint i = 0; i < size; ++i)
 	{
-		// IN DEVELOPMENT (Put in map the four tiles around player)
-		std::vector<Tile*> map;
-		bool top = false, left = false, right = false, down = false;
-		for (suint a = 0; a < tiles.size(); ++a)
+		suint* mapPtr = nullptr;
+
+		Multibool mapp(3);
+		mapp.Set(1, true);
+
+		bool test0 = mapp.Get(0);
+		bool test1 = mapp.Get(1);
+
+		// IN DEVELOPMENT ("if (tiles[i].type == PLAYER) {")
+		suint map = 20000; // Do a .h class of this bool method
+		for (suint a = 0; a < size; ++a)
 		{
 			if (a == i) continue;
 
 			Tile* tile = tiles[i];
 			Tile* mapTile = tiles[a];
 
-			if (!left && tile->GetPosition().x - 1 == mapTile->GetPosition().x && tile->GetPosition().y == mapTile->GetPosition().y)
+			if ((map - 1000) < 20000 && tile->GetPosition().Apply(0, -1) == mapTile->GetPosition())
 			{
-				left = true;
-				map.push_back(mapTile);
+				map += 1000;
+				if (mapPtr == nullptr) mapPtr = &map;
+			}
+			if ((map - 1100) < 20000 && tile->GetPosition().Apply(0,  1) == mapTile->GetPosition())
+			{
+				map += 100;
+				if (mapPtr = nullptr) mapPtr = &map;
+			}
+			if ((map - 1110) < 20000 && tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition())
+			{
+				map += 10;
+				if (mapPtr == nullptr) mapPtr = &map;
+			}
+			if ((map - 1111) < 20000 && tile->GetPosition().Apply(1,  0) == mapTile->GetPosition())
+			{
+				map += 1;
+				if (mapPtr == nullptr) mapPtr = &map;
 			}
 		}
-		// IN DEVELOPMENT
+		// IN DEVELOPMENT (} "If" depending on the enum type)
 
-		tiles[i]->Update(dt, &map);
+		tiles[i]->Update(dt, mapPtr);
 	}
 
 	return true;

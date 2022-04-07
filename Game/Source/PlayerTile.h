@@ -14,11 +14,11 @@ class PlayerTile : public Tile
 {
 public:
 
-    PlayerTile(fPoint position, float size, Render* render, Input* input);
+    PlayerTile(Point position, float size, Render* render, Input* input);
 
-    bool Start(iPoint position, fPoint offset, float size) override;
+    bool Start(Point position, Point offset, float size) override;
 
-    bool Update(float dt, std::vector<Tile*>* map) override;
+    bool Update(float dt, suint* map) override;
 
     bool Draw(float dt) override;
 

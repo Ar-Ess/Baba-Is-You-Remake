@@ -11,12 +11,12 @@
 
 struct sSpline
 {
-	std::vector<fPoint>	points;
+	std::vector<Point>	points;
 	int	selectedPoint = 0;
 	float splineLength = 0.0f;
 	bool loop = false;
 
-	fPoint GetSplinePoint(float t, bool looped = false)
+	Point GetSplinePoint(float t, bool looped = false)
 	{
 		int p0, p1, p2, p3;
 		if (looped == false)
@@ -50,7 +50,7 @@ struct sSpline
 		return{ tx, ty };
 	}
 
-	fPoint GetSplineGradient(float t, bool bLooped = false)
+	Point GetSplineGradient(float t, bool bLooped = false)
 	{
 		int p0, p1, p2, p3;
 		if (!bLooped)
@@ -88,8 +88,8 @@ struct sSpline
 	{
 		float fLength = 0.0f;
 		float fStepSize = 0.005;
-
-		fPoint old_point, new_point;
+		
+		Point old_point, new_point;
 		old_point = GetSplinePoint((float)node, bLooped);
 
 		for (float t = 0; t < 1.0f; t += fStepSize)
@@ -101,20 +101,6 @@ struct sSpline
 		}
 
 		return fLength;
-	}
-
-	float GetNormalisedOffset(float p)
-	{
-		// Which node is the base?
-		int i = 0;
-		while (p > points[i].length)
-		{
-			p -= points[i].length;
-			i++;
-		}
-
-		// The fractional is the offset 
-		return (float)i + (p / points[i].length);
 	}
 };
 

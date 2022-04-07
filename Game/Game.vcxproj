@@ -137,11 +137,13 @@
     <ClInclude Include="Source\GuiSlider.h" />
     <ClInclude Include="Source\GuiString.h" />
     <ClInclude Include="Source\LevelScene.h" />
+    <ClInclude Include="Source\Multibool.h" />
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\ParticlePool.h" />
     <ClInclude Include="Source\ParticleSystem.h" />
     <ClInclude Include="Source\PerfTimer.h" />
     <ClInclude Include="Source\PlayerTile.h" />
+    <ClInclude Include="Source\Point.h" />
     <ClInclude Include="Source\PQueue.h" />
     <ClInclude Include="Source\Queue.h" />
     <ClInclude Include="Source\Audio.h" />
@@ -161,7 +163,6 @@
     <ClInclude Include="Source\List.h" />
     <ClInclude Include="Source\Log.h" />
     <ClCompile Include="Source\Log.cpp" />
-    <ClInclude Include="Source\Point.h" />
     <ClInclude Include="Source\SString.h" />
     <ClInclude Include="Source\DynArray.h" />
     <ClInclude Include="Source\External\PugiXml\src\pugiconfig.hpp" />

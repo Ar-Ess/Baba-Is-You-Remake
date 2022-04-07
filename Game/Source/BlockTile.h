@@ -15,15 +15,17 @@ public: // Methods
 
 	~BlockTile() override {}
 
-	bool Start(iPoint position, fPoint offset, float size) override
+	bool Start(Point position, Point offset, float size) override
 	{
 		this->offset = offset;
 		this->collider = { (float)position.x, (float)position.y, size, size };
 		return true;
 	}
 
-	bool Update(float dt, std::vector<Tile*>* map) override
+	bool Update(float dt, suint* map) override
 	{
+		if (map == nullptr || *map == 21111) return true;
+
 		return true;
 	}
 

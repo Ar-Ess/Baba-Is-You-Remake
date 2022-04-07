@@ -23,7 +23,7 @@ public:
 
 	void SetTitle(const char* title);
 
-	iPoint GetWindowSize() const;
+	Point GetWindowSize() const;
 
 	void GetWindowSize(uint& width, uint& height) const;
 

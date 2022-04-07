@@ -32,7 +32,7 @@ enum EmitterType
 
 struct EmitterData
 {
-	fPoint angleRange = { 0.0f, 0.0f };
+	Point angleRange = { 0.0f, 0.0f };
 	float startSpeed = 0.0f, endSpeed = 0.0f;
 	float startSize = 0.0f, endSize = 0.0f;
 	uint emitNumber = 0u;
@@ -46,13 +46,13 @@ struct EmitterData
 	double rotSpeed = 0;
 
 	// Randoms
-	fPoint rotSpeedRand = { 0.0f, 0.0f };
-	fPoint startSpeedRand = { 0.0f, 0.0f };
-	fPoint endSpeedRand = { 0.0f, 0.0f };
-	fPoint emitVarianceRand = { 0.0f, 0.0f };
-	fPoint lifeRand = { 0.0f, 0.0f };
-	fPoint startSizeRand = { 0.0f, 0.0f };
-	fPoint endSizeRand = { 0.0f, 0.0f };
+	Point rotSpeedRand = { 0.0f, 0.0f };
+	Point startSpeedRand = { 0.0f, 0.0f };
+	Point endSpeedRand = { 0.0f, 0.0f };
+	Point emitVarianceRand = { 0.0f, 0.0f };
+	Point lifeRand = { 0.0f, 0.0f };
+	Point startSizeRand = { 0.0f, 0.0f };
+	Point endSizeRand = { 0.0f, 0.0f };
 
 	// Vortex
 	bool vortexSensitive = false;
@@ -98,7 +98,7 @@ public:
 
 	// Emitter methods
 	pugi::xml_node LoadEmitters(pugi::xml_document& psystem_file);
-	Emitter* AddEmiter(fPoint pos, EmitterType type);
+	Emitter* AddEmiter(Point pos, EmitterType type);
 	bool RemoveEmitter(Emitter* emitter);
 	bool RemoveAllEmitters();
 

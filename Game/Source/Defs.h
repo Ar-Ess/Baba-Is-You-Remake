@@ -38,6 +38,7 @@
 #define TO_BOOL( a )  ( (a != 0) ? true : false )
 
 typedef unsigned int uint;
+typedef short unsigned int suint;
 typedef unsigned char uchar;
 typedef unsigned __int16 uint16;
 typedef unsigned __int32 uint32;

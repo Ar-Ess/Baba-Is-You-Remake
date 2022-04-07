@@ -11,7 +11,7 @@ void Spline::CreateSplines(pugi::xml_node& node)
 
 		for (pugi::xml_node pt = sp.child("Point"); pt != nullptr; pt = pt.next_sibling("Point"))
 		{
-			spline.points.push_back(fPoint{ pt.attribute("x").as_float(), pt.attribute("y").as_float() });
+			spline.points.push_back(Point{ pt.attribute("x").as_float(), pt.attribute("y").as_float() });
 		}
 		splinesList.Add(spline);
 	}
@@ -21,7 +21,7 @@ void Spline::DrawSpline(uint id)
 {
 	for (float t = 0.0f; t < splinesList[id].points.size(); t+=0.005f)
 	{
-		fPoint pos = splinesList[id].GetSplinePoint(t, true);
+		Point pos = splinesList[id].GetSplinePoint(t, true);
 		SDL_SetRenderDrawColor(app->render->renderer, red.r, red.g, red.g, red.a);
 		SDL_RenderDrawPoint(app->render->renderer, pos.x, pos.y);
 	}

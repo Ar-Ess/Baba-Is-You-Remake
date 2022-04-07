@@ -14,8 +14,8 @@ private:
 	friend class ParticlePool;
 
 	// Particles size and movement
-	fPoint pos = { 0.0f, 0.0f };
-	fPoint angleRange = { 0.0f, 360.0f };
+	Point pos = { 0.0f, 0.0f };
+	Point angleRange = { 0.0f, 360.0f };
 	float startSpeed = 0.0f;
 	float endSpeed = 0.0f;
 	float startSize = 0.0f;
@@ -50,20 +50,20 @@ private:
 	float timeStep = 0.0f;
 
 	// Random control parameters
-	fPoint rotSpeedRand = { 0.0f, 0.0f };
-	fPoint startSpeedRand = { 0.0f, 0.0f };
-	fPoint endSpeedRand = { 0.0f, 0.0f };
-	fPoint emitVarianceRand = { 0.0f, 0.0f };
-	fPoint lifeRand = { 0.0f, 0.0f };
-	fPoint startSizeRand = { 0.0f, 0.0f };
-	fPoint endSizeRand = { 0.0f, 0.0f };
+	Point rotSpeedRand = { 0.0f, 0.0f };
+	Point startSpeedRand = { 0.0f, 0.0f };
+	Point endSpeedRand = { 0.0f, 0.0f };
+	Point emitVarianceRand = { 0.0f, 0.0f };
+	Point lifeRand = { 0.0f, 0.0f };
+	Point startSizeRand = { 0.0f, 0.0f };
+	Point endSizeRand = { 0.0f, 0.0f };
 
 	// Vortex control parameters
 	bool vortexSensitive = false;
 
 public:
 
-	Emitter(fPoint pos, EmitterData data);
+	Emitter(Point pos, EmitterData data);
 	// fPoint pos, uint emitNumber, uint emitVariance, uint maxParticleLife, fPoint angleRange, double rotSpeed, float maxSpeed, float startSize, float endSize, SDL_Rect textureRect, SDL_Color startColor = { 0, 0, 0, 0 }, SDL_Color endColor = { 0, 0, 0, 0 }, SDL_BlendMode blendMode = SDL_BlendMode::SDL_BLENDMODE_NONE, double lifetime = -1.0f
 	virtual ~Emitter();
 
@@ -83,8 +83,8 @@ public:
 	void StopEmission(double timer = 0.0f);
 
 	// Emitter move methods
-	void MoveEmitter(fPoint newPos);
-	fPoint GetEmitterPos() const;
+	void MoveEmitter(Point newPos);
+	Point GetEmitterPos() const;
 
 	void VortexSensitive(bool sensitive);
 };

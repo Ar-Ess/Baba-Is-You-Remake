@@ -5,12 +5,13 @@
 #include "Input.h"
 #include "Render.h"
 #include <vector>
+#include "Defs.h"
 
 class Tile
 {
 public: // Methods
 
-	Tile(fPoint position, float size, Render* render, Input* input) 
+	Tile(Point position, float size, Render* render, Input* input) 
 	{
 		this->collider = { position, size, size };
 		this->render = render;
@@ -19,9 +20,9 @@ public: // Methods
 
 	virtual ~Tile() {}
 
-	virtual bool Start(iPoint position, fPoint offset, float size) { return true; }
+	virtual bool Start(Point position, Point offset, float size) { return true; }
 
-	virtual bool Update(float dt, std::vector<Tile*>* map) { return true; }
+	virtual bool Update(float dt, suint* map) { return true; }
 
 	virtual bool Draw(float dt) { return true; }
 
@@ -29,15 +30,15 @@ public: // Methods
 
 	virtual bool CleanUp() { return true; }
 
-	fPoint GetPosition() const
+	Point GetPosition() const
 	{
-		return fPoint{ collider.x, collider.y };
+		return Point{ collider.x, collider.y };
 	}
 
 protected: // Variables
 
 	Rect collider = {};
-	fPoint offset = {};
+	Point offset = {};
 	Render* render = nullptr;
 	Input* input = nullptr;
 

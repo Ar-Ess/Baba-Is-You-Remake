@@ -138,7 +138,7 @@ pugi::xml_node ParticleSystem::LoadEmitters(pugi::xml_document& psystem_file)
 	return ret;
 }
 
-Emitter* ParticleSystem::AddEmiter(fPoint pos, EmitterType type)
+Emitter* ParticleSystem::AddEmiter(Point pos, EmitterType type)
 {
 	Emitter* tmp_emitter = new Emitter(pos, vecEmitterData[type]);
 

@@ -36,7 +36,7 @@ public:
 	// Utils
 	void SetViewPort(const SDL_Rect& rect);
 	void ResetViewPort();
-	iPoint ScreenToWorld(int x, int y) const;
+	Point ScreenToWorld(int x, int y) const;
 
 	// Drawing
 	bool DrawTexture(SDL_Texture* texture, int x, int y, float sX, float sY, SDL_Rect* section = NULL, bool scaleModCoords = true, bool staticPos = true, double angle = 0, SDL_RendererFlip flip = SDL_FLIP_NONE) const;

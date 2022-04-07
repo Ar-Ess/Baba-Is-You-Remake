@@ -12,8 +12,6 @@
 struct SDL_Texture;
 class LevelScene;
 
-typedef short unsigned int suint;
-
 enum Scenes
 {
 	NO_SCENE = -1,
