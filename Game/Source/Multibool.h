@@ -13,8 +13,10 @@ public:
 		{
 			this->amount = amount;
 			bools = pow(10, amount);
-
 			bools *= 2;
+			allFalse = bools;
+			for (unsigned short int i = 0; i < amount; i++) allTrue += pow(10, i);
+			allTrue += bools;
 		}
 	}
 
@@ -37,36 +39,38 @@ public:
 		return;
 	}
 
+	void SetAllFalse()
+	{
+		bools = allFalse;
+	}
+
 	bool Get(int index)
 	{
-		unsigned int substract = 0;
-		for (short unsigned int i = 0; i < amount; i++)
-		{
-			if (index == i) continue;
-			substract += pow(10, i);
-		}
+		assert(index >= 0 || index < amount);
 
-		return (bools - substract);
+		int result = bools / pow(10, index);
 
-		//short int invIndex = amount - index - 1;
-		//// index out of bounds
-		//assert(index >= 0 || index < amount);
+		result = result % 10;
 
-		//unsigned int substract = pow(10, amount - 1);
-		//for (unsigned short int i = 0; i < invIndex; i++) substract += pow(10, double((amount - 1) - (i + 1)));
-		//
-		//unsigned int condition = bools - substract;
+		return result;
+	}
 
-		//unsigned int level = pow(10, index);
+	bool IsAllTrue() const
+	{
+		return (bools - allTrue == 0);
+	}
 
-		//return (condition - level + substract >= bools);
+	bool IsAllFalse() const
+	{
+		return (bools - allFalse == 0);
 	}
 
 private:
 
 	unsigned int bools = 0;
 	unsigned short int amount = 0;
-
+	unsigned short int allFalse = 0;
+	unsigned short int allTrue = 0;
 };
 
 #endif  // __MULTIBOOL_H__

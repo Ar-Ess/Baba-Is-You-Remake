@@ -111,7 +111,7 @@
     <ClCompile Include="Source\ParticlePool.cpp" />
     <ClCompile Include="Source\ParticleSystem.cpp" />
     <ClCompile Include="Source\PerfTimer.cpp" />
-    <ClCompile Include="Source\PlayerTile.cpp" />
+    <ClCompile Include="Source\Tile.cpp" />
     <ClCompile Include="Source\Render.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Spline.cpp" />
@@ -121,7 +121,6 @@
     <ClCompile Include="Source\Window.cpp" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\AssetsManager.h" />
-    <ClInclude Include="Source\BlockTile.h" />
     <ClInclude Include="Source\Collider.h" />
     <ClInclude Include="Source\Dialogue.h" />
     <ClInclude Include="Source\DialogueNode.h" />
@@ -142,7 +141,6 @@
     <ClInclude Include="Source\ParticlePool.h" />
     <ClInclude Include="Source\ParticleSystem.h" />
     <ClInclude Include="Source\PerfTimer.h" />
-    <ClInclude Include="Source\PlayerTile.h" />
     <ClInclude Include="Source\Point.h" />
     <ClInclude Include="Source\PQueue.h" />
     <ClInclude Include="Source\Queue.h" />

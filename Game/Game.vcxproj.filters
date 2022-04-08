@@ -84,7 +84,7 @@
     <ClCompile Include="Source\LevelScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PlayerTile.cpp">
+    <ClCompile Include="Source\Tile.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -214,12 +214,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Tile.h">
-      <Filter>Tiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\BlockTile.h">
-      <Filter>Tiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PlayerTile.h">
       <Filter>Tiles</Filter>
     </ClInclude>
     <ClInclude Include="Source\Point.h">

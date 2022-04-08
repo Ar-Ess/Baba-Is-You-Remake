@@ -1,8 +1,7 @@
 #include "LevelScene.h"
-#include "PlayerTile.h"
-#include "BlockTile.h"
+#include "Tile.h"
 
-LevelScene::LevelScene(Render* render, Input* input, Tile* player, const Point winSize)
+LevelScene::LevelScene(Render* render, Input* input, const Point winSize)
 {
 	this->render = render;
 	this->input = input;
@@ -10,7 +9,7 @@ LevelScene::LevelScene(Render* render, Input* input, Tile* player, const Point w
 	this->winSize = winSize;
 
 	//                        Rows  Columns  WindowSize  PlayerInitPos  Offset
-	level[0] = new LevelConfig(14,    26,     winSize,     { 0, 0 },   { 100, 70 });
+	level[0] = new LevelConfig(14,    26,     winSize,     { 0, 0 },   { 150, 70 });
 	level[1] = new LevelConfig( 3,     3,     winSize,     { 0, 0 },   { 10, 7 });
 }
 
@@ -28,69 +27,52 @@ bool LevelScene::Start(suint index)
 
 	lvl = index;
 
-	player->Start(level[lvl]->playerInitPos, level[lvl]->GetMapOffset(), level[lvl]->tileSize);
+	player = new Tile(PLAYER_TILE, level[lvl]->playerInitPos, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input);
+	player->SetBehaviour(PLAYER, true);
 	tiles.push_back(player);
 
-	tiles.push_back(new BlockTile(render, input));
+	for (suint i = 0; i < level[lvl]->rows; ++i)
+	{
+		tiles.push_back(new Tile(BLOCK_TILE, { -1, i }, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input));
+		tiles.push_back(new Tile(BLOCK_TILE, { level[lvl]->columns, i }, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input));
+	}
+	for (suint i = 0; i < level[lvl]->columns; ++i)
+	{
+		tiles.push_back(new Tile(BLOCK_TILE, { i, -1 }, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input));
+		tiles.push_back(new Tile(BLOCK_TILE, { i, level[lvl]->rows }, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input));
+	}
 
-	for (suint i = 1; i < tiles.size(); ++i) tiles[i]->Start({-1, 0}, level[lvl]->GetMapOffset(), level[lvl]->tileSize);
+	tiles.push_back(new Tile(ROCK_TILE, { 4, 6 }, level[lvl]->tileSize, level[lvl]->GetMapOffset(), render, input));
+	tiles.at(tiles.size() - 1)->SetBehaviour(PUSH, true);
 
 	return true;
 }
 
 bool LevelScene::Update(float dt)
 {
-	/*
-	if (input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) level[lvl].rows > 0 ? --level[lvl].rows : level[lvl].rows = 0;
-	if (input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) ++level[lvl].rows;
-	if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN) level[lvl].columns > 0 ? --level[lvl].columns : level[lvl].columns = 0;
-	if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN) ++level[lvl].columns;
-	*/
-
 	suint size = tiles.size();
+	Multibool map(4);
 	for (suint i = 0; i < size; ++i)
 	{
-		suint* mapPtr = nullptr;
+		Tile* tile = tiles[i];
 
-		Multibool mapp(3);
-		mapp.Set(1, true);
-
-		bool test0 = mapp.Get(0);
-		bool test1 = mapp.Get(1);
-
-		// IN DEVELOPMENT ("if (tiles[i].type == PLAYER) {")
-		suint map = 20000; // Do a .h class of this bool method
-		for (suint a = 0; a < size; ++a)
+		if (tile->GetBehaviour(PLAYER))
 		{
-			if (a == i) continue;
+			for (suint a = 0; a < size; ++a)
+			{
+				if (a == i) continue;
+				// Check distance and if larger do continue
+				Tile* mapTile = tiles[a];
 
-			Tile* tile = tiles[i];
-			Tile* mapTile = tiles[a];
-
-			if ((map - 1000) < 20000 && tile->GetPosition().Apply(0, -1) == mapTile->GetPosition())
-			{
-				map += 1000;
-				if (mapPtr == nullptr) mapPtr = &map;
-			}
-			if ((map - 1100) < 20000 && tile->GetPosition().Apply(0,  1) == mapTile->GetPosition())
-			{
-				map += 100;
-				if (mapPtr = nullptr) mapPtr = &map;
-			}
-			if ((map - 1110) < 20000 && tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition())
-			{
-				map += 10;
-				if (mapPtr == nullptr) mapPtr = &map;
-			}
-			if ((map - 1111) < 20000 && tile->GetPosition().Apply(1,  0) == mapTile->GetPosition())
-			{
-				map += 1;
-				if (mapPtr == nullptr) mapPtr = &map;
+				if (!map.Get(0) && tile->GetPosition().Apply(0, -1) == mapTile->GetPosition()) map.Set(0, true);
+				if (!map.Get(1) && tile->GetPosition().Apply(0, 1) == mapTile->GetPosition()) map.Set(1, true);
+				if (!map.Get(2) && tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition()) map.Set(2, true);
+				if (!map.Get(3) && tile->GetPosition().Apply(1, 0) == mapTile->GetPosition()) map.Set(3, true);
 			}
 		}
-		// IN DEVELOPMENT (} "If" depending on the enum type)
 
-		tiles[i]->Update(dt, mapPtr);
+		if (!tiles[i]->Update(dt, map)) break;
+		map.SetAllFalse();
 	}
 
 	return true;
@@ -107,6 +89,8 @@ bool LevelScene::Draw(float dt)
 
 bool LevelScene::CleanUp()
 {
+	suint size = tiles.size();
+	for (suint i = 0; i < size; ++i) tiles[i]->CleanUp();
 	return true;
 }
 

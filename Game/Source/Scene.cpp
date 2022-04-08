@@ -8,7 +8,6 @@
 #include "Render.h"
 #include "Window.h"
 
-#include "PlayerTile.h"
 #include "LevelScene.h"
 #include "GuiManager.h"
 
@@ -33,8 +32,7 @@ bool Scene::Awake()
 
 bool Scene::Start()
 {
-	player = new PlayerTile({0, 0}, 0, app->render, app->input);
-	level = new LevelScene(app->render, app->input, player, app->win->GetWindowSize());
+	level = new LevelScene(app->render, app->input, app->win->GetWindowSize());
 
 	//DEBUG BOOLS
 	app->guiManager->debugGui = false;

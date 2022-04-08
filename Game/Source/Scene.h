@@ -7,7 +7,6 @@
 
 #include "Spline.h"
 #include "EasingFunctions.h"
-#include "Tile.h"
 
 struct SDL_Texture;
 class LevelScene;
@@ -51,7 +50,6 @@ private: //DEBUG
 	bool activeContinue = false;
 
 private: //Pointers
-	Tile* player = nullptr;
 	LevelScene* level = nullptr;
 
 private: //SPLINES

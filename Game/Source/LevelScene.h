@@ -72,7 +72,7 @@ class LevelScene
 {
 public: // Methods
 
-	LevelScene(Render* render, Input* input, Tile* player, const Point winSize);
+	LevelScene(Render* render, Input* input, const Point winSize);
 
 	~LevelScene();
 
