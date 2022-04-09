@@ -8,6 +8,8 @@ TileManager::TileManager(Render* render, Input* input)
 
 bool TileManager::Update(float dt)
 {
+	BehaviorChangeDebug();
+
 	suint size = tiles.size();
 	bool change = false;
 	for (suint i = 0; i < size; ++i)
@@ -113,6 +115,55 @@ void TileManager::SetTileMaps()
 			if (tile->GetPosition().Apply(0, 1) == mapTile->GetPosition()) tile->map.bottom = mapTile;
 			if (tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition()) tile->map.left = mapTile;
 			if (tile->GetPosition().Apply(1, 0) == mapTile->GetPosition()) tile->map.right = mapTile;
+		}
+	}
+}
+
+void TileManager::BehaviorChangeDebug()
+{
+	if (input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		suint size = tiles.size();
+		for (suint i = 0; i < size; ++i)
+		{
+			Tile* tile = tiles[i];
+			switch (tile->type)
+			{
+			case PLAYER_TILE:
+				tile->behaviours->Set(PLAYER, false);
+				tile->behaviours->Set(PUSH, true);
+				break;
+
+			case ROCK_TILE:
+				tile->behaviours->Set(PLAYER, true);
+				tile->behaviours->Set(PUSH, false);
+				tiles.erase(tiles.begin() + i);
+				tiles.insert(tiles.begin(), tile);
+				break;
+			}
+		}
+	}
+
+	if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		suint size = tiles.size();
+		for (suint i = 0; i < size; ++i)
+		{
+			Tile* tile = tiles[i];
+			switch (tile->type)
+			{
+			case PLAYER_TILE:
+				tile->behaviours->Set(PLAYER, true);
+				tile->behaviours->Set(PUSH, false);
+				tiles.erase(tiles.begin() + i);
+				tiles.insert(tiles.begin(), tile);
+				break;
+
+			case ROCK_TILE:
+				tile->behaviours->Set(PLAYER, false);
+				tile->behaviours->Set(PUSH, true);
+				break;
+			}
 		}
 	}
 }

@@ -45,21 +45,13 @@ bool LevelScene::Start(suint index)
 		tileManager->PushTile(BLOCK_TILE, { i, level[lvl]->rows }, level[lvl]->tileSize, input);
 	}
 
-	Tile* rock1 = new Tile(ROCK_TILE, { 4, 7 }, level[lvl]->tileSize, input);
+	Tile* rock0 = new Tile(ROCK_TILE, { 4, 7 }, level[lvl]->tileSize, input);
+	rock0->SetBehaviour(PUSH, true);
+	tileManager->PushTile(rock0);
+
+	/*Tile* rock1 = new Tile(ROCK_TILE, { 4, 5 }, level[lvl]->tileSize, input);
 	rock1->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock1);
-
-	Tile* rock2 = new Tile(ROCK_TILE, { 4, 6 }, level[lvl]->tileSize, input);
-	rock2->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock2);
-
-	Tile* rock3 = new Tile(ROCK_TILE, { 4, 4 }, level[lvl]->tileSize, input);
-	rock3->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock3);
-
-	Tile* rock4 = new Tile(ROCK_TILE, { 4, 2 }, level[lvl]->tileSize, input);
-	rock4->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock4);
+	tileManager->PushTile(rock1);*/
 	// Level construction (at the end, this will be done with an excel)
 
 	tileManager->SetTileMaps();

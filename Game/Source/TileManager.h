@@ -44,6 +44,8 @@ public: // Methods
 
 private: // Methods
 
+	void BehaviorChangeDebug();
+
 public: // Variables
 
 private: // Variables
