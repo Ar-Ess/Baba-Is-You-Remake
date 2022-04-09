@@ -11,8 +11,6 @@
 
 #define NUM_OF_LEVELS 2
 
-struct SDL_Texture;
-
 struct LevelConfig
 {
 	LevelConfig(suint rows, suint columns, Point winSize, Point playerInitPos = {0, 0}, Point offset = { 50, 40 })
@@ -99,7 +97,7 @@ private: // Variables
 
 	LevelConfig* level[NUM_OF_LEVELS] = {};
 
-	std::vector<Tile*> tiles;
+	TileManager* tileManager = nullptr;
 
 };
 

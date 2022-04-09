@@ -87,6 +87,9 @@
     <ClCompile Include="Source\Tile.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="Source\TileManager.cpp">
+      <Filter>Tiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\App.h" />
@@ -221,6 +224,9 @@
     </ClInclude>
     <ClInclude Include="Source\Multibool.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TileManager.h">
+      <Filter>Tiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

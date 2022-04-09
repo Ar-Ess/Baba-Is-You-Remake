@@ -1,12 +1,26 @@
 #ifndef __TILE_H__
 #define __TILE_H__
 
-#include "Point.h"
-#include "Input.h"
-#include "Render.h"
-#include "Defs.h"
-#include "Multibool.h"
-#include "External/SDL/include/SDL.h"
+#include "TileManager.h"
+#include <vector>
+
+enum Behaviour
+{
+	NO_BEHAVIOR,
+	PLAYER = 0,
+	WIN,
+	PUSH,
+	STOP
+};
+
+enum Direction
+{
+	NO_DIR = -1,
+	TOP,
+	BOTTOM,
+	LEFT,
+	RIGHT
+};
 
 enum TileType
 {
@@ -16,29 +30,43 @@ enum TileType
 	ROCK_TILE
 };
 
-enum Behaviour
+class Tile;
+
+struct Map
 {
-	NO_BEHAVIOR,
-	PLAYER = 0,
-	WIN,
-	PUSH
+	Map()
+	{
+		top = nullptr;
+		bottom = nullptr;
+		left = nullptr;
+		right = nullptr;
+	}
+
+	void Reset()
+	{
+		top = nullptr;
+		bottom = nullptr;
+		left = nullptr;
+		right = nullptr;
+	}
+
+	Tile* top = nullptr;
+	Tile* bottom = nullptr;
+	Tile* left = nullptr;
+	Tile* right = nullptr;
 };
 
 class Tile
 {
 public: // Methods
 
-	Tile(TileType type, Point position, float size, Point offset, Render* render, Input* input);
+	Tile(TileType type, Point position, float size, Input* input);
 
 	~Tile() {}
 
 	bool Start();
 
-	bool Update(float dt, Multibool map);
-
-	bool Draw(float dt);
-
-	bool DebugDraw();
+	bool Update(float dt);
 
 	bool CleanUp();
 
@@ -57,23 +85,44 @@ public: // Methods
 		behaviours->Set((int)b, set);
 	}
 
+	bool IsStatic()
+	{
+		return (!GetBehaviour(PUSH) || GetBehaviour(STOP));
+	}
+
+	float DistanceTo(Point to)
+	{
+		Point position = GetPosition();
+		return position.Distance(to);
+	}
+
 private: // Methods
 
-	bool UpdateBehaviour(Multibool map);
+	friend class TileManager;
+
+	bool UpdateBehaviour();
 
 	void SetTexture(SDL_Texture* tex);
+
+	void ResetMap();
+
+	bool IsAccessible(Direction dir);
+
+	void MovementLogic(Direction dir);
 
 public: // Variables
 
 	TileType type = NO_TILE;
+	//                 Top    Bottom    Left     Right
+	Map map = Map();
 
 protected: // Variables
 
 	Rect collider = {};
-	Point offset = {};
-	Render* render = nullptr;
 	Input* input = nullptr;
 	SDL_Texture* texture = nullptr;
+
+	std::vector<Tile*>* tiles;
 
 	Multibool* behaviours = nullptr;
 };
