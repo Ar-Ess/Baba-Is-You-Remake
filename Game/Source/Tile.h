@@ -27,7 +27,12 @@ enum TileType
 	NO_TILE,
 	PLAYER_TILE,
 	BLOCK_TILE,
-	ROCK_TILE
+	ROCK_TILE,
+	PLAYER_TEXT_TILE,
+	ROCK_TEXT_TILE,
+	IS_TILE,
+	YOU_TILE,
+	PUSH_TILE,
 };
 
 class Tile;
@@ -102,9 +107,9 @@ private: // Methods
 
 	bool UpdateBehaviour();
 
-	void SetTexture(SDL_Texture* tex);
+	bool UpdateLogic();
 
-	void ResetMap();
+	void SetTexture(SDL_Texture* tex);
 
 	bool IsAccessible(Direction dir);
 
@@ -122,7 +127,7 @@ protected: // Variables
 	Input* input = nullptr;
 	SDL_Texture* texture = nullptr;
 
-	std::vector<Tile*>* tiles;
+	TileManager* manager = nullptr;
 
 	Multibool* behaviours = nullptr;
 };

@@ -8,8 +8,6 @@ TileManager::TileManager(Render* render, Input* input)
 
 bool TileManager::Update(float dt)
 {
-	BehaviorChangeDebug();
-
 	suint size = tiles.size();
 	bool change = false;
 
@@ -67,20 +65,24 @@ bool TileManager::DebugDraw()
 		Rect right = { ((collider.x + 1) * collider.w) - (collider.w / 10 * 2) + offset.x, (collider.y * collider.w) + (collider.w / 3) + offset.y, collider.w / 7, collider.h / 3 };
 
 		SDL_Color color = {};
-		SDL_Color color1 = {255, 150, 0, 100};
 
 		switch (draw->type)
 		{
 		case PLAYER_TILE: color = { 0, 255, 0, 150 }; break;
 		case BLOCK_TILE: color = { 255, 0, 0, 150 }; break;
-		case ROCK_TILE: color = { 140, 80, 0, 150 }; break;
+		case ROCK_TILE: color = { 100, 40, 0, 150 }; break;
+		case PLAYER_TEXT_TILE: color = {200, 200, 255, 150}; break;
+		case ROCK_TEXT_TILE: color = { 200, 140, 30, 150 }; break;
+		case IS_TILE: color = { 100, 100, 255, 150}; break;
+		case YOU_TILE: color = { 0, 0, 255, 150}; break;
+		case PUSH_TILE: color = { 0, 255, 255, 150 }; break;
 		}
 
 		render->DrawRectangle(rect, color);
-		if (draw->map.top) render->DrawRectangle(top, {255, 255, 255, 100});
-		if (draw->map.bottom) render->DrawRectangle(bottom, { 255, 255, 255, 100 });
-		if (draw->map.left) render->DrawRectangle(left, { 255, 255, 255, 100 });
-		if (draw->map.right) render->DrawRectangle(right, { 255, 255, 255, 100 });
+		if (draw->map.top) render->DrawRectangle(top, {255, 255, 255, 75});
+		if (draw->map.bottom) render->DrawRectangle(bottom, { 255, 255, 255, 75 });
+		if (draw->map.left) render->DrawRectangle(left, { 255, 255, 255, 75 });
+		if (draw->map.right) render->DrawRectangle(right, { 255, 255, 255, 75 });
 	}
 
 	return true;
@@ -96,14 +98,14 @@ bool TileManager::CleanUp()
 void TileManager::PushTile(TileType type, Point position, float size, Input* input)
 {
 	Tile* push = new Tile(type, position, size, input);
-	push->tiles = &tiles;
+	push->manager = this;
 	this->tiles.push_back(push);
 	if (type == BLOCK_TILE) push->SetBehaviour(STOP, true);
 }
 
 void TileManager::PushTile(Tile* push)
 {
-	push->tiles = &tiles;
+	push->manager = this;
 	this->tiles.push_back(push);
 }
 
@@ -129,51 +131,32 @@ void TileManager::SetTileMaps()
 	}
 }
 
-void TileManager::BehaviorChangeDebug()
+void TileManager::ResetTileMap(Tile* tile)
 {
-	if (input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		suint size = tiles.size();
-		for (suint i = 0; i < size; ++i)
-		{
-			Tile* tile = tiles[i];
-			switch (tile->type)
-			{
-			case PLAYER_TILE:
-				tile->behaviours->Set(PLAYER, false);
-				tile->behaviours->Set(PUSH, true);
-				break;
+	suint size = tiles.size();
+	tile->map.Reset();
 
-			case ROCK_TILE:
-				tile->behaviours->Set(PLAYER, true);
-				tile->behaviours->Set(PUSH, false);
-				tiles.erase(tiles.begin() + i);
-				tiles.insert(tiles.begin(), tile);
-				break;
-			}
-		}
+	for (suint a = 0; a < size; ++a)
+	{
+		Tile* mapTile = tiles[a];
+		if (tile == mapTile) continue;
+		if (tile->DistanceTo(mapTile->GetPosition()) >= 2) continue;
+
+		if (tile->GetPosition().Apply(0, -1) == mapTile->GetPosition()) tile->map.top = mapTile;
+		if (tile->GetPosition().Apply(0, 1) == mapTile->GetPosition()) tile->map.bottom = mapTile;
+		if (tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition()) tile->map.left = mapTile;
+		if (tile->GetPosition().Apply(1, 0) == mapTile->GetPosition()) tile->map.right = mapTile;
 	}
+}
 
-	if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+void TileManager::ResetBehaviors(TileType type, Behaviour b, bool set)
+{
+	suint size = tiles.size();
+	for (suint i = 0; i < size; ++i)
 	{
-		suint size = tiles.size();
-		for (suint i = 0; i < size; ++i)
-		{
-			Tile* tile = tiles[i];
-			switch (tile->type)
-			{
-			case PLAYER_TILE:
-				tile->behaviours->Set(PLAYER, true);
-				tile->behaviours->Set(PUSH, false);
-				tiles.erase(tiles.begin() + i);
-				tiles.insert(tiles.begin(), tile);
-				break;
+		Tile* tile = tiles[i];
+		if (tile->type != type) continue;
 
-			case ROCK_TILE:
-				tile->behaviours->Set(PLAYER, false);
-				tile->behaviours->Set(PUSH, true);
-				break;
-			}
-		}
+		tile->behaviours->Set((int)b, set);
 	}
 }

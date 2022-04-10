@@ -45,13 +45,32 @@ bool LevelScene::Start(suint index)
 		tileManager->PushTile(BLOCK_TILE, { i, level[lvl]->rows }, level[lvl]->tileSize, input);
 	}
 
-	Tile* rock0 = new Tile(ROCK_TILE, { 4, 7 }, level[lvl]->tileSize, input);
-	rock0->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock0);
+	Tile* rock = new Tile(ROCK_TILE, { 7, 11 }, level[lvl]->tileSize, input);
+	tileManager->PushTile(rock);
 
-	Tile* rock1 = new Tile(ROCK_TILE, { 4, 5 }, level[lvl]->tileSize, input);
-	rock1->SetBehaviour(PUSH, true);
-	tileManager->PushTile(rock1);
+	Tile* playerText = new Tile(PLAYER_TEXT_TILE, { 4, 5 }, level[lvl]->tileSize, input);
+	playerText->SetBehaviour(PUSH, true);
+	tileManager->PushTile(playerText);
+
+	Tile* isText = new Tile(IS_TILE, { 5, 5 }, level[lvl]->tileSize, input);
+	isText->SetBehaviour(PUSH, true);
+	tileManager->PushTile(isText);
+
+	Tile* youText = new Tile(YOU_TILE, { 6, 5 }, level[lvl]->tileSize, input);
+	youText->SetBehaviour(PUSH, true);
+	tileManager->PushTile(youText);
+
+	Tile* rockText = new Tile(ROCK_TEXT_TILE, { 10, 4 }, level[lvl]->tileSize, input);
+	rockText->SetBehaviour(PUSH, true);
+	tileManager->PushTile(rockText);
+
+	Tile* isText1 = new Tile(IS_TILE, { 11, 5 }, level[lvl]->tileSize, input);
+	isText1->SetBehaviour(PUSH, true);
+	tileManager->PushTile(isText1);
+
+	Tile* pushText = new Tile(PUSH_TILE, { 12, 5 }, level[lvl]->tileSize, input);
+	pushText->SetBehaviour(PUSH, true);
+	tileManager->PushTile(pushText);
 	// Level construction (at the end, this will be done with an excel)
 
 	tileManager->SetTileMaps();

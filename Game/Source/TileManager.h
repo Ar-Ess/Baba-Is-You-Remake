@@ -14,6 +14,7 @@
 
 class Tile;
 enum TileType;
+enum Behaviour;
 
 class TileManager
 {
@@ -37,14 +38,16 @@ public: // Methods
 
 	void SetTileMaps();
 
+	void ResetTileMap(Tile* tile);
+
+	void ResetBehaviors(TileType type, Behaviour b, bool set);
+
 	void SetOffset(Point offset)
 	{
 		this->offset = offset;
 	}
 
 private: // Methods
-
-	void BehaviorChangeDebug();
 
 public: // Variables
 

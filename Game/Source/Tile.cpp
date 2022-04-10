@@ -7,8 +7,6 @@ Tile::Tile(TileType type, Point position, float size, Input* input)
     this->behaviours = new Multibool(8);
     this->type = type;
     if (type == BLOCK_TILE) SetBehaviour(STOP, true);
-
-    this->tiles = tiles;
 }
 
 bool Tile::Start()
@@ -19,6 +17,8 @@ bool Tile::Start()
 bool Tile::Update(float dt)
 {
     bool ret = UpdateBehaviour();
+
+    if (ret) UpdateLogic();
 
     return ret;
 }
@@ -81,27 +81,49 @@ bool Tile::UpdateBehaviour()
     return ret;
 }
 
+bool Tile::UpdateLogic()
+{
+    switch (type)
+    {
+    case PLAYER_TEXT_TILE:
+        if (!map.right || map.right->type != IS_TILE)
+        {
+            manager->ResetBehaviors(PLAYER_TILE, PLAYER, false);
+            manager->ResetBehaviors(PLAYER_TILE, PUSH, false);
+            break;
+        }
+
+        switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
+        {
+        case YOU_TILE: manager->ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
+        case PUSH_TILE: manager->ResetBehaviors(PLAYER_TILE, PUSH, true); break;
+        }
+
+        break;
+
+    case ROCK_TEXT_TILE:
+        if (!map.right || map.right->type != IS_TILE)
+        {
+            manager->ResetBehaviors(ROCK_TILE, PLAYER, false);
+            manager->ResetBehaviors(ROCK_TILE, PUSH, false);
+            break;
+        }
+
+        switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
+        {
+        case YOU_TILE: manager->ResetBehaviors(ROCK_TILE, PLAYER, true); break;
+        case PUSH_TILE: manager->ResetBehaviors(ROCK_TILE, PUSH, true); break;
+        }
+
+        break;
+    }
+
+    return true;
+}
+
 void Tile::SetTexture(SDL_Texture *tex)
 {
     texture = tex;
-}
-
-void Tile::ResetMap()
-{
-    suint size = tiles->size();
-    map.Reset();
-
-    for (suint a = 0; a < size; ++a)
-    {
-        Tile* mapTile = tiles->at(a);
-        if (this == mapTile) continue;
-        if (DistanceTo(mapTile->GetPosition()) >= 2) continue;
-
-        if (GetPosition().Apply(0, -1) == mapTile->GetPosition()) map.top = mapTile;
-        if (GetPosition().Apply(0, 1) == mapTile->GetPosition()) map.bottom = mapTile;
-        if (GetPosition().Apply(-1, 0) == mapTile->GetPosition()) map.left = mapTile;
-        if (GetPosition().Apply(1, 0) == mapTile->GetPosition()) map.right = mapTile;
-    }
 }
 
 bool Tile::IsAccessible(Direction dir)
@@ -151,16 +173,16 @@ void Tile::MovementLogic(Direction dir)
 
     if (next == nullptr)
     {
-        ResetMap();
+        manager->ResetTileMap(this);
         return;
     }
     if (next->IsStatic())
     {
-        ResetMap();
+        manager->ResetTileMap(this);
         return;
     }
 
     next->MovementLogic(dir);
 
-    ResetMap();
+    manager->ResetTileMap(this);
 }
