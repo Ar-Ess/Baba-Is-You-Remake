@@ -12,10 +12,14 @@ bool TileManager::Update(float dt)
 
 	suint size = tiles.size();
 	bool change = false;
+
 	for (suint i = 0; i < size; ++i)
 	{
-		change = tiles[i]->Update(dt);
-		if (!change) break;
+		bool tileChange = false;
+		tileChange = tiles[i]->Update(dt);
+		if (tileChange) change = true;
+
+		if (!change && !tiles[i + 1]->behaviours->Get(PLAYER)) break;
 	}
 
 	if (change) SetTileMaps();
@@ -57,6 +61,10 @@ bool TileManager::DebugDraw()
 		Rect collider = draw->collider;
 
 		Rect rect = { (collider.x * collider.w) + offset.x, (collider.y * collider.w) + offset.y, collider.w, collider.h };
+		Rect top = { (collider.x * collider.w) + (collider.w / 3) + offset.x, (collider.y * collider.w) + (collider.w / 10) + offset.y, collider.w / 3, collider.h / 7 };
+		Rect bottom = { (collider.x * collider.w) + (collider.w / 3) + offset.x, ((collider.y + 1) * collider.w) - (collider.w / 10 * 2) + offset.y, collider.w / 3, collider.h / 7 };
+		Rect left = { (collider.x * collider.w) + (collider.w / 10) + offset.x, (collider.y * collider.w) + (collider.w / 3) + offset.y, collider.w / 7, collider.h / 3 };
+		Rect right = { ((collider.x + 1) * collider.w) - (collider.w / 10 * 2) + offset.x, (collider.y * collider.w) + (collider.w / 3) + offset.y, collider.w / 7, collider.h / 3 };
 
 		SDL_Color color = {};
 		SDL_Color color1 = {255, 150, 0, 100};
@@ -68,9 +76,11 @@ bool TileManager::DebugDraw()
 		case ROCK_TILE: color = { 140, 80, 0, 150 }; break;
 		}
 
-		if (draw->map.top || draw->map.bottom || draw->map.left || draw->map.right) color.b = 200;
-
 		render->DrawRectangle(rect, color);
+		if (draw->map.top) render->DrawRectangle(top, {255, 255, 255, 100});
+		if (draw->map.bottom) render->DrawRectangle(bottom, { 255, 255, 255, 100 });
+		if (draw->map.left) render->DrawRectangle(left, { 255, 255, 255, 100 });
+		if (draw->map.right) render->DrawRectangle(right, { 255, 255, 255, 100 });
 	}
 
 	return true;
