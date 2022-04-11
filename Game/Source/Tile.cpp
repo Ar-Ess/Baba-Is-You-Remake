@@ -14,23 +14,7 @@ bool Tile::Start()
     return true;
 }
 
-bool Tile::Update(float dt)
-{
-    bool ret = UpdateBehaviour();
-
-    if (ret) UpdateLogic();
-
-    return ret;
-}
-
-bool Tile::CleanUp()
-{
-    delete behaviours;
-    delete texture;
-    return true;
-}
-
-bool Tile::UpdateBehaviour()
+bool Tile::UpdateBehaviour(float dt)
 {
     bool ret = true;
     if (GetBehaviour(PLAYER))
@@ -67,7 +51,7 @@ bool Tile::UpdateBehaviour()
             interact = map.right;
             newPos.x += 1;*/
         }
-        
+
         ret = !(dir == NO_DIR);
         if (ret)
         {
@@ -81,47 +65,80 @@ bool Tile::UpdateBehaviour()
     return ret;
 }
 
-bool Tile::UpdateLogic()
+bool Tile::UpdateLogic(float dt)
 {
-    manager->ResetTileMap(this);
+    //manager->ResetTileMap(this);
+
+    TileType affected = NO_TILE;
 
     switch (type)
     {
-    case PLAYER_TEXT_TILE:
-        if (!map.right || map.right->type != IS_TILE)
+    case PLAYER_TEXT_TILE: affected = PLAYER_TILE;break;
+    case ROCK_TEXT_TILE: affected = ROCK_TILE; break;
+    case FLAG_TEXT_TILE: affected = FLAG_TILE; break;
+    }
+
+    // IMPORTANT: If a tile is not stop it should be transpassable
+    // Maybe each position may have more than one tile...
+
+    if (type == NO_TILE) return true;
+
+    Tile* next = map.right;
+    if (!next || next->type != IS_TILE)
+    {
+        manager->ResetBehaviors(affected, PLAYER, false);
+        manager->ResetBehaviors(affected, PUSH, false);
+        return true;
+    }
+
+    if (!next->map.right) return true;
+    switch (next->map.right->type) //probably ending up being recursive (if AND TILE implemented)
+    {
+    case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, true); break;
+    case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, true); break;
+    default:
+        if (!prevBehaviourTile[0]) break;
+        switch (*prevBehaviourTile[0])
         {
-            manager->ResetBehaviors(PLAYER_TILE, PLAYER, false);
-            manager->ResetBehaviors(PLAYER_TILE, PUSH, false);
-            break;
+        case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, false); break;
+        case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, false); break;
         }
-
-        if (!map.right->map.right) break;
-        switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
-        {
-        case YOU_TILE: manager->ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
-        case PUSH_TILE: manager->ResetBehaviors(PLAYER_TILE, PUSH, true); break;
-        }
-
-        break;
-
-    case ROCK_TEXT_TILE:
-        if (!map.right || map.right->type != IS_TILE)
-        {
-            manager->ResetBehaviors(ROCK_TILE, PLAYER, false);
-            manager->ResetBehaviors(ROCK_TILE, PUSH, false);
-            break;
-        }
-
-        if (!map.right->map.right) break;
-        switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
-        {
-        case YOU_TILE: manager->ResetBehaviors(ROCK_TILE, PLAYER, true); break;
-        case PUSH_TILE: manager->ResetBehaviors(ROCK_TILE, PUSH, true); break;
-        }
-
         break;
     }
 
+    prevBehaviourTile[0] = &next->map.right->type;
+
+    /*Bottom Logic, problem with overwritting of the "Right-direction" logic*/
+    //next = map.bottom;
+    //if (!next || next->type != IS_TILE)
+    //{
+    //    manager->ResetBehaviors(affected, PLAYER, false);
+    //    manager->ResetBehaviors(affected, PUSH, false);
+    //    return true;
+    //}
+    //if (!next->map.bottom) return true;
+    //switch (next->map.bottom->type) //probably ending up being recursive (if AND TILE implemented)
+    //{
+    //case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, true); break;
+    //case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, true); break;
+    //default:
+    //    if (!prevBehaviourTile[1]) break;
+    //    switch (*prevBehaviourTile[1])
+    //    {
+    //    case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, false); break;
+    //    case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, false); break;
+    //    }
+    //    break;
+    //}
+    //prevBehaviourTile[1] = &next->map.bottom->type;
+
+    return true;
+}
+
+bool Tile::CleanUp()
+{
+    delete behaviours;
+    delete texture;
     return true;
 }
 

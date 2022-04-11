@@ -1,50 +1,62 @@
 #include "TileManager.h"
 
-TileManager::TileManager(Render* render, Input* input)
+TileManager::TileManager(Render* render, Input* input, Textures* texture)
 {
 	this->render = render;
 	this->input = input;
+	this->texture = texture;
+
+	textures.push_back(texture->Load("Assets/Textures/Tiles/player_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/rock_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/flag_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/wall_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/player_text_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/rock_text_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/flag_text_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/wall_text_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/you_b_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/push_b_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/win_b_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/stop_b_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/is_tile.png"));
 }
 
 bool TileManager::Update(float dt)
 {
+	if (input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) debug = !debug;
+
 	suint size = tiles.size();
 	bool change = false;
 
 	for (suint i = 0; i < size; ++i)
 	{
 		bool tileChange = false;
-		tileChange = tiles[i]->Update(dt);
+		tileChange = tiles[i]->UpdateBehaviour(dt);
 		if (tileChange) change = true;
 
 		if (!change && !tiles[i + 1]->behaviours->Get(PLAYER)) break;
 	}
 
-	if (change) SetTileMaps();
+	if (!change) return true;
+	
+	SetTileMaps();
+	for (suint i = 0; i < size; ++i) tiles[i]->UpdateLogic(dt);
 
 	return true;
 }
 
 bool TileManager::Draw(float dt)
 {
-	return true;
 
 	suint size = tiles.size();
 	for (suint i = 0; i < size; ++i)
 	{
 		Tile* draw = tiles[i];
-		Point position = draw->GetPosition();
+		if (draw->type == BLOCK_TILE) continue;
 
-		SDL_Texture* texture = nullptr;
+		float size = draw->collider.w;
 
-		switch (draw->type)
-		{
-		case PLAYER_TILE: texture = nullptr; break;
-		case BLOCK_TILE: texture = nullptr; break;
-		case ROCK_TILE: texture = nullptr; break;
-		}
-
-		render->DrawTexture(texture, position.x, position.y, 1, 1);
+		render->DrawTexture(textures.at((int)draw->type), (draw->collider.x * size) + offset.x, (draw->collider.y * size) + offset.y, size / 100, size / 100);
 	}
 
 	return true;
@@ -52,6 +64,8 @@ bool TileManager::Draw(float dt)
 
 bool TileManager::DebugDraw()
 {
+	if (!debug) return true;
+
 	suint size = tiles.size();
 	for (suint i = 0; i < size; ++i)
 	{
@@ -68,14 +82,28 @@ bool TileManager::DebugDraw()
 
 		switch (draw->type)
 		{
-		case PLAYER_TILE: color = { 0, 255, 0, 150 }; break;
+		// Static Tiles
 		case BLOCK_TILE: color = { 255, 0, 0, 150 }; break;
+
+		// Object Tiles
+		case PLAYER_TILE: color = { 0, 255, 0, 150 }; break;
 		case ROCK_TILE: color = { 100, 40, 0, 150 }; break;
-		case PLAYER_TEXT_TILE: color = {200, 200, 255, 150}; break;
+		case FLAG_TILE: color = { 200, 200, 50, 150 }; break;
+
+		// Text Tiles
+		case PLAYER_TEXT_TILE: color = {180, 180, 255, 150}; break;
 		case ROCK_TEXT_TILE: color = { 200, 140, 30, 150 }; break;
-		case IS_TILE: color = { 100, 100, 255, 150}; break;
-		case YOU_TILE: color = { 0, 0, 255, 150}; break;
-		case PUSH_TILE: color = { 0, 255, 255, 150 }; break;
+		case FLAG_TEXT_TILE: color = { 200, 200, 150, 150 }; break;
+
+		// Behaviour Tiles
+		case YOU_B_TILE: color = { 0, 0, 255, 150}; break;
+		case PUSH_B_TILE: color = { 0, 255, 255, 150 }; break;
+		case WIN_B_TILE: color = { 200, 100, 100, 150 }; break;
+
+		// Linker Tiles
+		case IS_TILE: color = { 100, 100, 255, 150 }; break;
+
+		default: color = {255, 255, 255, 255}; break;
 		}
 
 		render->DrawRectangle(rect, color);
@@ -115,18 +143,19 @@ void TileManager::SetTileMaps()
 	for (suint i = 0; i < size; ++i)
 	{
 		Tile* tile = tiles[i];
+		if (tile->type == BLOCK_TILE) continue;
 		tile->map.Reset();
 
 		for (suint a = 0; a < size; ++a)
 		{
 			if (a == i) continue;
 			Tile* mapTile = tiles[a];
-			if (tile->DistanceTo(mapTile->GetPosition()) >= 2) continue;
+			if (tile->DistanceTo(mapTile->GetPosition()) > 1.3f) continue;
 
 			if (tile->GetPosition().Apply(0, -1) == mapTile->GetPosition()) tile->map.top = mapTile;
-			if (tile->GetPosition().Apply(0, 1) == mapTile->GetPosition()) tile->map.bottom = mapTile;
-			if (tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition()) tile->map.left = mapTile;
-			if (tile->GetPosition().Apply(1, 0) == mapTile->GetPosition()) tile->map.right = mapTile;
+			else if (tile->GetPosition().Apply(0, 1) == mapTile->GetPosition()) tile->map.bottom = mapTile;
+			else if (tile->GetPosition().Apply(-1, 0) == mapTile->GetPosition()) tile->map.left = mapTile;
+			else if (tile->GetPosition().Apply(1, 0) == mapTile->GetPosition()) tile->map.right = mapTile;
 		}
 	}
 }
@@ -180,8 +209,8 @@ void TileManager::SetLevelBehaviors()
 
 			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
 			{
-			case YOU_TILE: ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
-			case PUSH_TILE: ResetBehaviors(PLAYER_TILE, PUSH, true); break;
+			case YOU_B_TILE: ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
+			case PUSH_B_TILE: ResetBehaviors(PLAYER_TILE, PUSH, true); break;
 			}
 
 			break;
@@ -196,8 +225,8 @@ void TileManager::SetLevelBehaviors()
 
 			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
 			{
-			case YOU_TILE: ResetBehaviors(ROCK_TILE, PLAYER, true); break;
-			case PUSH_TILE: ResetBehaviors(ROCK_TILE, PUSH, true); break;
+			case YOU_B_TILE: ResetBehaviors(ROCK_TILE, PLAYER, true); break;
+			case PUSH_B_TILE: ResetBehaviors(ROCK_TILE, PUSH, true); break;
 			}
 
 			break;

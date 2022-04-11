@@ -64,7 +64,7 @@ SDL_Texture* const Textures::Load(const char* path)
 
 	a.Cut(0, 6);
 
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	/*SDL_Surface* surface = IMG_Load(path);
 	if (surface == NULL)
 	{
@@ -89,7 +89,7 @@ SDL_Texture* const Textures::Load(const char* path)
 		SDL_FreeSurface(surface);
 	}
 
-	SDL_RWclose(rW);
+	if (rW) SDL_RWclose(rW);
 
 	a.Clear();
 

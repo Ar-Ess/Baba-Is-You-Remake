@@ -101,6 +101,19 @@ struct Point
 	void operator*=(Point i) { x *= i.x; y *= i.y; }
 	void operator/=(Point i) { if (i == 0) return; x /= i.x; y /= i.y; }
 
+	void operator+=(float i) { x += i; y += i; }
+	void operator-=(float i) { x -= i; y -= i; }
+	void operator*=(float i) { x *= i; y *= i; }
+	void operator/=(float i) { if (i == 0) return; x /= i; y /= i; }
+
+	Point operator+(int i) { return Point{ x + i, y + i }; }
+	Point operator-(int i) { return Point{ x - i, y - i }; }
+	Point operator*(int i) { return Point{ x * i, y * i }; }
+
+	Point operator+(float i) { return Point{ x + i, y + i }; }
+	Point operator-(float i) { return Point{ x - i, y - i }; }
+	Point operator*(float i) { return Point{ x * i, y * i }; }
+
 	Point operator/(int div) { return Point{ x / div, y / div }; }
 
 	bool operator<(int i) { return (x < i&& y < i); }

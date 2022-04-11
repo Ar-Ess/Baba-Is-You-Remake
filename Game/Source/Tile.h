@@ -4,15 +4,6 @@
 #include "TileManager.h"
 #include <vector>
 
-enum Behaviour
-{
-	NO_BEHAVIOR,
-	PLAYER = 0,
-	WIN,
-	PUSH,
-	STOP
-};
-
 enum Direction
 {
 	NO_DIR = -1,
@@ -22,17 +13,37 @@ enum Direction
 	RIGHT
 };
 
+enum Behaviour
+{
+	NO_BEHAVIOR = -1,
+	PLAYER,
+	WIN,
+	PUSH,
+	STOP
+};
+
 enum TileType
 {
-	NO_TILE,
-	PLAYER_TILE,
+	// Static Tiles
+	NO_TILE = -2,
 	BLOCK_TILE,
+	// Object Tiles
+	PLAYER_TILE,
 	ROCK_TILE,
+	FLAG_TILE,
+	WALL_TILE,
+	// Text Tiles
 	PLAYER_TEXT_TILE,
 	ROCK_TEXT_TILE,
-	IS_TILE,
-	YOU_TILE,
-	PUSH_TILE,
+	FLAG_TEXT_TILE,
+	WALL_TEXT_TILE,
+	// Behavior Tiles
+	YOU_B_TILE,
+	PUSH_B_TILE,
+	WIN_B_TILE,
+	STOP_B_TILE,
+	// Linker Tiles
+	IS_TILE
 };
 
 class Tile;
@@ -71,7 +82,9 @@ public: // Methods
 
 	bool Start();
 
-	bool Update(float dt);
+	bool UpdateBehaviour(float dt);
+
+	bool UpdateLogic(float dt);
 
 	bool CleanUp();
 
@@ -105,10 +118,6 @@ private: // Methods
 
 	friend class TileManager;
 
-	bool UpdateBehaviour();
-
-	bool UpdateLogic();
-
 	void SetTexture(SDL_Texture* tex);
 
 	bool IsAccessible(Direction dir);
@@ -130,6 +139,10 @@ protected: // Variables
 	TileManager* manager = nullptr;
 
 	Multibool* behaviours = nullptr;
+
+	//Provably separate by classes "Tiles" "TextTiles" "BehaviourTiles"
+	// This should only be in the "TextTiles"
+	TileType* prevBehaviourTile[2] = { nullptr, nullptr };
 };
 
 #endif // __TILE_H__

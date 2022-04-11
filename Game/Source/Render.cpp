@@ -139,6 +139,7 @@ void Render::ResetViewPort()
 // Blit to screen
 bool Render::DrawTexture(SDL_Texture* texture, int x, int y, float sX, float sY, SDL_Rect* section, bool scaleModCoords, bool staticPos, double angle, SDL_RendererFlip flip) const
 {
+	if (!texture) return false;
 	bool ret = true;
 	SDL_Rect rect = {x, y, 0, 0};
 

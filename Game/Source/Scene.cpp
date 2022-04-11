@@ -32,7 +32,7 @@ bool Scene::Awake()
 
 bool Scene::Start()
 {
-	level = new LevelScene(app->render, app->input, app->win->GetWindowSize());
+	level = new LevelScene(app->render, app->input, app->tex, app->win->GetWindowSize());
 
 	//DEBUG BOOLS
 	app->guiManager->debugGui = false;

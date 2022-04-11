@@ -3,6 +3,7 @@
 
 #include "Input.h"
 #include "Render.h"
+#include "Textures.h"
 #include "Defs.h"
 #include "External/SDL/include/SDL.h"
 
@@ -20,7 +21,7 @@ class TileManager
 {
 public: // Methods
 
-	TileManager(Render* render, Input* input);
+	TileManager(Render* render, Input* input, Textures* texture);
 
 	~TileManager() {}
 
@@ -59,8 +60,12 @@ private: // Variables
 
 	Render* render = nullptr;
 	Input* input = nullptr;
+	Textures* texture = nullptr;
 
 	std::vector<Tile*> tiles;
+	std::vector<SDL_Texture*> textures;
+
+	bool debug = true;
 
 };
 

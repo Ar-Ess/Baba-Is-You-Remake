@@ -4,6 +4,7 @@
 #include "Point.h"
 #include "Render.h"
 #include "Input.h"
+#include "Textures.h"
 #include "Scene.h"
 #include "Tile.h"
 #include "Multibool.h"
@@ -63,7 +64,7 @@ class LevelScene
 {
 public: // Methods
 
-	LevelScene(Render* render, Input* input, const Point winSize);
+	LevelScene(Render* render, Input* input, Textures* texture, const Point winSize);
 
 	~LevelScene();
 
