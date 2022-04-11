@@ -1,5 +1,7 @@
 #include "LevelScene.h"
 #include "Tile.h"
+#include <fstream>
+#include <sstream>
 
 LevelScene::LevelScene(Render* render, Input* input, const Point winSize)
 {
@@ -7,10 +9,6 @@ LevelScene::LevelScene(Render* render, Input* input, const Point winSize)
 	this->input = input;
 	this->player = player;
 	this->winSize = winSize;
-
-	//                        Rows  Columns  WindowSize  PlayerInitPos  Offset
-	level[0] = new LevelConfig(14,    26,     winSize,     { 0, 0 },   { 150, 70 });
-	level[1] = new LevelConfig( 3,     3,     winSize,     { 0, 0 },   { 10, 7 });
 
 	tileManager = new TileManager(render, input);
 }
@@ -27,6 +25,8 @@ bool LevelScene::Start(suint index)
 		return false;
 	}
 
+	if (!BuildLevel(index)) return false;
+	/*
 	lvl = index;
 
 	player = new Tile(PLAYER_TILE, level[lvl]->playerInitPos, level[lvl]->tileSize, input);
@@ -73,8 +73,11 @@ bool LevelScene::Start(suint index)
 	tileManager->PushTile(pushText);
 	// Level construction (at the end, this will be done with an excel)
 
+	*/
+
 	tileManager->SetTileMaps();
-	tileManager->SetOffset(level[lvl]->GetMapOffset());
+	tileManager->SetOffset(level->GetMapOffset());
+	tileManager->SetLevelBehaviors();
 
 	return true;
 }
@@ -107,14 +110,111 @@ bool LevelScene::CleanUp()
 bool LevelScene::DebugDraw()
 {
 	// Grid
-	for (suint i = 0; i < level[lvl]->rows + 1; ++i) // Rows
+	for (suint i = 0; i < level->rows + 1; ++i) // Rows
 	{
-		render->DrawLine(level[lvl]->center.x + (level[lvl]->offset.x / 2), (level[lvl]->tileSize * i) + level[lvl]->center.y + (level[lvl]->offset.y / 2), (level[lvl]->tileSize * level[lvl]->columns) + level[lvl]->center.x + (level[lvl]->offset.x / 2), (level[lvl]->tileSize * i) + level[lvl]->center.y + (level[lvl]->offset.y / 2));
+		render->DrawLine(level->center.x + (level->offset.x / 2), (level->tileSize * i) + level->center.y + (level->offset.y / 2), (level->tileSize * level->columns) + level->center.x + (level->offset.x / 2), (level->tileSize * i) + level->center.y + (level->offset.y / 2));
 	}
-	for (suint i = 0; i < level[lvl]->columns + 1; ++i) // Columns
+	for (suint i = 0; i < level->columns + 1; ++i) // Columns
 	{
-		render->DrawLine((level[lvl]->tileSize * i) + level[lvl]->center.x + (level[lvl]->offset.x / 2), level[lvl]->center.y + (level[lvl]->offset.y / 2), (level[lvl]->tileSize * i) + level[lvl]->center.x + (level[lvl]->offset.x / 2), (level[lvl]->tileSize * level[lvl]->rows) + level[lvl]->center.y + (level[lvl]->offset.y / 2));
+		render->DrawLine((level->tileSize * i) + level->center.x + (level->offset.x / 2), level->center.y + (level->offset.y / 2), (level->tileSize * i) + level->center.x + (level->offset.x / 2), (level->tileSize * level->rows) + level->center.y + (level->offset.y / 2));
 	}
+
+	return true;
+}
+
+bool LevelScene::BuildLevel(suint level)
+{
+	std::string fileName = "Assets/Levels/level";
+	fileName += std::to_string(level + 1);
+	fileName += ".csv";
+	std::ifstream levelFile(fileName);
+
+	if (!levelFile.is_open()) return false;
+
+	suint rows = 0, columns = 0, offsetx = 0, offsety = 0, textDefaultPush = 0;
+	char dummy;
+	std::string line;
+
+	levelFile >> rows;
+	levelFile >> dummy;
+	levelFile >> columns;
+	levelFile >> dummy;
+	levelFile >> textDefaultPush;
+	levelFile >> dummy;
+	levelFile >> offsetx;
+	levelFile >> dummy;
+	levelFile >> offsety;
+
+	std::getline(levelFile, line);
+	line.shrink_to_fit();
+	line.clear();
+
+	this->level = new LevelConfig(rows - 2, columns - 2, winSize, Point{ offsetx, offsety });
+
+	for (suint i = 0; i < rows; ++i) 
+	{
+		std::getline(levelFile, line);
+		suint x = 0;
+		for (suint a = 0; a < columns; ++a)
+		{
+			if (line[x] == '0')
+			{
+				tileManager->PushTile(BLOCK_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				++x;
+			}
+			else if (line[x] == 'p' && line[x + 1] == ',')
+			{
+				tileManager->PushTile(PLAYER_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				++x;
+			}
+			else if (line[x] == 'p' && line[x + 1] == 't')
+			{
+				Tile* tile = new Tile(PLAYER_TEXT_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				tileManager->PushTile(tile);
+				x += 2;
+			}
+			else if (line[x] == 'i' && line[x + 1] == 's')
+			{
+				Tile* tile = new Tile(IS_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				tileManager->PushTile(tile);
+				x += 2;
+			}
+			else if (line[x] == 'y')
+			{
+				Tile* tile = new Tile(YOU_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				tileManager->PushTile(tile);
+				++x;
+			}
+			else if (line[x] == 'f' && line[x + 1] == ',')
+			{
+				//tileManager->PushTile(FLAG_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				++x;
+			}
+			else if (line[x] == 'w')
+			{
+				/*Tile* tile = new Tile(WIN_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				tileManager->PushTile(tile);*/
+				++x;
+			}
+			else if (line[x] == 'f' && line[x + 1] == 't')
+			{
+				/*Tile* tile = new Tile(FLAG_TEXT_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				tileManager->PushTile(tile);*/
+				x += 2;
+			}
+			++x;
+		}
+
+		line.shrink_to_fit();
+		line.clear();
+	}
+
+	levelFile.close();
 
 	return true;
 }

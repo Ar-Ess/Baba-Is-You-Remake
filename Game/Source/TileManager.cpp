@@ -99,7 +99,7 @@ void TileManager::PushTile(TileType type, Point position, float size, Input* inp
 {
 	Tile* push = new Tile(type, position, size, input);
 	push->manager = this;
-	this->tiles.push_back(push);
+	type == PLAYER_TILE ? tiles.insert(tiles.begin(), push) : tiles.push_back(push);
 	if (type == BLOCK_TILE) push->SetBehaviour(STOP, true);
 }
 
@@ -158,5 +158,49 @@ void TileManager::ResetBehaviors(TileType type, Behaviour b, bool set)
 		if (tile->type != type) continue;
 
 		tile->behaviours->Set((int)b, set);
+	}
+}
+
+void TileManager::SetLevelBehaviors()
+{
+	suint size = tiles.size();
+	for (suint i = 0; i < size; ++i)
+	{
+		Tile* tile = tiles[i];
+
+		switch (tile->type)
+		{
+		case PLAYER_TEXT_TILE:
+			if (!tile->map.right || tile->map.right->type != IS_TILE)
+			{
+				ResetBehaviors(PLAYER_TILE, PLAYER, false);
+				ResetBehaviors(PLAYER_TILE, PUSH, false);
+				break;
+			}
+
+			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
+			{
+			case YOU_TILE: ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
+			case PUSH_TILE: ResetBehaviors(PLAYER_TILE, PUSH, true); break;
+			}
+
+			break;
+
+		case ROCK_TEXT_TILE:
+			if (!tile->map.right || tile->map.right->type != IS_TILE)
+			{
+				ResetBehaviors(ROCK_TILE, PLAYER, false);
+				ResetBehaviors(ROCK_TILE, PUSH, false);
+				break;
+			}
+
+			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
+			{
+			case YOU_TILE: ResetBehaviors(ROCK_TILE, PLAYER, true); break;
+			case PUSH_TILE: ResetBehaviors(ROCK_TILE, PUSH, true); break;
+			}
+
+			break;
+		}
 	}
 }

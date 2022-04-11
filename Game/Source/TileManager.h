@@ -42,6 +42,8 @@ public: // Methods
 
 	void ResetBehaviors(TileType type, Behaviour b, bool set);
 
+	void SetLevelBehaviors();
+
 	void SetOffset(Point offset)
 	{
 		this->offset = offset;

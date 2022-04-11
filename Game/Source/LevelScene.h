@@ -8,16 +8,16 @@
 #include "Tile.h"
 #include "Multibool.h"
 #include <vector>
+#include "Defs.h"
 
 #define NUM_OF_LEVELS 2
 
 struct LevelConfig
 {
-	LevelConfig(suint rows, suint columns, Point winSize, Point playerInitPos = {0, 0}, Point offset = { 50, 40 })
+	LevelConfig(suint rows, suint columns, Point winSize, Point offset = { 50, 40 })
 	{
 		this->rows = rows;
 		this->columns = columns;
-		this->playerInitPos = playerInitPos;
 		this->offset = offset;
 		
 		winSize -= offset;
@@ -26,12 +26,6 @@ struct LevelConfig
 	}
 
 	~LevelConfig() {}
-
-	// Function: Algorithm that returns the value in pixels of the initial position of the player
-	Point GetPlayerInitialPosition()
-	{
-		return Point{ (tileSize * playerInitPos.x) + (offset.x / 2) + center.x, (tileSize * playerInitPos.y) + (offset.y / 2) + center.y };
-	}
 
 	Point GetMapOffset()
 	{
@@ -42,7 +36,6 @@ struct LevelConfig
 	suint columns = 0;
 	Point offset = {0, 0};
 	Point center = {0, 0};
-	Point playerInitPos = {0, 0};
 	float tileSize = 0;
 
 private: // Methods
@@ -86,6 +79,8 @@ private: // Methods
 
 	bool DebugDraw();
 
+	bool BuildLevel(suint level);
+
 private: // Variables
 
 	Render* render = nullptr;
@@ -95,7 +90,7 @@ private: // Variables
 	Point winSize = { 0, 0 };
 	suint lvl = 0;
 
-	LevelConfig* level[NUM_OF_LEVELS] = {};
+	LevelConfig* level = nullptr;
 
 	TileManager* tileManager = nullptr;
 

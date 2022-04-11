@@ -83,6 +83,8 @@ bool Tile::UpdateBehaviour()
 
 bool Tile::UpdateLogic()
 {
+    manager->ResetTileMap(this);
+
     switch (type)
     {
     case PLAYER_TEXT_TILE:
@@ -93,6 +95,7 @@ bool Tile::UpdateLogic()
             break;
         }
 
+        if (!map.right->map.right) break;
         switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
         {
         case YOU_TILE: manager->ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
@@ -109,6 +112,7 @@ bool Tile::UpdateLogic()
             break;
         }
 
+        if (!map.right->map.right) break;
         switch (map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
         {
         case YOU_TILE: manager->ResetBehaviors(ROCK_TILE, PLAYER, true); break;

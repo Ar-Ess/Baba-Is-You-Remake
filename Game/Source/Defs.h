@@ -2,6 +2,7 @@
 #define __DEFS_H__
 
 #include <stdio.h>
+#include <string>
 #include <map>
 
 //  NULL just in case ----------------------
@@ -50,6 +51,8 @@ template <class VALUE_TYPE> void SWAP(VALUE_TYPE& a, VALUE_TYPE& b)
 	a = b;
 	b = tmp;
 }
+
+bool SameString(std::string a, std::string b);
 
 // Standard string size
 #define SHORT_STR	 32
