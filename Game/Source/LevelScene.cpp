@@ -121,28 +121,28 @@ bool LevelScene::BuildLevel(suint level)
 			}
 			else if (line[x] == 'p' && line[x + 1] == 't')
 			{
-				Tile* tile = new Tile(PLAYER_TEXT_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(PLAYER_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				x += 2;
 			}
 			else if (line[x] == 'i' && line[x + 1] == 's')
 			{
-				Tile* tile = new Tile(IS_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(IS_TILE, LINKER, { a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				x += 2;
 			}
 			else if (line[x] == 'y')
 			{
-				Tile* tile = new Tile(YOU_B_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(YOU_B_TILE, BEHAVIOR,{ a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				++x;
 			}
 			else if (line[x] == 'p' && line[x + 1] == 's' && line[x + 2] == 'h')
 			{
-				Tile* tile = new Tile(PUSH_B_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(PUSH_B_TILE, BEHAVIOR, { a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				x += 3;
@@ -154,14 +154,14 @@ bool LevelScene::BuildLevel(suint level)
 			}
 			else if (line[x] == 'w')
 			{
-				Tile* tile = new Tile(WIN_B_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(WIN_B_TILE, BEHAVIOR, { a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				++x;
 			}
 			else if (line[x] == 'f' && line[x + 1] == 't')
 			{
-				Tile* tile = new Tile(FLAG_TEXT_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				Tile* tile = new Tile(FLAG_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
 				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
 				tileManager->PushTile(tile);
 				x += 2;

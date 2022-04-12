@@ -7,13 +7,13 @@
 enum Direction
 {
 	NO_DIR = -1,
-	TOP,
+	RIGHT,
 	BOTTOM,
-	LEFT,
-	RIGHT
+	TOP,
+	LEFT
 };
 
-enum Behaviour
+enum Behaviour // Remember to modify GetBehaviourFromType in Tile.cpp
 {
 	NO_BEHAVIOR = -1,
 	PLAYER,
@@ -22,7 +22,7 @@ enum Behaviour
 	STOP
 };
 
-enum TileType
+enum TileType // Remember to modify function "GetClassFromTile" in Tile.cpp
 {
 	// Static Tiles
 	NO_TILE = -2,
@@ -37,13 +37,22 @@ enum TileType
 	ROCK_TEXT_TILE,
 	FLAG_TEXT_TILE,
 	WALL_TEXT_TILE,
-	// Behavior Tiles
+	// Behavior Tiles (Remember to modify GetBehaviourFromType in TileManager.cpp)
 	YOU_B_TILE,
-	PUSH_B_TILE,
 	WIN_B_TILE,
+	PUSH_B_TILE,
 	STOP_B_TILE,
 	// Linker Tiles
 	IS_TILE
+};
+
+enum TileClass
+{
+	NO_CLASS = -1,
+	OBJECT,
+	TEXT,
+	BEHAVIOR,
+	LINKER
 };
 
 class Tile;
@@ -56,6 +65,21 @@ struct Map
 		bottom = nullptr;
 		left = nullptr;
 		right = nullptr;
+	}
+
+	Tile* Get(Direction dir)
+	{
+		Tile* ret = nullptr;
+
+		switch (dir)
+		{
+		case TOP: ret = top; break;
+		case BOTTOM: ret = bottom; break;
+		case LEFT: ret = left; break;
+		case RIGHT: ret = right; break;
+		}
+
+		return ret;
 	}
 
 	void Reset()
@@ -76,7 +100,7 @@ class Tile
 {
 public: // Methods
 
-	Tile(TileType type, Point position, float size, Input* input);
+	Tile(TileType type, TileClass clas, Point position, float size, Input* input);
 
 	~Tile() {}
 
@@ -103,9 +127,16 @@ public: // Methods
 		behaviours->Set((int)b, set);
 	}
 
+	// This function returns if this tile can't be entered nor pushed
 	bool IsStatic()
 	{
-		return (!GetBehaviour(PUSH) || GetBehaviour(STOP));
+		return (!GetBehaviour(PUSH) && GetBehaviour(STOP));
+	}
+
+	// This function returns if this tile can be accessed
+	bool IsTransparent()
+	{
+		return (!GetBehaviour(PUSH) && !GetBehaviour(STOP));
 	}
 
 	float DistanceTo(Point to)
@@ -118,15 +149,18 @@ private: // Methods
 
 	friend class TileManager;
 
-	void SetTexture(SDL_Texture* tex);
-
 	bool IsAccessible(Direction dir);
 
 	void MovementLogic(Direction dir);
 
+	void LookAheadLogic(Direction dir, TileType affected);
+
+	Behaviour GetBehaviorFromType(TileType type);
+
 public: // Variables
 
 	TileType type = NO_TILE;
+	TileClass clas = NO_CLASS;
 	//                 Top    Bottom    Left     Right
 	Map map = Map();
 
@@ -134,7 +168,6 @@ protected: // Variables
 
 	Rect collider = {};
 	Input* input = nullptr;
-	SDL_Texture* texture = nullptr;
 
 	TileManager* manager = nullptr;
 
@@ -142,7 +175,7 @@ protected: // Variables
 
 	//Provably separate by classes "Tiles" "TextTiles" "BehaviourTiles"
 	// This should only be in the "TextTiles"
-	TileType* prevBehaviourTile[2] = { nullptr, nullptr };
+	TileType prevBehaviourTile[2] = { NO_TILE, NO_TILE };
 };
 
 #endif // __TILE_H__

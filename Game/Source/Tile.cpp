@@ -1,11 +1,12 @@
 #include "Tile.h"
 
-Tile::Tile(TileType type, Point position, float size, Input* input)
+Tile::Tile(TileType type, TileClass clas, Point position, float size, Input* input)
 {
     this->collider = { (float)position.x, (float)position.y, size, size };
     this->input = input;
     this->behaviours = new Multibool(8);
     this->type = type;
+    this->clas = clas;
     if (type == BLOCK_TILE) SetBehaviour(STOP, true);
 }
 
@@ -23,42 +24,15 @@ bool Tile::UpdateBehaviour(float dt)
         Point newPos = collider.GetPosition();
         Tile* interact = nullptr;
 
-        if (IsAccessible(TOP) && input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-        {
-            dir = TOP;
-            /*if (map.top && map.top->GetBehaviour(PUSH)) --map.top->collider.y;
-            interact = map.top;
-            newPos.y -= 1;*/
-        }
-        else if (IsAccessible(BOTTOM) && input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
-        {
-            dir = BOTTOM;
-            /*if (map.bottom && map.bottom->GetBehaviour(PUSH)) ++map.bottom->collider.y;
-            interact = map.bottom;
-            newPos.y += 1;*/
-        }
-        else if (IsAccessible(LEFT) && input->GetKey(SDL_SCANCODE_A) == KEY_DOWN)
-        {
-            dir = LEFT;
-            /*if (map.left && map.left->GetBehaviour(PUSH)) --map.left->collider.x;
-            interact = map.left;
-            newPos.x -= 1;*/
-        }
-        else if (IsAccessible(RIGHT) && input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
-        {
-            dir = RIGHT;
-            /*if (map.right && map.right->GetBehaviour(PUSH)) ++map.right->collider.x;
-            interact = map.right;
-            newPos.x += 1;*/
-        }
+        if (input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && IsAccessible(TOP)) dir = TOP;
+        else if (input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && IsAccessible(BOTTOM)) dir = BOTTOM;
+        else if (input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && IsAccessible(LEFT)) dir = LEFT;
+        else if (input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && IsAccessible(RIGHT)) dir = RIGHT;
 
         ret = !(dir == NO_DIR);
         if (ret)
         {
             MovementLogic(dir);
-            /*collider.SetPosition(newPos);
-            ResetMap();
-            if (interact) interact->ResetMap();*/
         }
     }
 
@@ -67,7 +41,7 @@ bool Tile::UpdateBehaviour(float dt)
 
 bool Tile::UpdateLogic(float dt)
 {
-    //manager->ResetTileMap(this);
+    if (clas != TEXT) return true;
 
     TileType affected = NO_TILE;
 
@@ -81,32 +55,8 @@ bool Tile::UpdateLogic(float dt)
     // IMPORTANT: If a tile is not stop it should be transpassable
     // Maybe each position may have more than one tile...
 
-    if (type == NO_TILE) return true;
-
-    Tile* next = map.right;
-    if (!next || next->type != IS_TILE)
-    {
-        manager->ResetBehaviors(affected, PLAYER, false);
-        manager->ResetBehaviors(affected, PUSH, false);
-        return true;
-    }
-
-    if (!next->map.right) return true;
-    switch (next->map.right->type) //probably ending up being recursive (if AND TILE implemented)
-    {
-    case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, true); break;
-    case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, true); break;
-    default:
-        if (!prevBehaviourTile[0]) break;
-        switch (*prevBehaviourTile[0])
-        {
-        case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, false); break;
-        case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, false); break;
-        }
-        break;
-    }
-
-    prevBehaviourTile[0] = &next->map.right->type;
+    LookAheadLogic(RIGHT, affected);
+    LookAheadLogic(BOTTOM, affected);
 
     /*Bottom Logic, problem with overwritting of the "Right-direction" logic*/
     //next = map.bottom;
@@ -138,13 +88,7 @@ bool Tile::UpdateLogic(float dt)
 bool Tile::CleanUp()
 {
     delete behaviours;
-    delete texture;
     return true;
-}
-
-void Tile::SetTexture(SDL_Texture *tex)
-{
-    texture = tex;
 }
 
 bool Tile::IsAccessible(Direction dir)
@@ -160,6 +104,7 @@ bool Tile::IsAccessible(Direction dir)
     }
 
     if (check == nullptr) return true;
+    if (check->IsTransparent()) return true;
     if (check->IsStatic()) return false;
 
     return check->IsAccessible(dir);
@@ -197,13 +142,55 @@ void Tile::MovementLogic(Direction dir)
         manager->ResetTileMap(this);
         return;
     }
-    if (next->IsStatic())
+    if (next->behaviours->Get(PUSH))
     {
-        manager->ResetTileMap(this);
+        next->MovementLogic(dir);
         return;
     }
 
-    next->MovementLogic(dir);
-
     manager->ResetTileMap(this);
+}
+
+void Tile::LookAheadLogic(Direction dir, TileType affected)
+{
+    Tile* next = map.Get(dir);
+
+    if (!next || next->clas != LINKER)
+    {
+        if (prevBehaviourTile[dir] == NO_TILE) return;
+        // No available for "Tile change" mechanic (Player->Is->Flag)
+        manager->ResetBehaviors(affected, GetBehaviorFromType(prevBehaviourTile[dir]), false);
+        prevBehaviourTile[dir] = NO_TILE;
+        return;
+    }
+
+    next = next->map.Get(dir);
+    if (!next || next->clas != BEHAVIOR)
+    {
+        if (prevBehaviourTile[dir] == NO_TILE) return;
+
+        manager->ResetBehaviors(affected, GetBehaviorFromType(prevBehaviourTile[dir]), false);
+        prevBehaviourTile[dir] = NO_TILE;
+        return;
+    }
+
+    if (prevBehaviourTile[dir] != NO_TILE) manager->ResetBehaviors(affected, GetBehaviorFromType(prevBehaviourTile[dir]), false);
+    manager->ResetBehaviors(affected, GetBehaviorFromType(next->type), true);
+    prevBehaviourTile[dir] = next->type;
+    return;
+
+}
+
+Behaviour Tile::GetBehaviorFromType(TileType type)
+{
+    Behaviour ret = NO_BEHAVIOR;
+    switch (type)
+    {
+    case PUSH_B_TILE: ret = PUSH; break;
+    case YOU_B_TILE: ret = PLAYER; break;
+    case STOP_B_TILE: ret = STOP; break;
+    case WIN_B_TILE: ret = WIN; break;
+    }
+
+    return ret;
 }

@@ -16,6 +16,7 @@
 class Tile;
 enum TileType;
 enum Behaviour;
+enum TileClass;
 
 class TileManager
 {
@@ -51,6 +52,8 @@ public: // Methods
 	}
 
 private: // Methods
+
+	TileClass GetClassFromType(TileType type);
 
 public: // Variables
 

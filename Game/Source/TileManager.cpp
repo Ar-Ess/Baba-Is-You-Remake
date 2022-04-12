@@ -15,8 +15,8 @@ TileManager::TileManager(Render* render, Input* input, Textures* texture)
 	textures.push_back(texture->Load("Assets/Textures/Tiles/flag_text_tile.png"));
 	textures.push_back(texture->Load("Assets/Textures/Tiles/wall_text_tile.png"));
 	textures.push_back(texture->Load("Assets/Textures/Tiles/you_b_tile.png"));
-	textures.push_back(texture->Load("Assets/Textures/Tiles/push_b_tile.png"));
 	textures.push_back(texture->Load("Assets/Textures/Tiles/win_b_tile.png"));
+	textures.push_back(texture->Load("Assets/Textures/Tiles/push_b_tile.png"));
 	textures.push_back(texture->Load("Assets/Textures/Tiles/stop_b_tile.png"));
 	textures.push_back(texture->Load("Assets/Textures/Tiles/is_tile.png"));
 }
@@ -47,7 +47,6 @@ bool TileManager::Update(float dt)
 
 bool TileManager::Draw(float dt)
 {
-
 	suint size = tiles.size();
 	for (suint i = 0; i < size; ++i)
 	{
@@ -125,7 +124,8 @@ bool TileManager::CleanUp()
 
 void TileManager::PushTile(TileType type, Point position, float size, Input* input)
 {
-	Tile* push = new Tile(type, position, size, input);
+	TileClass clas = GetClassFromType(type);
+	Tile* push = new Tile(type, clas, position, size, input);
 	push->manager = this;
 	type == PLAYER_TILE ? tiles.insert(tiles.begin(), push) : tiles.push_back(push);
 	if (type == BLOCK_TILE) push->SetBehaviour(STOP, true);
@@ -134,7 +134,7 @@ void TileManager::PushTile(TileType type, Point position, float size, Input* inp
 void TileManager::PushTile(Tile* push)
 {
 	push->manager = this;
-	this->tiles.push_back(push);
+	push->type == PLAYER_TILE ? tiles.insert(tiles.begin(), push) : tiles.push_back(push);
 }
 
 void TileManager::SetTileMaps()
@@ -180,6 +180,8 @@ void TileManager::ResetTileMap(Tile* tile)
 
 void TileManager::ResetBehaviors(TileType type, Behaviour b, bool set)
 {
+	if (b == NO_BEHAVIOR) return;
+
 	suint size = tiles.size();
 	for (suint i = 0; i < size; ++i)
 	{
@@ -187,6 +189,11 @@ void TileManager::ResetBehaviors(TileType type, Behaviour b, bool set)
 		if (tile->type != type) continue;
 
 		tile->behaviours->Set((int)b, set);
+		if (b == PLAYER && i > 0)
+		{
+			tiles.erase(tiles.begin() + i);
+			tiles.insert(tiles.begin() + 1, tile);
+		}
 	}
 }
 
@@ -232,4 +239,22 @@ void TileManager::SetLevelBehaviors()
 			break;
 		}
 	}
+}
+
+TileClass TileManager::GetClassFromType(TileType type)
+{
+	if ((int)type < 0) 
+		return NO_CLASS;
+
+	else if ((int)type < 4) 
+		return OBJECT;
+
+	else if ((int)type < 8) 
+		return TEXT;
+
+	else if ((int)type < 12) 
+		return BEHAVIOR;
+
+	else
+		return LINKER;
 }
