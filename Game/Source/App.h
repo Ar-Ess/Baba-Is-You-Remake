@@ -26,7 +26,6 @@ class Textures;
 class Audio;
 class EntityManager;
 class GuiManager;
-class FontTTF;
 class Scene;
 class DialogueManager;
 class Transition;
@@ -103,7 +102,6 @@ public:
 	Audio* audio;
 	EntityManager* entityManager;
 	GuiManager* guiManager;
-	FontTTF* fontTTF;
 	Scene* scene;
 	DialogueManager* dialogueManager;
 	Transition* transition;

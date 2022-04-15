@@ -3,10 +3,13 @@
 
 #include "Module.h"
 #include "GuiControl.h"
+#include "GuiString.h"
+#include "SDL/include/SDL_pixels.h"
 
 #include <vector>
 
 struct SDL_Texture;
+struct _TTF_Font;
 enum class GuiControlType;
 
 struct Texture
@@ -18,6 +21,44 @@ struct Texture
 	}
 
 	SDL_Texture* texture = nullptr;
+	Point dimensions = {};
+};
+
+enum Align
+{
+	TOP_LEFT,
+	TOP_RIGHT,
+	BOTTOM_LEFT,
+	BOTTOM_RIGHT,
+	CENTER_LEFT,
+	CENTER_RIGHT,
+	CENTER_TOP,
+	CENTER_BOTTOM,
+	CENTER
+};
+
+class Alignment
+{
+public:
+	Alignment(GuiString* text, Point dimensions)
+	{
+		this->text = text;
+		this->dimensions = dimensions;
+	}
+
+	void AlignTo(Align align = TOP_LEFT)
+	{
+		switch (align)
+		{
+		case CENTER:
+			text->offset = {(dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+		}
+	}
+
+private:
+
+	GuiString* text = nullptr;
 	Point dimensions = {};
 };
 
@@ -93,6 +134,26 @@ private:
 	std::vector<Texture*>* textures = {};
 };
 
+class ControlAddition
+{
+public:
+	ControlAddition(GuiControl* control)
+	{
+		this->control = control;
+	}
+
+	Alignment AddGuiString(const char* text, suint fontIndex = 0, SDL_Color color = { 0, 0, 0, 255 })
+	{
+		control->text = new GuiString(control->bounds, text, fontIndex, control->id, control->scale, control->render, control->gui, control->anchored, color);
+
+		return Alignment(control->text, Point{control->bounds.w, control->bounds.h});
+	}
+
+private:
+
+	GuiControl* control = nullptr;
+};
+
 class GuiManager : public Module
 {
 public:
@@ -111,7 +172,7 @@ public:
 
 	bool CleanUp();
 
-	void CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
+	ControlAddition CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
 
 	void DestroyGuiControl(suint index);
 
@@ -119,9 +180,24 @@ public:
 
 	TextureSwitcher ChangeTexture(suint controlIndex);
 	
-	void DestroyTesture(suint index);
+	void DestroyTexture(suint index);
+
+	void CreateFont(const char* path, suint fontSize);
+
+	SDL_Texture* PrintFont(const char* text, SDL_Color color, suint fontIndex, int endLine = -1);
+
+	TextureSwitcher ChangeFont(suint controlIndex);
+
+	void DestroyFont(suint index);
 
 	void DisableAllButtons();
+
+private:
+	
+	friend class GuiString;
+	bool CalculateSize(const char* text, suint fontIndex, Point* result) const;
+
+	bool InitializeFonts();
 
 	void SelectButtonsLogic();
 
@@ -139,6 +215,7 @@ private:
 
 	std::vector<GuiControl*> controls;
 	std::vector<Texture*> textures;
+	std::vector<_TTF_Font*> fonts;
 	
 	int selectKey = 43;
 	int idSelection = -1;

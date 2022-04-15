@@ -6,7 +6,6 @@
 #include "Textures.h"
 #include "Audio.h"
 #include "GuiManager.h"
-#include "FontTTF.h"
 #include "AssetsManager.h"
 #include "Scene.h"
 #include "Transition.h"
@@ -30,7 +29,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new Textures();
 	audio = new Audio();
 	guiManager = new GuiManager(input, render, audio, tex);
-	fontTTF = new FontTTF();
 	scene = new Scene(guiManager, render, input, tex, win);
 	transition = new Transition();
 	psystem = new ParticleSystem();
@@ -43,7 +41,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(tex);
 	AddModule(audio);
 	AddModule(guiManager);
-	AddModule(fontTTF);
 	AddModule(scene);
 	AddModule(transition);
 	AddModule(psystem);

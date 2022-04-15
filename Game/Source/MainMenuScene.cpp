@@ -14,7 +14,7 @@ MainMenuScene::~MainMenuScene()
 
 bool MainMenuScene::Start()
 {
-	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 });
+	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 }).AddGuiString("PLAY", 0, {255, 255, 255, 255}).AlignTo(Align::CENTER);
 	gui->CreateTexture("Assets/Textures/UI/button_set_2.png");
 	gui->CreateTexture("Assets/Textures/UI/button_set_3.png");
 	gui->CreateTexture("Assets/Textures/UI/button_set_4.png");

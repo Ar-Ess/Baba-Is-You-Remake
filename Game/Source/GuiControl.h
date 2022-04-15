@@ -16,7 +16,9 @@ class Audio;
 class Render;
 class Textures;
 class Scene;
+class GuiString;
 class GuiManager;
+
 
 enum class GuiControlType
 {
@@ -55,6 +57,15 @@ public:
         anchored(anchored), 
         input(input), render(render), gui(gui), audio(audio), observer(scene) {}
 
+    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, suint id, Point scale, bool anchored, Render* render, GuiManager* gui) :
+        bounds(bounds),
+        type(type),
+        texture(texture),
+        id(id),
+        scale(scale),
+        anchored(anchored),
+        render(render), gui(gui) {}
+
     GuiControl(GuiControlType type) // Temp
     {
 
@@ -83,6 +94,7 @@ public:
     GuiManager* gui = nullptr;
     Audio* audio = nullptr;
     Scene* observer = nullptr;
+    GuiString* text;
 
     GuiControlType type;
     GuiControlState state;

@@ -1,40 +1,33 @@
 #include "GuiString.h"
+#include "GuiManager.h"
 #include "Textures.h"
 #include "App.h"
 
-GuiString::GuiString() : GuiControl(GuiControlType::TEXT), textFont(app->fontTTF->defaultFont)
+GuiString::GuiString(Rect bounds, const char* text, suint fontIndex, suint id, Point scale, Render* render, GuiManager* gui, bool anchored, SDL_Color color) : GuiControl(bounds, GuiControlType::TEXT, gui->PrintFont(text, color, fontIndex), id, scale, anchored, render, gui)
 {
-	//textTexture = app->fontTTF->Print(this->text.GetString(), YELLOW, textFont);	
+	Point result = {};
+	gui->CalculateSize(text, fontIndex, &result);
+	this->bounds.w = result.x;
+	this->bounds.h = result.y;
 }
 
 GuiString::~GuiString()
 {
-	app->tex->UnLoad(textTexture);
+	app->tex->UnLoad(texture);
 }
 
-void GuiString::Draw(float scaleX, float scaleY, bool staticPos)
+bool GuiString::Draw() const
 {
-	app->render->DrawTexture(textTexture, bounds.x, bounds.y, scaleX, scaleY, (SDL_Rect*)0, false, staticPos);
-}
+	Point position = bounds.GetPosition().Apply(offset);
+	render->DrawTexture(texture, position, scale, anchored);
 
-void GuiString::SetString(const char* newText, SDL_Color color, int endline)
-{
-	//text = SString(newText);
-	textTexture = app->fontTTF->Print(newText, color, textFont, textTexture, endline);
-}
-
-void GuiString::SetTextFont(_TTF_Font* textFont)
-{
-	this->textFont = textFont;
+	return true;
 }
 
 void GuiString::Delete()
 {
-	observer = nullptr;
-	//text.Clear();
-	textFont = nullptr;
-	app->tex->UnLoad(textTexture);
-	textTexture = nullptr;
+	app->tex->UnLoad(texture);
+	texture = nullptr;
 }
 
 void GuiString::CenterAlign()

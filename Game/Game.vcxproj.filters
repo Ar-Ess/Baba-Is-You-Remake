@@ -36,9 +36,6 @@
     <ClCompile Include="Source\GuiManager.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Font.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GuiCheckBox.cpp">
       <Filter>GuiControls</Filter>
     </ClCompile>
@@ -155,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="Source\GuiManager.h">
       <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Font.h">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\GuiCheckBox.h">
       <Filter>GuiControls</Filter>

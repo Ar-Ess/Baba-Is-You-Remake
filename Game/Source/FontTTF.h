@@ -1,27 +1,21 @@
 #ifndef _FONTTTF_H_
 #define _FONTTTF_H_
 
-#include "Module.h"
 #include "SDL/include/SDL_pixels.h"
-#include "List.h"
+#include <vector>
 
-#define DEFAULT_FONT "Assets/Fonts/kenvector_future_thin.ttf"
 #define DEFAULT_FONT_SIZE 12
 #define DYNAMIC_TEXT_LEN 12
 
 struct SDL_Texture;
 struct _TTF_Font;
 
-class FontTTF : public Module
+class FontTTF
 {
 public:
 	FontTTF();
 
 	virtual ~FontTTF();
-
-	bool Awake(pugi::xml_node&);
-
-	bool CleanUp();
 
 	_TTF_Font* const Load(const char* path, int size = 12);
 
@@ -33,7 +27,6 @@ public:
 
 public:
 
-	List<_TTF_Font*> fonts;
-	_TTF_Font* defaultFont = nullptr;
+	std::vector<_TTF_Font*> fonts;
 };
 #endif // !_FONTTTF_H_

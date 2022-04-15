@@ -100,6 +100,8 @@ bool GuiButton::Draw(float dt) const
 
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &section);
 
+    if (text) text->Draw();
+
     if (gui->debug) DebugDraw();
 
     return false;

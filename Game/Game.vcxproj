@@ -95,7 +95,6 @@
     <ClCompile Include="Source\Dialogue.cpp" />
     <ClCompile Include="Source\EasingFunctions.cpp" />
     <ClCompile Include="Source\Emitter.cpp" />
-    <ClCompile Include="Source\Font.cpp" />
     <ClCompile Include="Source\FontTTF.cpp" />
     <ClCompile Include="Source\GuiButton.cpp" />
     <ClCompile Include="Source\GuiCheckBox.cpp" />
@@ -129,7 +128,6 @@
     <ClInclude Include="Source\DialogueOption.h" />
     <ClInclude Include="Source\EasingFunctions.h" />
     <ClInclude Include="Source\Emitter.h" />
-    <ClInclude Include="Source\Font.h" />
     <ClInclude Include="Source\FontTTF.h" />
     <ClInclude Include="Source\GuiButton.h" />
     <ClInclude Include="Source\GuiCheckBox.h" />

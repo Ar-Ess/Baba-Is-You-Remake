@@ -4,7 +4,9 @@
 #include "GuiCheckBox.h"
 #include "GuiSlider.h"
 #include "GuiString.h"
-#include "FontTTF.h"
+
+#include "SDL_ttf/include/SDL_ttf.h"
+#pragma comment( lib, "../Game/Source/External/SDL_ttf/libx86/SDL2_ttf.lib" )
 
 #include "Log.h"
 
@@ -28,7 +30,11 @@ bool GuiManager::Awake(pugi::xml_node&)
 
 bool GuiManager::Start(Scene* scene)
 {
+	InitializeFonts();
+
 	CreateTexture("Assets/Textures/UI/button_default_set.png");
+	CreateFont("Fonts/manaspace.regular.ttf", 18);
+
 	debug = false;
 	this->scene = scene;
 	return true;
@@ -58,25 +64,29 @@ bool GuiManager::Draw(float dt)
 	return true;
 }
 
-void GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
+ControlAddition GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
 {
 	GuiControl* control = nullptr;
 
 	Texture* tex = textures.at(texIndex);
-	Rect bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y};
+	Rect bounds = { position.x, position.y, 0, 0};
 
 	switch (type)
 	{
 	case GuiControlType::BUTTON:
+		bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y };
 		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene); 
 		break;
 	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
 	case GuiControlType::SLIDER: control = new GuiSlider({ 0, 0, 0, 0 }, "0"); break;
-	case GuiControlType::TEXT: control = new GuiString(); break;
-	default: break;
+	case GuiControlType::TEXT: 
+		control = new GuiString(bounds, "", texIndex, controls.size(), scale, render, this, anchored);
+		break;
 	}
 
 	if (control != nullptr) controls.push_back(control);
+
+	return ControlAddition(control);
 }
 
 void GuiManager::DestroyGuiControl(suint index)
@@ -91,10 +101,53 @@ void GuiManager::CreateTexture(const char* path)
 	textures.push_back(new Texture(tex, dimensions));
 }
 
-void GuiManager::DestroyTesture(suint index)
+void GuiManager::DestroyTexture(suint index)
 {
 	texture->UnLoad(textures.at(index)->texture);
 	textures.erase(textures.begin() + index);
+}
+
+void GuiManager::CreateFont(const char* path, suint fontSize)
+{
+	_TTF_Font* font = TTF_OpenFont(path, fontSize);
+
+	if (font == NULL)
+	{
+		LOG("Could not load TTF font with path: %s. TTF_OpenFont: %s", path, TTF_GetError());
+		return;
+	}
+
+	fonts.push_back(font);
+}
+
+SDL_Texture* GuiManager::PrintFont(const char* text, SDL_Color color, suint fontIndex, int endLine)
+{
+	SDL_Texture* ret = nullptr;
+	Point result = {0, 0};
+	_TTF_Font* font = fonts.at(fontIndex);
+
+	if (endLine == -1)
+	{
+		CalculateSize(text, fontIndex, &result);
+		endLine = result.x;
+	}
+	SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(font, text, color, endLine);
+
+	if (surface == nullptr) return nullptr;
+
+	ret = texture->LoadSurface(surface, nullptr);
+	SDL_FreeSurface(surface);
+
+	return ret;
+}
+
+//TextureSwitcher GuiManager::ChangeFont(suint controlIndex)
+//{
+//	return FontSwitcher();
+//}
+
+void GuiManager::DestroyFont(suint index)
+{
 }
 
 TextureSwitcher GuiManager::ChangeTexture(suint controlIndex)
@@ -109,6 +162,32 @@ void GuiManager::DisableAllButtons()
 	{
 		controls[i]->state = GuiControlState::DISABLED;
 	}
+}
+
+bool GuiManager::CalculateSize(const char* text, suint fontIndex, Point* result) const
+{
+	int w, h;
+
+	if (TTF_SizeText(fonts.at(fontIndex), text, &w, &h) != 0) return false;
+
+	result->x = w;
+	result->y = h;
+
+	return true;
+}
+
+bool GuiManager::InitializeFonts()
+{
+	LOG("Init True Type Font library");
+	bool ret = true;
+
+	if (TTF_Init() == -1)
+	{
+		LOG("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+		ret = false;
+	}
+
+	return ret;
 }
 
 void GuiManager::SelectButtonsLogic()
@@ -152,6 +231,18 @@ void GuiManager::SelectButtonsLogic()
 
 bool GuiManager::CleanUp()
 {
+	LOG("Freeing True Type fonts and library");
+
+	ListItem<_TTF_Font*>* item;
+	suint size = fonts.size();
+	for (suint i = 0; i < size; ++i)
+	{
+		TTF_CloseFont(fonts.at(i));
+	}
+	fonts.shrink_to_fit();
+	fonts.clear();
+	TTF_Quit();
+
 	return true;
 }
 
