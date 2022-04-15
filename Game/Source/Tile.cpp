@@ -50,6 +50,7 @@ bool Tile::UpdateLogic(float dt)
     case PLAYER_TEXT_TILE: affected = PLAYER_TILE;break;
     case ROCK_TEXT_TILE: affected = ROCK_TILE; break;
     case FLAG_TEXT_TILE: affected = FLAG_TILE; break;
+    case WALL_TEXT_TILE: affected = WALL_TILE; break;
     }
 
     // IMPORTANT: If a tile is not stop it should be transpassable

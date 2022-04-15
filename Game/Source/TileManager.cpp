@@ -204,40 +204,7 @@ void TileManager::SetLevelBehaviors()
 	{
 		Tile* tile = tiles[i];
 
-		switch (tile->type)
-		{
-		case PLAYER_TEXT_TILE:
-			if (!tile->map.right || tile->map.right->type != IS_TILE)
-			{
-				ResetBehaviors(PLAYER_TILE, PLAYER, false);
-				ResetBehaviors(PLAYER_TILE, PUSH, false);
-				break;
-			}
-
-			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
-			{
-			case YOU_B_TILE: ResetBehaviors(PLAYER_TILE, PLAYER, true); break;
-			case PUSH_B_TILE: ResetBehaviors(PLAYER_TILE, PUSH, true); break;
-			}
-
-			break;
-
-		case ROCK_TEXT_TILE:
-			if (!tile->map.right || tile->map.right->type != IS_TILE)
-			{
-				ResetBehaviors(ROCK_TILE, PLAYER, false);
-				ResetBehaviors(ROCK_TILE, PUSH, false);
-				break;
-			}
-
-			switch (tile->map.right->map.right->type) //provably ending up being recursive (if AND TILE implemented)
-			{
-			case YOU_B_TILE: ResetBehaviors(ROCK_TILE, PLAYER, true); break;
-			case PUSH_B_TILE: ResetBehaviors(ROCK_TILE, PUSH, true); break;
-			}
-
-			break;
-		}
+		tile->UpdateLogic(0.0f);
 	}
 }
 

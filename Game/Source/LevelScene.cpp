@@ -109,60 +109,141 @@ bool LevelScene::BuildLevel(suint level)
 		suint x = 0;
 		for (suint a = 0; a < columns; ++a)
 		{
+			// BLOCK
 			if (line[x] == '0')
 			{
 				tileManager->PushTile(BLOCK_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
 				++x;
 			}
+			// Player
 			else if (line[x] == 'p' && line[x + 1] == ',')
 			{
 				tileManager->PushTile(PLAYER_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
 				++x;
 			}
+			// Player Text
 			else if (line[x] == 'p' && line[x + 1] == 't')
 			{
 				Tile* tile = new Tile(PLAYER_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				x += 2;
 			}
+			// Is Text
 			else if (line[x] == 'i' && line[x + 1] == 's')
 			{
 				Tile* tile = new Tile(IS_TILE, LINKER, { a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				x += 2;
 			}
+			// You Text
 			else if (line[x] == 'y')
 			{
 				Tile* tile = new Tile(YOU_B_TILE, BEHAVIOR,{ a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				++x;
 			}
+			// Push Behavior
 			else if (line[x] == 'p' && line[x + 1] == 's' && line[x + 2] == 'h')
 			{
 				Tile* tile = new Tile(PUSH_B_TILE, BEHAVIOR, { a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				x += 3;
 			}
+			// Flag
 			else if (line[x] == 'f' && line[x + 1] == ',')
 			{
 				tileManager->PushTile(FLAG_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
 				++x;
 			}
-			else if (line[x] == 'w')
+			// Win Behavior
+			else if (line[x] == 'w' && line[x + 1] == ',')
 			{
 				Tile* tile = new Tile(WIN_B_TILE, BEHAVIOR, { a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				++x;
 			}
+			// Flag Text
 			else if (line[x] == 'f' && line[x + 1] == 't')
 			{
 				Tile* tile = new Tile(FLAG_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
-				if (textDefaultPush) tile->SetBehaviour(PUSH, true);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
+				tileManager->PushTile(tile);
+				x += 2;
+			}
+			// Stop Behavior
+			else if (line[x] == 's' && line[x + 1] == 't' && line[x + 2] == 'p')
+			{
+				Tile* tile = new Tile(STOP_B_TILE, BEHAVIOR, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
+				tileManager->PushTile(tile);
+				x += 3;
+			}
+			// Wall
+			else if (line[x] == 'w' && line[x + 1] == 'l' && line[x + 2] == ',')
+			{
+				tileManager->PushTile(WALL_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+				x += 2;
+			}
+			// Wall Text
+			else if (line[x] == 'w' && line[x + 1] == 'l' && line[x + 2] == 't')
+			{
+				Tile* tile = new Tile(WALL_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
+				tileManager->PushTile(tile);
+				x += 3;
+			}
+			// Rock
+			else if (line[x] == 'r' && line[x + 1] == ',')
+			{
+			tileManager->PushTile(ROCK_TILE, { a - 1, i - 1 }, this->level->tileSize, input);
+			++x;
+			}
+			// Rock Text
+			else if (line[x] == 'r' && line[x + 1] == 't')
+			{
+				Tile* tile = new Tile(ROCK_TEXT_TILE, TEXT, { a - 1, i - 1 }, this->level->tileSize, input);
+				if (textDefaultPush)
+				{
+					tile->SetBehaviour(PUSH, true);
+					tile->SetBehaviour(STOP, true);
+				}
 				tileManager->PushTile(tile);
 				x += 2;
 			}
