@@ -2,6 +2,8 @@
 #define __INPUT_H__
 
 #include "Module.h"
+#include "Window.h"
+#include "Point.h"
 
 //#define NUM_KEYS 352
 #define NUM_MOUSE_BUTTONS 5
@@ -71,7 +73,7 @@ class Input : public Module
 {
 public:
 
-	Input();
+	Input(Window* window);
 
 	virtual ~Input();
 
@@ -115,9 +117,13 @@ public:
 
 	bool GetWindowEvent(EventWindow ev);
 
-	void GetMousePosition(int &x, int &y);
+	void GetMousePosition(float &x, float &y);
 
-	void GetMouseMotion(int& x, int& y);
+	Point GetMousePosition() const;
+
+	void GetMouseMotion(float& x, float& y);
+
+	Point GetMouseMotion() const;
 
 	void HandleDeviceConnection(int index);
 
@@ -128,6 +134,9 @@ public:
 	const char* GetControllerName(int id) const;
 
 private:
+
+	Window* window = nullptr;
+
 	bool windowEvents[WE_COUNT];
 
 	KeyState* keyboard = nullptr;	
@@ -135,12 +144,9 @@ private:
 
 	GamePad pad;
 	KeyState* controllerButtons = nullptr;
-public:
 		
-	int	mouseMotionX;
-	int mouseMotionY;
-	int mouseX;
-	int mouseY;
+	Point mouseMotion = {};
+	Point mouse = {};
 };
 
 #endif // __INPUT_H__

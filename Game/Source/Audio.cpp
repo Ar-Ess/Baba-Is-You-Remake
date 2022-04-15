@@ -8,16 +8,16 @@
 #include "SDL/include/SDL.h"
 #include "SDL_mixer/include/SDL_mixer.h"
 
-AudioManager::AudioManager() : Module()
+Audio::Audio() : Module()
 {
 	music = NULL;
 	name.Create("audio");
 }
 
-AudioManager::~AudioManager()
+Audio::~Audio()
 {}
 
-bool AudioManager::Awake(pugi::xml_node& config)
+bool Audio::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Audio Mixer");
 	bool ret = true;
@@ -61,7 +61,7 @@ bool AudioManager::Awake(pugi::xml_node& config)
 	return ret;
 }
 
-bool AudioManager::CleanUp()
+bool Audio::CleanUp()
 {
 	if(!active)
 		return true;
@@ -86,7 +86,7 @@ bool AudioManager::CleanUp()
 	return true;
 }
 
-void AudioManager::SetMusic(SoundTrack sc, float fadeTime)
+void Audio::SetMusic(SoundTrack sc, float fadeTime)
 {
 	if (sc == NO_TRACK)
 	{
@@ -101,12 +101,12 @@ void AudioManager::SetMusic(SoundTrack sc, float fadeTime)
 	st = sc;
 }
 
-void AudioManager::SetFx(Effect fx)
+void Audio::SetFx(Effect fx)
 {
 	PlayFx(((int)fx) + 1);
 }
 
-uint AudioManager::GetAngle(Point player, Point enemy)
+uint Audio::GetAngle(Point player, Point enemy)
 {
 	Point vec(enemy.x - player.x, enemy.y - player.y);
 
@@ -124,7 +124,7 @@ uint AudioManager::GetAngle(Point player, Point enemy)
 	return a_ret;
 }
 
-uint AudioManager::GetVolumeFromDistance(Point player, Point enemy)
+uint Audio::GetVolumeFromDistance(Point player, Point enemy)
 {
 	Point vec(enemy.x - player.x, enemy.y - player.y);
 	float screen_dist = sqrt(pow(vec.x, 2) + pow(vec.y, 2));
@@ -141,24 +141,24 @@ uint AudioManager::GetVolumeFromDistance(Point player, Point enemy)
 	return volume;
 }
 
-void AudioManager::SetChannelAngles()
+void Audio::SetChannelAngles()
 {
 	for (int i = 0; i <= 360; i++) {
 		Mix_SetPosition(i, i, 1);
 	}
 }
 
-int AudioManager::GetMusicVolume()
+int Audio::GetMusicVolume()
 {
 	return Mix_VolumeMusic(-1);
 }
 
-int AudioManager::GetFxVolume()
+int Audio::GetFxVolume()
 {
 	return Mix_VolumeChunk(fx[0], -1);
 }
 
-void AudioManager::TransitionVolumeMusic()
+void Audio::TransitionVolumeMusic()
 {
 	if (Mix_VolumeMusic(-1) == MIX_MAX_VOLUME)
 		Mix_VolumeMusic(MIX_MAX_VOLUME / 3);
@@ -166,7 +166,7 @@ void AudioManager::TransitionVolumeMusic()
 		Mix_VolumeMusic(MIX_MAX_VOLUME);
 }
 
-void AudioManager::ChangeVolumeMusic(int volume)
+void Audio::ChangeVolumeMusic(int volume)
 {
 	volume = ValueToVolume(volume);
 
@@ -176,7 +176,7 @@ void AudioManager::ChangeVolumeMusic(int volume)
 	Mix_VolumeMusic(volume);
 }
 
-void AudioManager::ChangeVolumeFx(int volume)
+void Audio::ChangeVolumeFx(int volume)
 {
 	volume = ValueToVolume(volume);
 
@@ -186,17 +186,17 @@ void AudioManager::ChangeVolumeFx(int volume)
 	for (int i = 0; i < fx.Count(); i++) Mix_VolumeChunk(fx[i], volume);
 }
 
-int AudioManager::ValueToVolume(int value, int maxPercent)
+int Audio::ValueToVolume(int value, int maxPercent)
 {
 	return ((128 * value) / maxPercent);
 }
 
-int AudioManager::VolumeToValue(int volume, int maxPercent)
+int Audio::VolumeToValue(int volume, int maxPercent)
 {
 	return ((maxPercent * volume) / 128);
 }
 
-void AudioManager::TogglePauseMusic()
+void Audio::TogglePauseMusic()
 {
 	if (Mix_PausedMusic)
 		Mix_PauseMusic();
@@ -204,12 +204,12 @@ void AudioManager::TogglePauseMusic()
 		Mix_ResumeMusic();
 }
 
-void AudioManager::StopMusic()
+void Audio::StopMusic()
 {
 	Mix_HaltMusic();
 }
 
-bool AudioManager::PlayMusic(const char* path, float fadeTime)
+bool Audio::PlayMusic(const char* path, float fadeTime)
 {
 	bool ret = true;
 
@@ -269,7 +269,7 @@ bool AudioManager::PlayMusic(const char* path, float fadeTime)
 	return ret;
 }
 
-void AudioManager::LoadAllFx(pugi::xml_node& fx_node)
+void Audio::LoadAllFx(pugi::xml_node& fx_node)
 {
 	for (pugi::xml_node sound = fx_node.child("sound");
 		sound != nullptr; sound = sound.next_sibling("sound"))
@@ -281,7 +281,7 @@ void AudioManager::LoadAllFx(pugi::xml_node& fx_node)
 	for (int i = 0; i < fx.Count(); i++) Mix_VolumeChunk(fx[i], 128);
 }
 
-unsigned int AudioManager::LoadFx(const char* path)
+unsigned int Audio::LoadFx(const char* path)
 {
 	SString a(path);
 
@@ -310,7 +310,7 @@ unsigned int AudioManager::LoadFx(const char* path)
 	return ret;
 }
 
-bool AudioManager::PlayFx(unsigned int id, int repeat)
+bool Audio::PlayFx(unsigned int id, int repeat)
 {
 	bool ret = false;
 
@@ -326,7 +326,7 @@ bool AudioManager::PlayFx(unsigned int id, int repeat)
 	return ret;
 }
 
-bool AudioManager::PlayFxOnChannel(uint id, uint channel, uint distance, int repeat)
+bool Audio::PlayFxOnChannel(uint id, uint channel, uint distance, int repeat)
 {
 	bool ret = true;
 

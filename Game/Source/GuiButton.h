@@ -8,25 +8,26 @@ class GuiButton : public GuiControl
 {
 public:
 
-    GuiButton(SDL_Rect bounds, const char* text);
+    GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene);
     virtual ~GuiButton();
 
     bool Update(float dt);
-    bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
-    void SetTexture(const char* path, Point magnitude);
+    bool Draw(float dt) const;
     void Delete();
 	bool buttonFocus = false;
 
 private:
-    void UpdateDimensions(Point magnitudes);
+    void SetDimensions(Point magnitudes);
+
+    void DebugDraw() const;
 
 private:
+
     //Texture sections
-    Point locked = { 0, 0};
+    Point disabled = { 0, 0};
     Point normal = { 0, 0};
     Point focused = { 0, 0};
     Point pressed = { 0, 0};
-    SDL_Texture* spritesheet = nullptr;
 };
 
 #endif // __GUIBUTTON_H__

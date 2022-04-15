@@ -24,14 +24,14 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	PERF_START(ptimer);
 
 	win = new Window();
-	input = new Input();
+	input = new Input(win);
 	assetsManager = new AssetsManager();
 	render = new Render();
 	tex = new Textures();
-	audio = new AudioManager();
-	guiManager = new GuiManager();
+	audio = new Audio();
+	guiManager = new GuiManager(input, render, audio, tex);
 	fontTTF = new FontTTF();
-	scene = new Scene();
+	scene = new Scene(guiManager, render, input, tex, win);
 	transition = new Transition();
 	psystem = new ParticleSystem();
 

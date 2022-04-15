@@ -107,6 +107,7 @@
     <ClCompile Include="Source\App.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Input.cpp" />
+    <ClCompile Include="Source\MainMenuScene.cpp" />
     <ClCompile Include="Source\Particle.cpp" />
     <ClCompile Include="Source\ParticlePool.cpp" />
     <ClCompile Include="Source\ParticleSystem.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Source\GuiSlider.h" />
     <ClInclude Include="Source\GuiString.h" />
     <ClInclude Include="Source\LevelScene.h" />
+    <ClInclude Include="Source\MainMenuScene.h" />
     <ClInclude Include="Source\Multibool.h" />
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\ParticlePool.h" />

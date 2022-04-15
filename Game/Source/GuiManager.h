@@ -1,47 +1,125 @@
-#ifndef __GUIMANAGER_H__
-#define __GUIMANAGER_H__
+#ifndef __GUI_MANAGER_H__
+#define __GUI_MANAGER_H__
 
 #include "Module.h"
 #include "GuiControl.h"
 
-#include "Animation.h"
-#include "List.h"
-
-#define MAGENTA {190,0,0,150}
-#define RED {255,0,0,255}
-#define SOFT_RED {240,80,0,255}
-#define BLUE {0,143,255,255}
-#define CYAN {0,255,247,255}	
+#include <vector>
 
 struct SDL_Texture;
+enum class GuiControlType;
+
+struct Texture
+{
+	Texture(SDL_Texture* texture, Point dimensions)
+	{
+		this->texture = texture;
+		this->dimensions = dimensions;
+	}
+
+	SDL_Texture* texture = nullptr;
+	Point dimensions = {};
+};
+
+class TextureSwitcher
+{
+public:
+	TextureSwitcher(GuiControl* control, std::vector<Texture*>* textures)
+	{
+		this->control = control;
+		this->textures = textures;
+	}
+
+	void To(suint newTextureId)
+	{
+		Texture* newTexture = textures->at(newTextureId);
+		control->texture = newTexture->texture;
+		control->SetDimensions(newTexture->dimensions);
+	}
+
+	bool Next()
+	{
+		suint size = textures->size();
+		suint index = -1;
+		for (suint i = 0; i < size; ++i)
+		{
+			if (textures->at(i)->texture == control->texture)
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index == -1) return false;
+
+		if (index == (size - 1)) index = 0;
+		else ++index;
+
+		Texture* newTexture = textures->at(index);
+		control->texture = newTexture->texture;
+		control->SetDimensions(newTexture->dimensions);
+
+		return true;
+	}
+
+	bool Prev()
+	{
+		suint size = textures->size();
+		suint index = -1;
+		for (suint i = 0; i < size; ++i)
+		{
+			if (textures->at(i)->texture == control->texture)
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index == -1) return false;
+
+		if (index == 0) index = size - 1;
+		else --index;
+
+		Texture* newTexture = textures->at(index);
+		control->texture = newTexture->texture;
+		control->SetDimensions(newTexture->dimensions);
+
+		return true;
+	}
+
+private:
+
+	GuiControl* control = nullptr;
+	std::vector<Texture*>* textures = {};
+};
 
 class GuiManager : public Module
 {
 public:
 
-	GuiManager();
+	GuiManager(Input* input, Render* Render, Audio* audio, Textures* texture, int selectKey = 43);
 
 	virtual ~GuiManager();
 
 	bool Awake(pugi::xml_node&);
 
-	bool Start();
+	bool Start(Scene* scene);
 
 	bool Update(float dt);
 
+	bool Draw(float dt);
+
 	bool CleanUp();
 
-	GuiControl* CreateGuiControl(GuiControlType type);
+	void CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
 
-	void DestroyGuiControl(GuiControl* entity);
+	void DestroyGuiControl(suint index);
 
-	void AddGuiControl(GuiControl* entity);
+	void CreateTexture(const char* path);
 
-	void DrawPlayerLifeBar(int life, int maxLife, int x, int y);
-
-	void DrawEnemyLifeBar(int life, int maxLife, int x, int y, int size = 4);
-
-	void BlinkLifeBar(int life,SDL_Color color1 , SDL_Color color2);
+	TextureSwitcher ChangeTexture(suint controlIndex);
+	
+	void DestroyTesture(suint index);
 
 	void DisableAllButtons();
 
@@ -49,23 +127,25 @@ public:
 
 public:
 
-	List<GuiControl*> controls;
-	List<GuiControl*> buttons;
-
-	bool debugGui = false;
-	float accumulatedTime = 0.0f;
-	float updateMsCycle = 0.0f;
-	bool doLogic = false;
-
-	int idSelection = -1;
+	bool debug = false;
 
 private:
-	int secondsCounter;
-	int frameCounter;
+
+	Input* input = nullptr;
+	Render* render = nullptr;
+	Audio* audio = nullptr;
+	Textures* texture = nullptr;
+	Scene* scene = nullptr;
+
+	std::vector<GuiControl*> controls;
+	std::vector<Texture*> textures;
+	
+	int selectKey = 43;
+	int idSelection = -1;
 
 };
 
-#endif // __GUIMANAGER_H__
+#endif // __GUI_MANAGER_H__
 
 //TEXT
 /*    IMPLEMENTATION

@@ -1,6 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include "App.h"
 #include "Scene.h"
 #include "Input.h"
 #include "Textures.h"
@@ -9,15 +6,19 @@
 #include "Window.h"
 
 #include "LevelScene.h"
+#include "MainMenuScene.h"
 #include "GuiManager.h"
 
 #include "Defs.h"
 #include "Log.h"
 
-#include "SDL/include/SDL.h"
-
-Scene::Scene() : Module()
+Scene::Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window) : Module()
 {
+	this->gui = gui;
+	this->render = render;
+	this->input = input;
+	this->texture = texture;
+	this->window = window;
 }
 
 Scene::~Scene()
@@ -32,62 +33,51 @@ bool Scene::Awake()
 
 bool Scene::Start()
 {
-	level = new LevelScene(app->render, app->input, app->tex, app->win->GetWindowSize());
-
 	//DEBUG BOOLS
-	app->guiManager->debugGui = false;
+	gui->Start(this);
 
 	//FIRST SCENE
-	SetScene(LOGO_SCENE);
+	if (!SetScene(LOGO_SCENE)) return false;
 
 	//CONTINUE ACTIVITY
-	activeContinue = false;
+	/*activeContinue = false;
 	if (FILE* file = fopen("save_game.xml", "r"))
 	{
 		fclose(file);
 		activeContinue = true;
-	}
+	}*/
 
 	//SPLINE
 	pugi::xml_document doc;
 	spline.LoadSplines(doc);
 
-	app->render->scale = 1; //Qui toqui aquesta linia de codi, la 72, i m'entero, no viu un dia més :) <3
+	render->scale = 1; //Qui toqui aquesta linia de codi, la 72, i m'entero, no viu un dia més :) <3
 
-	return true;
-}
-
-bool Scene::PreUpdate()
-{
 	return true;
 }
 
 bool Scene::Update(float dt)
 {
+	bool ret = true;
+
 	switch (currScene)
 	{
 	case LOGO_SCENE:
-		UpdateLogoScene(dt);
+		ret = UpdateLogoScene(dt);
+		break;
+
+	case MAIN_MENU_SCENE:
+		ret = UpdateMainMenuScene(dt);
 		break;
 
 	case LEVEL_SCENE:
-		UpdateLevelScene(dt);
+		ret = UpdateLevelScene(dt);
 		break;
 	}
 
-	return true;
-}
-
-bool Scene::PostUpdate()
-{
 	DebugCommands();
 
-	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-	{
-		app->guiManager->debugGui = !app->guiManager->debugGui;
-	}
-
-	return !exit;
+	return (!exit && ret);
 }
 
 bool Scene::CleanUp()
@@ -99,8 +89,16 @@ bool Scene::CleanUp()
 	case LOGO_SCENE:
 		break;
 
+	case MAIN_MENU_SCENE:
+		menu->CleanUp();
+		delete menu;
+		menu = nullptr;
+		break;
+
 	case LEVEL_SCENE:
 		level->CleanUp();
+		delete level;
+		level = nullptr;
 		break;
 	}
 
@@ -109,8 +107,9 @@ bool Scene::CleanUp()
 
 // SCENE MANAGER
 
-void Scene::SetScene(Scenes scene)
+bool Scene::SetScene(Scenes scene)
 {
+	bool ret = true;
 	CleanUp();
 
 	prevScene = currScene;
@@ -119,35 +118,72 @@ void Scene::SetScene(Scenes scene)
 	switch (currScene)
 	{
 	case LOGO_SCENE:
-		SetLogoScene();
+		ret = SetLogoScene();
+		break;
+
+	case MAIN_MENU_SCENE:
+		ret = SetMainMenuScene();
 		break;
 
 	case LEVEL_SCENE:
-		SetLevelScene();
+		ret = SetLevelScene();
 		break;
 	}
 
 	easing.ResetIterations();
+
+	return ret;
 }
 
-void Scene::SetLogoScene()
-{	
-}
-
-void Scene::UpdateLogoScene(float dt)
+bool Scene::SetLogoScene()
 {
-	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) SetScene(Scenes::LEVEL_SCENE);
+	return true;
 }
 
-void Scene::SetLevelScene()
+bool Scene::SetMainMenuScene()
 {
-	level->Start(0);
+	menu = new MainMenuScene(render, input, gui);
+	menu->Start();
+	return true;
 }
 
-void Scene::UpdateLevelScene(float dt)
+bool Scene::SetLevelScene()
 {
-	level->Update(dt);
-	level->Draw(dt);
+	level = new LevelScene(render, input, texture, window->GetWindowSize(), lvl);
+	return level->Start();
+}
+
+bool Scene::UpdateLogoScene(float dt)
+{
+	bool ret = true;
+
+	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) ret = SetScene(Scenes::MAIN_MENU_SCENE);
+
+	return ret;
+}
+
+bool Scene::UpdateMainMenuScene(float dt)
+{
+	bool ret = true;
+
+	if (!menu->Update(dt)) return false;
+	if (!menu->Draw(dt)) return false;
+
+	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	{
+		lvl = 1;
+		ret = SetScene(Scenes::LEVEL_SCENE);
+	}
+
+	return ret;
+}
+
+bool Scene::UpdateLevelScene(float dt)
+{
+	if (!level->Update(dt)) return false;
+	if (!level->Draw(dt)) return false;
+
+	return true;
 }
 
 // GUI CONTROLS
@@ -156,7 +192,13 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 {
 	switch (currScene)
 	{
-	case LOGO_SCENE:
+	case MAIN_MENU_SCENE:
+		switch (control->id)
+		{
+		case 0:
+			gui->ChangeTexture(control->id).Prev();
+			break;
+		}
 		break;
 	}
 
@@ -165,6 +207,8 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 
 void Scene::DebugCommands()
 {
+	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) gui->debug = !gui->debug;
+
 	switch (currScene)
 	{
 	case LOGO_SCENE:

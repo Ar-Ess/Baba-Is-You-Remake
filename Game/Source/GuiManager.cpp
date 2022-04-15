@@ -1,9 +1,4 @@
-#include "App.h"
-#include "Textures.h"
-
 #include "GuiManager.h"
-
-#include "Log.h"
 
 #include "GuiButton.h"
 #include "GuiCheckBox.h"
@@ -11,32 +6,15 @@
 #include "GuiString.h"
 #include "FontTTF.h"
 
-GuiControl* GuiManager::CreateGuiControl(GuiControlType type)
+#include "Log.h"
+
+GuiManager::GuiManager(Input* input, Render* render, Audio* audio, Textures* texture, int selectKey)
 {
-	GuiControl* control = nullptr;
-
-	switch (type)
-	{
-	case GuiControlType::BUTTON: control = new GuiButton({ 0, 0, 0, 0 }, "0"); break;
-	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
-	case GuiControlType::SLIDER: control = new GuiSlider({ 0, 0, 0, 0 }, "0"); break;
-	case GuiControlType::TEXT: control = new GuiString(); break;
-	default: break;
-	}
-
-	if (control != nullptr) controls.Add(control);
-
-	return control;
-}
-
-void GuiManager::DestroyGuiControl(GuiControl* entity)
-{
-	int id = controls.Find(entity);
-	controls.Del(controls.At(id));
-}
-
-GuiManager::GuiManager()
-{
+	this->selectKey = selectKey;
+	this->texture = texture;
+	this->input = input;
+	this->render = render;
+	this->audio = audio;
 }
 
 GuiManager::~GuiManager()
@@ -48,83 +26,95 @@ bool GuiManager::Awake(pugi::xml_node&)
 	return true;
 }
 
-bool GuiManager::Start()
+bool GuiManager::Start(Scene* scene)
 {
-	secondsCounter = 0;
-	frameCounter = 0;
-
+	CreateTexture("Assets/Textures/UI/button_default_set.png");
+	debug = false;
+	this->scene = scene;
 	return true;
 }
 
 bool GuiManager::Update(float dt)
 {
-	frameCounter++;
-	if (frameCounter % 25 == 0)
-		secondsCounter++;
-
-	accumulatedTime += dt;
-	if (accumulatedTime >= updateMsCycle) doLogic = true;
-
-	//UpdateAll(dt, doLogic);
-
-	if (doLogic == true)
+	suint size = controls.size();
+	for (suint i = 0; i < size; ++i)
 	{
-		accumulatedTime = 0.0f;
-		doLogic = false;
+		controls[i]->Update(dt);
 	}
 
-	Scene* s = app->scene;
-	if (s->GetCurrScene() != Scenes::LOGO_SCENE) SelectButtonsLogic();
+	SelectButtonsLogic();
 
 	return true;
 }
 
-void GuiManager::BlinkLifeBar(int life, SDL_Color color1, SDL_Color color2)
+bool GuiManager::Draw(float dt)
 {
-	/*if(secondsCounter % 2 ==0)
-		app->render->DrawRectangle(lifeBar, color1);
-	else
-		app->render->DrawRectangle(lifeBar, color2);*/
+	suint size = controls.size();
+	for (suint i = 0; i < size; ++i)
+	{
+		controls[i]->Draw(dt);
+	}
+
+	return true;
+}
+
+void GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
+{
+	GuiControl* control = nullptr;
+
+	Texture* tex = textures.at(texIndex);
+	Rect bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y};
+
+	switch (type)
+	{
+	case GuiControlType::BUTTON:
+		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene); 
+		break;
+	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
+	case GuiControlType::SLIDER: control = new GuiSlider({ 0, 0, 0, 0 }, "0"); break;
+	case GuiControlType::TEXT: control = new GuiString(); break;
+	default: break;
+	}
+
+	if (control != nullptr) controls.push_back(control);
+}
+
+void GuiManager::DestroyGuiControl(suint index)
+{
+	controls.erase(controls.begin() + index);
+}
+
+void GuiManager::CreateTexture(const char* path)
+{
+	Point dimensions = {};
+	SDL_Texture* tex = texture->Load(path, &dimensions);
+	textures.push_back(new Texture(tex, dimensions));
+}
+
+void GuiManager::DestroyTesture(suint index)
+{
+	texture->UnLoad(textures.at(index)->texture);
+	textures.erase(textures.begin() + index);
+}
+
+TextureSwitcher GuiManager::ChangeTexture(suint controlIndex)
+{
+	return TextureSwitcher(controls.at(controlIndex), &textures);
 }
 
 void GuiManager::DisableAllButtons()
 {
-	Scene* s = app->scene;
-
-	//switch (s->GetCurrScene())
-	//{
-	//case MAIN_MENU:
-	//	s->newGameButton->buttonFocus = false;
-	//	s->continueButton->buttonFocus = false;
-	//	s->optionsButton->buttonFocus = false;
-	//	s->exitButton->buttonFocus = false;
-	//	break;
-
-	//case PAUSE_MENU:
-	//	s->backToGameButton->buttonFocus = false;
-	//	s->saveGameButton->buttonFocus = false;
-	//	s->optionsPauseButton->buttonFocus = false;
-	//	s->backToMenuButton->buttonFocus = false;
-	//	break;
-
-	//case OPTIONS_MENU:
-	//	s->optionsMenu->fullScreenCheckBox->checkBoxFocus = false;
-	//	s->optionsMenu->dFullScreenCheckBox->checkBoxFocus = false;
-	//	s->optionsMenu->vSyncCheckBox->checkBoxFocus = false;
-	//	s->optionsMenu->musicVolumeSlider->sliderFocus = false;
-	//	s->optionsMenu->fxVolumeSlider->sliderFocus = false;
-	//	s->optionsMenu->returnMenuButton->buttonFocus = false;
-	//	break;
-	//}
-
-	s = nullptr;
+	suint size = controls.size();
+	for (suint i = 0; i < size; ++i)
+	{
+		controls[i]->state = GuiControlState::DISABLED;
+	}
 }
 
 void GuiManager::SelectButtonsLogic()
 {
-	Scene* s = app->scene;
 
-	if (app->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN || app->input->GetControl(L3) == KEY_DOWN)
+	if (app->input->GetKey(selectKey) == KEY_DOWN || app->input->GetControl(L3) == KEY_DOWN)
 	{
 		idSelection++;
 		DisableAllButtons();
@@ -158,8 +148,6 @@ void GuiManager::SelectButtonsLogic()
 		else if (idSelection == 6) idSelection = -1;
 		break;
 	}*/
-
-	s = nullptr;
 }
 
 bool GuiManager::CleanUp()

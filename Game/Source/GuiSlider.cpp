@@ -9,21 +9,19 @@
 
 GuiSlider::GuiSlider( SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::SLIDER)
 {
-    this->bounds = bounds;
-    this->text = text;
+    //this->bounds = bounds;
 }
 
 GuiSlider::~GuiSlider()
 {
-    app->tex->UnLoad(spritesheet);
-    text.Clear();
+    app->tex->UnLoad(texture);
 }
 
 bool GuiSlider::Update(float dt)
 {
-    if (state != GuiControlState::LOCKED)
+    if (state != GuiControlState::DISABLED)
     {
-        int mouseX, mouseY;
+        float mouseX, mouseY;
         app->input->GetMousePosition(mouseX, mouseY);
 
         if ((mouseX > slider.x) && (mouseX < (slider.x + slider.w)) &&
@@ -111,110 +109,110 @@ bool GuiSlider::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPo
 
         switch (state)
         {
-        case GuiControlState::LOCKED:
-            barSection.x = locked.x;
-            barSection.y = locked.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
+        case GuiControlState::DISABLED:
+            barSection.x = disabled.x;
+            barSection.y = disabled.y;
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
             if (GetValue() > 65)
             {
                 sSection.x = sLocked.x;
                 sSection.y = sLocked.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else if (GetValue() > 0)
             {
                 sSection.x = sLowLocked.x;
                 sSection.y = sLowLocked.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else
             {
                 sSection.x = sMuteLocked.x;
                 sSection.y = sMuteLocked.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             break;
 
         case GuiControlState::NORMAL:
             barSection.x = normal.x;
             barSection.y = normal.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
 
             if (GetValue() > 65)
             {
                 sSection.x = sNormal.x;
                 sSection.y = sNormal.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else if (GetValue() > 0)
             {
                 sSection.x = sLowNormal.x;
                 sSection.y = sLowNormal.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else
             {
                 sSection.x = sMuteNormal.x;
                 sSection.y = sMuteNormal.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             break;
 
         case GuiControlState::FOCUSED:
             barSection.x = focused.x;
             barSection.y = focused.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
 
             if (GetValue() > 65)
             {
                 sSection.x = sFocused.x;
                 sSection.y = sFocused.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else if (GetValue() > 0)
             {
                 sSection.x = sLowFocused.x;
                 sSection.y = sLowFocused.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else
             {
                 sSection.x = sMuteFocused.x;
                 sSection.y = sMuteFocused.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             break;
 
         case GuiControlState::PRESSED:
             barSection.x = pressed.x;
             barSection.y = pressed.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &barSection, false, staticPos);
 
             if (GetValue() > 65)
             {
                 sSection.x = sPressed.x;
                 sSection.y = sPressed.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else if (GetValue() > 0)
             {
                 sSection.x = sLowPressed.x;
                 sSection.y = sLowPressed.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             else
             {
                 sSection.x = sMutePressed.x;
                 sSection.y = sMutePressed.y;
-                app->render->DrawTexture(spritesheet, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
+                app->render->DrawTexture(texture, slider.x, slider.y, scaleX, scaleY, &sSection, false, staticPos);
             }
             break;
         }
     }
 
-    if (app->guiManager->debugGui)
+    if (app->guiManager->debug)
     {
-        SDL_Rect barRect = bounds;
+        Rect barRect = bounds;
         SDL_Rect sRect = slider;
 
         if (staticPos)
@@ -231,7 +229,7 @@ bool GuiSlider::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPo
 
         switch (state)
         {
-        case GuiControlState::LOCKED:
+        case GuiControlState::DISABLED:
             app->render->DrawRectangle(barRect, { 100, 100, 100, 80 });
             app->render->DrawRectangle(slider, { 150, 100, 100, 80 });
             break;
@@ -298,9 +296,9 @@ void GuiSlider::SetSlider(SDL_Rect bounds)
 
 void GuiSlider::SetTexture(const char* path, Point barMagnitude, Point sMagnitude)
 {
-    app->tex->UnLoad(spritesheet);
-    spritesheet = nullptr;
-    spritesheet = app->tex->Load(path);
+    app->tex->UnLoad(texture);
+    texture = nullptr;
+    texture = app->tex->Load(path);
 
     UpdateDimensions(barMagnitude, sMagnitude);
     SetSliderValue();
@@ -309,36 +307,35 @@ void GuiSlider::SetTexture(const char* path, Point barMagnitude, Point sMagnitud
 void GuiSlider::Delete()
 {
     observer = nullptr;
-    app->tex->UnLoad(spritesheet);
-    spritesheet = nullptr;
-    text.Clear();
+    app->tex->UnLoad(texture);
+    texture = nullptr;
 }
 
 void GuiSlider::UpdateDimensions(Point barMagnitude, Point sMagnitude)
 {
-    bounds.w = barMagnitude.x;
-    bounds.h = barMagnitude.y;
+    //bounds.w = barMagnitude.x;
+    //bounds.h = barMagnitude.y;
 
-    slider.w = sMagnitude.x;
-    slider.h = sMagnitude.y;
+    //slider.w = sMagnitude.x;
+    //slider.h = sMagnitude.y;
 
-    locked = { 0, 0 * bounds.h };
-    normal = { 0, 1 * bounds.h };
-    focused = { 0, 2 * bounds.h };
-    pressed = { 0, 3 * bounds.h };
+    //disabled = { 0, 0 * bounds.h };
+    //normal = { 0, 1 * bounds.h };
+    //focused = { 0, 2 * bounds.h };
+    //pressed = { 0, 3 * bounds.h };
 
-    sLocked = { 0 * slider.w, (0 * slider.h) + (4 * bounds.h)};
-    sNormal = { 0 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    sFocused = { 0 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    sPressed = { 0 * slider.w, (3 * slider.h) + (4 * bounds.h) };
-    
-    sLowLocked = { 1 * slider.w, (0 * slider.h) + (4 * bounds.h) };
-    sLowNormal = { 1 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    sLowFocused = { 1 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    sLowPressed = { 1 * slider.w, (3 * slider.h) + (4 * bounds.h) };
+    //sLocked = { 0 * slider.w, (0 * slider.h) + (4 * bounds.h)};
+    //sNormal = { 0 * slider.w, (1 * slider.h) + (4 * bounds.h) };
+    //sFocused = { 0 * slider.w, (2 * slider.h) + (4 * bounds.h) };
+    //sPressed = { 0 * slider.w, (3 * slider.h) + (4 * bounds.h) };
+    //
+    //sLowLocked = { 1 * slider.w, (0 * slider.h) + (4 * bounds.h) };
+    //sLowNormal = { 1 * slider.w, (1 * slider.h) + (4 * bounds.h) };
+    //sLowFocused = { 1 * slider.w, (2 * slider.h) + (4 * bounds.h) };
+    //sLowPressed = { 1 * slider.w, (3 * slider.h) + (4 * bounds.h) };
 
-    sMuteLocked = { 2 * slider.w, (0 * slider.h) + (4 * bounds.h) };
-    sMuteNormal = { 2 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    sMuteFocused = { 2 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    sMutePressed = { 2 * slider.w, (3 * slider.h) + (4 * bounds.h) };
+    //sMuteLocked = { 2 * slider.w, (0 * slider.h) + (4 * bounds.h) };
+    //sMuteNormal = { 2 * slider.w, (1 * slider.h) + (4 * bounds.h) };
+    //sMuteFocused = { 2 * slider.w, (2 * slider.h) + (4 * bounds.h) };
+    //sMutePressed = { 2 * slider.w, (3 * slider.h) + (4 * bounds.h) };
 }

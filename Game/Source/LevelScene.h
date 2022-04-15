@@ -11,8 +11,6 @@
 #include <vector>
 #include "Defs.h"
 
-#define NUM_OF_LEVELS 2
-
 struct LevelConfig
 {
 	LevelConfig(suint rows, suint columns, Point winSize, Point offset = { 50, 40 })
@@ -64,11 +62,11 @@ class LevelScene
 {
 public: // Methods
 
-	LevelScene(Render* render, Input* input, Textures* texture, const Point winSize);
+	LevelScene(Render* render, Input* input, Textures* texture, const Point winSize, suint level);
 
 	~LevelScene();
 
-	bool Start(suint index);
+	bool Start();
 
 	bool Update(float dt);
 

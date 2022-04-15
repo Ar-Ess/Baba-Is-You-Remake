@@ -3,12 +3,13 @@
 #include <fstream>
 #include <sstream>
 
-LevelScene::LevelScene(Render* render, Input* input, Textures* texture, const Point winSize)
+LevelScene::LevelScene(Render* render, Input* input, Textures* texture, const Point winSize, suint lvl)
 {
 	this->render = render;
 	this->input = input;
 	this->player = player;
 	this->winSize = winSize;
+	this->lvl = lvl;
 
 	tileManager = new TileManager(render, input, texture);
 }
@@ -17,15 +18,11 @@ LevelScene::~LevelScene()
 {
 }
 
-bool LevelScene::Start(suint index)
+bool LevelScene::Start()
 {
-	if (NUM_OF_LEVELS <= index)
-	{
-		LOG("Accessing a non existent level - [ NUM_OF_LEVELS <= index ]");
-		return false;
-	}
+	if (lvl == 0) return false;
 
-	if (!BuildLevel(index)) return false;
+	if (!BuildLevel(lvl)) return false;
 
 	tileManager->SetTileMaps();
 	tileManager->SetOffset(level->GetMapOffset());
@@ -77,7 +74,7 @@ bool LevelScene::DebugDraw()
 bool LevelScene::BuildLevel(suint level)
 {
 	std::string fileName = "Assets/Levels/level";
-	fileName += std::to_string(level + 1);
+	fileName += std::to_string(level);
 	fileName += ".csv";
 	std::ifstream levelFile(fileName);
 

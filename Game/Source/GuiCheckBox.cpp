@@ -6,22 +6,19 @@
 
 GuiCheckBox::GuiCheckBox(SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::CHECKBOX)
 {
-    this->bounds = bounds;
-    this->text = text;
+    //this->bounds = bounds;
 }
 
 GuiCheckBox::~GuiCheckBox()
 {
 	observer = nullptr;
-	text.Clear();
-    delete &text;
 }
 
 bool GuiCheckBox::Update(float dt)
 {
-    if (state != GuiControlState::LOCKED)
+    if (state != GuiControlState::DISABLED)
     {
-        int mouseX, mouseY;
+        float mouseX, mouseY;
         app->input->GetMousePosition(mouseX, mouseY);
 
         if ((mouseX > bounds.x) && (mouseX < (bounds.x + bounds.w)) &&
@@ -79,10 +76,10 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
 
         switch (state)
         {
-        case GuiControlState::LOCKED:
-            section.x = locked.x;
-            section.y = locked.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
+        case GuiControlState::DISABLED:
+            section.x = disabled.x;
+            section.y = disabled.y;
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
             break;
 
         case GuiControlState::NORMAL:
@@ -96,7 +93,7 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
                 section.x = uncheckNormal.x;
                 section.y = uncheckNormal.y;
             }
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
             break;
 
         case GuiControlState::FOCUSED:
@@ -110,7 +107,7 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
                 section.x = uncheckFocused.x;
                 section.y = uncheckFocused.y;
             }
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
             break;
 
         case GuiControlState::PRESSED:
@@ -124,7 +121,7 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
                 section.x = uncheckPressed.x;
                 section.y = uncheckPressed.y;
             }
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
+            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
             break;
 
         default:
@@ -132,9 +129,9 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
         }
     }
 
-    if (app->guiManager->debugGui)
+    if (app->guiManager->debug)
     {
-        SDL_Rect buttonRect = bounds;
+        Rect buttonRect = bounds;
 
         if (staticPos)
         {
@@ -146,7 +143,7 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
 
         switch (state)
         {
-        case GuiControlState::LOCKED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
+        case GuiControlState::DISABLED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
             break;
         case GuiControlState::NORMAL: app->render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
             break;
@@ -164,9 +161,9 @@ bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool static
 
 void GuiCheckBox::SetTexture(const char* path, Point magnitude)
 {
-    app->tex->UnLoad(spritesheet);
-    spritesheet = nullptr;
-    spritesheet = app->tex->Load(path);
+    app->tex->UnLoad(texture);
+    texture = nullptr;
+    texture = app->tex->Load(path);
 
     UpdateDimensions(magnitude);
 }
@@ -174,9 +171,8 @@ void GuiCheckBox::SetTexture(const char* path, Point magnitude)
 void GuiCheckBox::Delete()
 {
     observer = nullptr;
-    app->tex->UnLoad(spritesheet);
-    spritesheet = nullptr;
-    text.Clear();
+    app->tex->UnLoad(texture);
+    texture = nullptr;
 }
 
 void GuiCheckBox::UpdateDimensions(Point magnitude)
@@ -184,11 +180,11 @@ void GuiCheckBox::UpdateDimensions(Point magnitude)
     bounds.w = magnitude.x;
     bounds.h = magnitude.y;
 
-    locked = { 0, 0 * bounds.h };
-    checkNormal = { 0, 1 * bounds.h };
-    checkFocused = { 0, 2 * bounds.h };
-    checkPressed = { 0, 3 * bounds.h };
-    uncheckNormal = { 0, 4 * bounds.h };
-    uncheckFocused = { 0, 5 * bounds.h };
-    uncheckPressed = { 0, 6 * bounds.h };
+    //disabled = { 0, 0 * bounds.h };
+    //checkNormal = { 0, 1 * bounds.h };
+    //checkFocused = { 0, 2 * bounds.h };
+    //checkPressed = { 0, 3 * bounds.h };
+    //uncheckNormal = { 0, 4 * bounds.h };
+    //uncheckFocused = { 0, 5 * bounds.h };
+    //uncheckPressed = { 0, 6 * bounds.h };
 }

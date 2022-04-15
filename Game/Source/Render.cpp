@@ -174,6 +174,43 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, float sX, float sY,
 	return ret;
 }
 
+bool Render::DrawTexture(SDL_Texture* texture, Point position, Point size, bool anchored, Rect* section, double angle, SDL_RendererFlip flip) const
+{
+	if (!texture) return false;
+
+	bool ret = true;
+	SDL_Rect rect = { position.x, position.y, 0, 0 };
+	SDL_Rect* sectPtr = nullptr;
+	SDL_Rect sect = {};
+
+	if (anchored)
+	{
+		rect.x += (int)camera.x;
+		rect.y += (int)camera.y;
+	}
+
+	if (section != nullptr)
+	{
+		rect.w = section->w;
+		rect.h = section->h;
+
+		sect = { (int)section->x, (int)section->y, (int)section->w, (int)section->h };
+		sectPtr = &sect;
+	}
+	else SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
+
+	rect.w *= size.x;
+	rect.h *= size.y;
+
+	if (SDL_RenderCopyEx(renderer, texture, sectPtr, &rect, angle, NULL, flip) != 0)
+	{
+		LOG("Cannot blit to screen. SDL_RenderCopy error: %s", SDL_GetError());
+		ret = false;
+	}
+
+	return ret;
+}
+
 bool Render::DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled, bool useCamera) const
 {
 	bool ret = true;

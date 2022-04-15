@@ -28,7 +28,7 @@ public:
 private:
     void UpdateDimensions(Point magnitudes);
     bool checked = false;
-    SDL_Texture* spritesheet = nullptr;
+    SDL_Texture* texture = nullptr;
     //options menu
 
     Point checkNormal = {0, 0};
@@ -37,7 +37,7 @@ private:
     Point uncheckNormal = { 0, 0 };
     Point uncheckFocused = { 0, 0 };
     Point uncheckPressed = { 0, 0 };
-    Point locked = {0, 0};
+    Point disabled = {0, 0};
 };
 
 #endif // __GUICHECKBOX_H__

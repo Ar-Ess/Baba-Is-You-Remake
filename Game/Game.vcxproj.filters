@@ -90,6 +90,9 @@
     <ClCompile Include="Source\TileManager.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MainMenuScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\App.h" />
@@ -227,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="Source\TileManager.h">
       <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MainMenuScene.h">
+      <Filter>Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@
 #define MAX_GAMEPADS 2
 #define NUM_CONTROLLER_BUTTONS 15
 
-Input::Input() : Module()
+Input::Input(Window* window) : Module()
 {
 	name.Create("input");
 
@@ -26,6 +26,8 @@ Input::Input() : Module()
 	pad.sdlController = nullptr;
 	pad.enabled = false;
 	pad.index = 0;
+
+	this->window = window;
 }
 
 Input::~Input()
@@ -135,11 +137,11 @@ bool Input::PreUpdate()
 				break;
 
 			case SDL_MOUSEMOTION:
-				int scale = app->win->GetScale();
-				mouseMotionX = event.motion.xrel / scale;
-				mouseMotionY = event.motion.yrel / scale;
-				mouseX = event.motion.x / scale;
-				mouseY = event.motion.y / scale;
+				int scale = window->GetScale();
+				mouseMotion.x = event.motion.xrel / scale;
+				mouseMotion.y = event.motion.yrel / scale;
+				mouse.x = event.motion.x / scale;
+				mouse.y = event.motion.y / scale;
 				//LOG("Mouse motion x %d y %d", mouse_motion_x, mouse_motion_y);
 				break;
 		}
@@ -267,16 +269,26 @@ bool Input::GetWindowEvent(EventWindow ev)
 	return windowEvents[ev];
 }
 
-void Input::GetMousePosition(int& x, int& y)
+void Input::GetMousePosition(float& x, float& y)
 {
-	x = mouseX;
-	y = mouseY;
+	x = mouse.x;
+	y = mouse.y;
 }
 
-void Input::GetMouseMotion(int& x, int& y)
+Point Input::GetMousePosition() const
 {
-	x = mouseMotionX;
-	y = mouseMotionY;
+	return mouse;
+}
+
+void Input::GetMouseMotion(float& x, float& y)
+{
+	x = mouseMotion.x;
+	y = mouseMotion.y;
+}
+
+Point Input::GetMouseMotion() const
+{
+	return mouseMotion;
 }
 
 // CONTROLLER

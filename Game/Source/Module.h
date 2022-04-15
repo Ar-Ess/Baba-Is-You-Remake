@@ -6,8 +6,6 @@
 #include "SString.h"
 
 class App;
-class GuiControl;
-enum class GuiControlState;
 
 class Module
 {
@@ -61,11 +59,6 @@ public:
 	}
 
 	virtual bool SaveState(pugi::xml_node&) const
-	{
-		return true;
-	}
-
-	virtual bool OnGuiMouseClickEvent(GuiControl* control)
 	{
 		return true;
 	}

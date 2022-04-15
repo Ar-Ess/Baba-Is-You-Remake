@@ -35,13 +35,13 @@ enum Effect
 	SKIP_DIALOGUE
 };
 
-class AudioManager : public Module
+class Audio : public Module
 {
 public:
 
-	AudioManager();
+	Audio();
 
-	virtual ~AudioManager();
+	virtual ~Audio();
 
 	bool Awake(pugi::xml_node&);
 

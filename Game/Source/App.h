@@ -23,7 +23,7 @@ class Window;
 class Input;
 class Render;
 class Textures;
-class AudioManager;
+class Audio;
 class EntityManager;
 class GuiManager;
 class FontTTF;
@@ -100,7 +100,7 @@ public:
 	Input* input;
 	Render* render;
 	Textures* tex;
-	AudioManager* audio;
+	Audio* audio;
 	EntityManager* entityManager;
 	GuiManager* guiManager;
 	FontTTF* fontTTF;

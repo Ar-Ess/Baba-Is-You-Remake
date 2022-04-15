@@ -58,7 +58,7 @@ bool Textures::CleanUp()
 	return true;
 }
 
-SDL_Texture* const Textures::Load(const char* path)
+SDL_Texture* const Textures::Load(const char* path, Point* dimensions)
 {
 	SString a(path);
 
@@ -86,6 +86,11 @@ SDL_Texture* const Textures::Load(const char* path)
 	else
 	{
 		texture = LoadSurface(surface);
+		if (dimensions)
+		{
+			dimensions->x = surface->w;
+			dimensions->y = surface->h;
+		}
 		SDL_FreeSurface(surface);
 	}
 

@@ -2,19 +2,19 @@
 #define __SCENE_H__
 
 #include "Module.h"
-#include "Point.h"
-#include "DynArray.h"
 
 #include "Spline.h"
 #include "EasingFunctions.h"
 
-struct SDL_Texture;
 class LevelScene;
+class MainMenuScene;
+class GuiControl;
 
 enum Scenes
 {
 	NO_SCENE = -1,
 	LOGO_SCENE,
+	MAIN_MENU_SCENE,
 	LEVEL_SCENE,
 };
 
@@ -22,7 +22,7 @@ class Scene : public Module
 {
 public:
 
-	Scene();
+	Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window);
 
 	virtual ~Scene();
 
@@ -30,49 +30,57 @@ public:
 
 	bool Start();
 
-	bool PreUpdate();
-
 	bool Update(float dt);
 
-	bool PostUpdate();
-
 	bool CleanUp();
+
+	bool OnGuiMouseClickEvent(GuiControl* control);
+
+// SCENE MANAGER
 
 	Scenes GetCurrScene() const
 	{
 		return currScene;
 	}
 
-private: //DEBUG
-
-	void DebugCommands();
-	bool exit = false;
-	bool activeContinue = false;
-
-private: //Pointers
-	LevelScene* level = nullptr;
-
-private: //SPLINES
-	Spline spline;
-	EasingFunctions easing;
-
-public://Scene Manager
-	void SetScene(Scenes scene);
+	bool SetScene(Scenes scene);
 
 private:
 	Scenes currScene = NO_SCENE;
 	Scenes prevScene = NO_SCENE;
 
 	//Setters
-	void SetLogoScene();
-	void SetLevelScene();
+	bool SetLogoScene();
+	bool SetMainMenuScene();
+	bool SetLevelScene();
 
 	//Updaters
-	void UpdateLogoScene(float dt);
-	void UpdateLevelScene(float dt);
+	bool UpdateLogoScene(float dt);
+	bool UpdateMainMenuScene(float dt);
+	bool UpdateLevelScene(float dt);
 
-private: //BUTTONS
-	bool OnGuiMouseClickEvent(GuiControl* control);
+private: // Methods
+
+	void DebugCommands();
+
+private: // Variables
+
+	GuiManager* gui = nullptr;
+	Render* render = nullptr;
+	Input* input = nullptr;
+	Textures* texture = nullptr;
+	Window* window = nullptr;
+
+	bool exit = false;
+	bool activeContinue = false;
+
+	suint lvl = 0;
+
+	MainMenuScene* menu = nullptr;
+	LevelScene* level = nullptr;
+
+	Spline spline;
+	EasingFunctions easing;
 
 };
 

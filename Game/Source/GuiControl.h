@@ -2,13 +2,21 @@
 #define __GUICONTROL_H__
 
 #include "Input.h"
+#include "Audio.h"
 #include "Render.h"
+#include "Textures.h"
 #include "Scene.h"
 
 #include "Point.h"
+#include "Rect.h"
 #include "SString.h"
 
-#include "SDL/include/SDL.h"
+class Input;
+class Audio;
+class Render;
+class Textures;
+class Scene;
+class GuiManager;
 
 enum class GuiControlType
 {
@@ -27,7 +35,7 @@ enum class GuiControlType
 
 enum class GuiControlState
 {
-    LOCKED,
+    DISABLED,
     NORMAL,
     FOCUSED,
     PRESSED,
@@ -38,24 +46,31 @@ class GuiControl
 {
 public:
 
-    GuiControl(GuiControlType type) : type(type), state(GuiControlState::NORMAL) {}
+    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) : 
+        bounds(bounds), type(type), 
+        state(GuiControlState::NORMAL), 
+        texture(texture), 
+        scale(scale), 
+        id(id),
+        anchored(anchored), 
+        input(input), render(render), gui(gui), audio(audio), observer(scene) {}
 
-    GuiControl(GuiControlType type, SDL_Rect bounds, const char* text) : type(type), state(GuiControlState::NORMAL), bounds(bounds), text(text) {}
+    GuiControl(GuiControlType type) // Temp
+    {
+
+    }
 
     virtual bool Update(float dt)
     {
         return true;
     }
 
-    virtual bool Draw() const
+    virtual bool Draw(float dt) const
     {
         return true;
     }
 
-    void SetObserver(Module* module)
-    {
-        observer = module;
-    }
+    virtual void SetDimensions(Point dimensions) {}
 
     void NotifyObserver()
     {
@@ -63,11 +78,19 @@ public:
     }
 
 public:
+    Input* input = nullptr;
+    Render* render = nullptr;
+    GuiManager* gui = nullptr;
+    Audio* audio = nullptr;
+    Scene* observer = nullptr;
+
     GuiControlType type;
     GuiControlState state;
-    SString text;
-    SDL_Rect bounds;
-    Module* observer = nullptr;
+    Rect bounds = {};
+    suint id = 0;
+    SDL_Texture* texture = nullptr;
+    bool anchored = false;
+    Point scale = { 0, 0 };
 };
 
 #endif // __GUICONTROL_H__

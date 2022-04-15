@@ -59,30 +59,6 @@ bool Tile::UpdateLogic(float dt)
     LookAheadLogic(RIGHT, affected);
     LookAheadLogic(BOTTOM, affected);
 
-    /*Bottom Logic, problem with overwritting of the "Right-direction" logic*/
-    //next = map.bottom;
-    //if (!next || next->type != IS_TILE)
-    //{
-    //    manager->ResetBehaviors(affected, PLAYER, false);
-    //    manager->ResetBehaviors(affected, PUSH, false);
-    //    return true;
-    //}
-    //if (!next->map.bottom) return true;
-    //switch (next->map.bottom->type) //probably ending up being recursive (if AND TILE implemented)
-    //{
-    //case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, true); break;
-    //case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, true); break;
-    //default:
-    //    if (!prevBehaviourTile[1]) break;
-    //    switch (*prevBehaviourTile[1])
-    //    {
-    //    case YOU_B_TILE: manager->ResetBehaviors(affected, PLAYER, false); break;
-    //    case PUSH_B_TILE: manager->ResetBehaviors(affected, PUSH, false); break;
-    //    }
-    //    break;
-    //}
-    //prevBehaviourTile[1] = &next->map.bottom->type;
-
     return true;
 }
 

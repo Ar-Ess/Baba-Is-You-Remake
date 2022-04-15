@@ -58,7 +58,7 @@ private:
 private:
 
     SDL_Rect slider;
-    SDL_Texture* spritesheet = nullptr;
+    SDL_Texture* texture = nullptr;
     int value;
     float percentValue;
 
@@ -67,7 +67,7 @@ private:
 
     bool sliderClicked = false;
 
-    Point locked = { 0, 0};
+    Point disabled = { 0, 0};
     Point normal = { 0, 0 };
     Point focused = { 0, 0 };
     Point pressed = { 0, 0 };

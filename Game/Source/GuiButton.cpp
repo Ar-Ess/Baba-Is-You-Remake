@@ -1,46 +1,53 @@
-#include "App.h"
-#include "Scene.h"
 #include "GuiButton.h"
 #include "GuiManager.h"
-#include "Audio.h"
-#include "Textures.h"
 
-GuiButton::GuiButton(SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::BUTTON)
+GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) : 
+    GuiControl(
+        bounds,
+        GuiControlType::BUTTON,
+        texture,
+        scale,
+        id,
+        anchored,
+        input, 
+        render, 
+        gui, 
+        audio,
+        scene
+    )
 {
-    this->bounds = bounds;
-    this->text = text;   
+    SetDimensions(Point{ bounds.w, bounds.h });
 }
 
 GuiButton::~GuiButton()
 {
 	observer = nullptr;
-    text.Clear();
-    text.~SString();
+    //text.Clear();
+    //text.~SString();
 }
 
 bool GuiButton::Update(float dt)
 {
-    if (state != GuiControlState::LOCKED)
+    if (state != GuiControlState::DISABLED)
     {
-        int mouseX, mouseY;
-        app->input->GetMousePosition(mouseX, mouseY);
+        Point mouse = input->GetMousePosition();
 
-        if ((mouseX > bounds.x) && (mouseX < (bounds.x + bounds.w)) &&
-            (mouseY > bounds.y) && (mouseY < (bounds.y + bounds.h)))
+        if ((mouse.x > bounds.x) && (mouse.x < (bounds.x + bounds.w)) &&
+            (mouse.y > bounds.y) && (mouse.y < (bounds.y + bounds.h)))
         {
             if (state == GuiControlState::NORMAL)
             {
-                app->audio->SetFx(Effect::BUTTON_FOCUSSED);
+                audio->SetFx(Effect::BUTTON_FOCUSSED);
             }
             state = GuiControlState::FOCUSED;
-            if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_REPEAT)
+            if (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_REPEAT)
             {
                 state = GuiControlState::PRESSED;
             }
 
-            if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_UP || app->input->GetControl(A) == KeyState::KEY_UP)
+            if (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_UP || input->GetControl(A) == KeyState::KEY_UP)
             {
-                app->audio->SetFx(Effect::BUTTON_RELEASED);
+                audio->SetFx(Effect::BUTTON_RELEASED);
                 NotifyObserver();
             }
         }
@@ -48,19 +55,19 @@ bool GuiButton::Update(float dt)
         {
             if (state == GuiControlState::NORMAL)
             {
-                app->audio->SetFx(Effect::BUTTON_FOCUSSED);
+                audio->SetFx(Effect::BUTTON_FOCUSSED);
             }
             state = GuiControlState::FOCUSED;
-            if ((app->input->GetControl(A) == KeyState::KEY_REPEAT) || (app->input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_REPEAT))
+            if ((input->GetControl(A) == KeyState::KEY_REPEAT) || (input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_REPEAT))
             {
                 state = GuiControlState::PRESSED;
             }
 
-            if ((app->input->GetControl(A) == KeyState::KEY_UP) || (app->input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_UP))
+            if ((input->GetControl(A) == KeyState::KEY_UP) || (input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_UP))
             {
-                app->audio->SetFx(Effect::BUTTON_RELEASED);
+                audio->SetFx(Effect::BUTTON_RELEASED);
                 NotifyObserver();
-                app->guiManager->idSelection = -1;
+                //gui->idSelection = -1;
             }
         }
         else state = GuiControlState::NORMAL;
@@ -68,91 +75,77 @@ bool GuiButton::Update(float dt)
     return true;
 }
 
-bool GuiButton::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPos)
+bool GuiButton::Draw(float dt) const
 {
-    if (drawTexture)
+    Rect section = { 0, 0, bounds.w, bounds.h };
+    switch (state)
     {
-        SDL_Rect section = {0, 0, bounds.w, bounds.h};
-        switch (state)
-        {
-        case GuiControlState::LOCKED:
-            section.x = locked.x;
-            section.y = locked.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-        case GuiControlState::NORMAL: 
-            section.x = normal.x;
-            section.y = normal.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-        case GuiControlState::FOCUSED:
-            section.x = focused.x;
-            section.y = focused.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-        case GuiControlState::PRESSED:
-            section.x = pressed.x;
-            section.y = pressed.y;
-            app->render->DrawTexture(spritesheet, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-        default:
-            break;
-        }
+    case GuiControlState::DISABLED:
+        section.x = disabled.x;
+        section.y = disabled.y;
+        break;
+    case GuiControlState::NORMAL:
+        section.x = normal.x;
+        section.y = normal.y;
+        break;
+    case GuiControlState::FOCUSED:
+        section.x = focused.x;
+        section.y = focused.y;
+        break;
+    case GuiControlState::PRESSED:
+        section.x = pressed.x;
+        section.y = pressed.y;
+        break;
     }
 
-    if (app->guiManager->debugGui)
-    {
-        SDL_Rect buttonRect = bounds;
+    render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &section);
 
-        if (staticPos)
-        {
-            buttonRect.x += (int)app->render->camera.x;
-            buttonRect.y += (int)app->render->camera.y;
-        }
-        buttonRect.w *= scaleX;
-        buttonRect.h *= scaleY;
-
-        switch (state)
-        {
-        case GuiControlState::LOCKED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
-            break;
-        case GuiControlState::NORMAL: app->render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
-            break;
-        case GuiControlState::FOCUSED: app->render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
-            break;
-        case GuiControlState::PRESSED: app->render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
-            break;
-        default:
-            break;
-        }
-    }
+    if (gui->debug) DebugDraw();
 
     return false;
 }
 
-void GuiButton::SetTexture(const char* path, Point magnitude)
+void GuiButton::DebugDraw() const
 {
-    app->tex->UnLoad(spritesheet);
-    spritesheet = app->tex->Load(path);
+    Rect buttonRect = bounds;
 
-    UpdateDimensions(magnitude);
+    if (anchored)
+    {
+        buttonRect.x += (int)render->camera.x;
+        buttonRect.y += (int)render->camera.y;
+    }
+
+    buttonRect.w *= scale.x;
+    buttonRect.h *= scale.y;
+
+    switch (state)
+    {
+    case GuiControlState::DISABLED: render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
+        break;
+    case GuiControlState::NORMAL: render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
+        break;
+    case GuiControlState::FOCUSED: render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
+        break;
+    case GuiControlState::PRESSED: render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
+        break;
+    }
 }
 
 void GuiButton::Delete()
 {
-    observer = nullptr;
-    app->tex->UnLoad(spritesheet);
-    spritesheet = nullptr;
-    text.Clear();
+    //observer = nullptr;
+    //app->tex->UnLoad(spritesheet);
+    //spritesheet = nullptr;
+    //text.Clear();
 }
 
-void GuiButton::UpdateDimensions(Point magnitude)
+void GuiButton::SetDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
-    bounds.h = magnitude.y;
+    bounds.h = magnitude.y / 4;
 
-    locked = {0, 0 * bounds.h};
-    normal = { 0, 1 * bounds.h };
-    focused = { 0, 2 * bounds.h };
-    pressed = { 0, 3 * bounds.h };
+    disabled = { 0.0f, 0 * bounds.h};
+    normal = { 0.0f, 1 * bounds.h };
+    focused = { 0.0f, 2 * bounds.h };
+    pressed = { 0.0f, 3 * bounds.h };
 }
