@@ -3,6 +3,7 @@
 
 #include "GuiControl.h"
 #include "FontTTF.h"
+#include "AlignEnum.h"
 
 struct _TTF_Font;
 struct SDL_Texture;
@@ -19,10 +20,15 @@ public:
 	bool Draw() const;
 	void Delete();
 	void CenterAlign();
+	Align GetAlignment() const
+	{
+		return alignment;
+	}
 
 private:
 
 	friend class Alignment;
+	Align alignment = Align::CENTER;
 	Point offset = { 0, 0 };
 
 };

@@ -5,6 +5,7 @@
 #include "GuiControl.h"
 #include "GuiString.h"
 #include "SDL/include/SDL_pixels.h"
+#include "AlignEnum.h"
 
 #include <vector>
 
@@ -24,19 +25,6 @@ struct Texture
 	Point dimensions = {};
 };
 
-enum Align
-{
-	TOP_LEFT,
-	TOP_RIGHT,
-	BOTTOM_LEFT,
-	BOTTOM_RIGHT,
-	CENTER_LEFT,
-	CENTER_RIGHT,
-	CENTER_TOP,
-	CENTER_BOTTOM,
-	CENTER
-};
-
 class Alignment
 {
 public:
@@ -54,6 +42,8 @@ public:
 			text->offset = {(dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 		}
+
+		text->alignment = align;
 	}
 
 private:
