@@ -36,9 +36,20 @@ public:
 		y = position.y;
 	}
 
+	void SetDimensions(Point dimension)
+	{
+		w = dimension.x;
+		h = dimension.y;
+	}
+
 	Point GetPosition() const
 	{
 		return Point{x, y};
+	}
+
+	Point GetDimensions() const
+	{
+		return Point{ w, h };
 	}
 
 public:

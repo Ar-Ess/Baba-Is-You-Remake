@@ -2,24 +2,17 @@
 #define __GUISLIDER_H__
 
 #include "GuiControl.h"
-
 #include "Point.h"
-
-enum SliderType {
-    MUSIC,
-    FX,
-};
 
 class GuiSlider : public GuiControl
 {
 public:
 
-    GuiSlider(SDL_Rect bounds, const char *text);
+    GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene);
     virtual ~GuiSlider();
 
     bool Update(float dt);
     bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
-    void SetTexture(const char* path, Point barMagnitude, Point sMagnitude);
     void Delete();
 
     void SetMinValue(int val);
@@ -53,12 +46,11 @@ public:
     bool sliderFocus = false;
 
 private:
-    void UpdateDimensions(Point barMagnitudes, Point sMagnitudes);
+    void UpdateDimensions(Point magnitudes);
 
 private:
 
     SDL_Rect slider;
-    SDL_Texture* texture = nullptr;
     int value;
     float percentValue;
 
@@ -72,20 +64,10 @@ private:
     Point focused = { 0, 0 };
     Point pressed = { 0, 0 };
 
-    Point sLocked = { 0, 0 };
-    Point sNormal = { 0, 0 };
-    Point sFocused = { 0, 0 };
-    Point sPressed = { 0, 0 };
-
-    Point sLowLocked = { 0, 0 };
-    Point sLowNormal = { 0, 0 };
-    Point sLowFocused = { 0, 0 };
-    Point sLowPressed = { 0, 0 };
-
-    Point sMuteLocked = { 0, 0 };
-    Point sMuteNormal = { 0, 0 };
-    Point sMuteFocused = { 0, 0 };
-    Point sMutePressed = { 0, 0 };
+    Point disabledButton = { 0, 0 };
+    Point normalButton = { 0, 0 };
+    Point focusedButton = { 0, 0 };
+    Point pressedButton = { 0, 0 };
 };
 
 #endif // __GUISLIDER_H__

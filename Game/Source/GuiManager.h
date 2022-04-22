@@ -15,14 +15,16 @@ enum class GuiControlType;
 
 struct Texture
 {
-	Texture(SDL_Texture* texture, Point dimensions)
+	Texture(SDL_Texture* texture, Point dimensions, GuiControlType guiType)
 	{
 		this->texture = texture;
 		this->dimensions = dimensions;
+		this->type = guiType;
 	}
 
 	SDL_Texture* texture = nullptr;
 	Point dimensions = {};
+	GuiControlType type;
 };
 
 class Alignment
@@ -71,7 +73,7 @@ public:
 	bool Next()
 	{
 		suint size = textures->size();
-		suint index = -1;
+		uint index = -1;
 		for (suint i = 0; i < size; ++i)
 		{
 			if (textures->at(i)->texture == control->texture)
@@ -83,10 +85,19 @@ public:
 
 		if (index == -1) return false;
 
-		if (index == (size - 1)) index = 0;
-		else ++index;
-
 		Texture* newTexture = textures->at(index);
+
+		for (suint i = index + 1; i != index; ++i)
+		{
+			if (i == (size - 1)) i = 0;
+
+			if (textures->at(i)->type == control->type)
+			{
+				newTexture = textures->at(i);
+				break;
+			}
+		}
+
 		control->texture = newTexture->texture;
 		control->SetDimensions(newTexture->dimensions);
 
@@ -108,10 +119,19 @@ public:
 
 		if (index == -1) return false;
 
-		if (index == 0) index = size - 1;
-		else --index;
-
 		Texture* newTexture = textures->at(index);
+
+		for (uint i = index - 1; i != index; --i)
+		{
+			if (i == -1) i = size - 1;
+
+			if (textures->at(i)->type == control->type)
+			{
+				newTexture = textures->at(i);
+				break;
+			}
+		}
+
 		control->texture = newTexture->texture;
 		control->SetDimensions(newTexture->dimensions);
 
@@ -166,7 +186,7 @@ public:
 
 	void DestroyGuiControl(suint index);
 
-	void CreateTexture(const char* path);
+	int CreateTexture(const char* path, GuiControlType type);
 
 	TextureSwitcher ChangeTexture(suint controlIndex);
 	

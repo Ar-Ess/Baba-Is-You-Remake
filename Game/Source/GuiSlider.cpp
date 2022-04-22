@@ -1,15 +1,22 @@
-#include "App.h"
 #include "GuiSlider.h"
 #include "GuiManager.h"
-#include "Audio.h"
-#include "Textures.h"
 
-#include "Log.h"
-#include "Defs.h"
-
-GuiSlider::GuiSlider( SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::SLIDER)
+GuiSlider::GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) :
+    GuiControl(
+        bounds,
+        GuiControlType::SLIDER,
+        texture,
+        scale,
+        id,
+        anchored,
+        input,
+        render,
+        gui,
+        audio,
+        scene
+    )
 {
-    //this->bounds = bounds;
+    SetDimensions(Point{ bounds.w, bounds.h });
 }
 
 GuiSlider::~GuiSlider()
@@ -102,6 +109,7 @@ bool GuiSlider::Update(float dt)
 
 bool GuiSlider::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPos)
 {
+    /*
     if (drawTexture)
     {
         SDL_Rect barSection = { 0, 0, bounds.w, bounds.h };
@@ -209,6 +217,7 @@ bool GuiSlider::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPo
             break;
         }
     }
+    */
 
     if (app->guiManager->debug)
     {
@@ -294,16 +303,6 @@ void GuiSlider::SetSlider(SDL_Rect bounds)
     UpdateValue();
 }
 
-void GuiSlider::SetTexture(const char* path, Point barMagnitude, Point sMagnitude)
-{
-    app->tex->UnLoad(texture);
-    texture = nullptr;
-    texture = app->tex->Load(path);
-
-    UpdateDimensions(barMagnitude, sMagnitude);
-    SetSliderValue();
-}
-
 void GuiSlider::Delete()
 {
     observer = nullptr;
@@ -311,31 +310,19 @@ void GuiSlider::Delete()
     texture = nullptr;
 }
 
-void GuiSlider::UpdateDimensions(Point barMagnitude, Point sMagnitude)
+void GuiSlider::UpdateDimensions(Point magnitudes)
 {
-    //bounds.w = barMagnitude.x;
-    //bounds.h = barMagnitude.y;
+    bounds.w = magnitudes.x;
+    bounds.h = magnitudes.y / 8;
 
-    //slider.w = sMagnitude.x;
-    //slider.h = sMagnitude.y;
+    disabled = { 0.0f, 0 * bounds.h };
+    normal =   { 0.0f, 1 * bounds.h };
+    focused =  { 0.0f, 2 * bounds.h };
+    pressed =  { 0.0f, 3 * bounds.h };
+    disabledButton = { 0.0f, 4 * bounds.h };
+    normalButton =   { 0.0f, 5 * bounds.h };
+    focusedButton  =  { 0.0f, 6 * bounds.h };
+    pressedButton =  { 0.0f, 7 * bounds.h };
 
-    //disabled = { 0, 0 * bounds.h };
-    //normal = { 0, 1 * bounds.h };
-    //focused = { 0, 2 * bounds.h };
-    //pressed = { 0, 3 * bounds.h };
-
-    //sLocked = { 0 * slider.w, (0 * slider.h) + (4 * bounds.h)};
-    //sNormal = { 0 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    //sFocused = { 0 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    //sPressed = { 0 * slider.w, (3 * slider.h) + (4 * bounds.h) };
-    //
-    //sLowLocked = { 1 * slider.w, (0 * slider.h) + (4 * bounds.h) };
-    //sLowNormal = { 1 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    //sLowFocused = { 1 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    //sLowPressed = { 1 * slider.w, (3 * slider.h) + (4 * bounds.h) };
-
-    //sMuteLocked = { 2 * slider.w, (0 * slider.h) + (4 * bounds.h) };
-    //sMuteNormal = { 2 * slider.w, (1 * slider.h) + (4 * bounds.h) };
-    //sMuteFocused = { 2 * slider.w, (2 * slider.h) + (4 * bounds.h) };
-    //sMutePressed = { 2 * slider.w, (3 * slider.h) + (4 * bounds.h) };
+    if (text) Alignment(text, Point{ bounds.w, bounds.h }).AlignTo(text->GetAlignment());
 }

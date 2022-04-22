@@ -32,7 +32,8 @@ bool GuiManager::Start(Scene* scene)
 {
 	InitializeFonts();
 
-	CreateTexture("Assets/Textures/UI/button_default_set.png");
+	CreateTexture("Assets/Textures/UI/button_default_set.png", GuiControlType::BUTTON);
+	CreateTexture("Assets/Textures/UI/slider_default_set.png", GuiControlType::SLIDER);
 	CreateFont("Fonts/manaspace.regular.ttf", 18);
 
 	debug = false;
@@ -68,18 +69,21 @@ ControlAddition GuiManager::CreateGuiControl(GuiControlType type, Point position
 {
 	GuiControl* control = nullptr;
 
+	if (textures.size() <= texIndex) texIndex = 0;
 	Texture* tex = textures.at(texIndex);
-	Rect bounds = { position.x, position.y, 0, 0};
+	Rect bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y };
 
 	switch (type)
 	{
 	case GuiControlType::BUTTON:
-		bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y };
 		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene); 
 		break;
 	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
-	case GuiControlType::SLIDER: control = new GuiSlider({ 0, 0, 0, 0 }, "0"); break;
+	case GuiControlType::SLIDER:
+		control = new GuiSlider(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene);
+		break;
 	case GuiControlType::TEXT: 
+		bounds.SetDimensions({0, 0});
 		control = new GuiString(bounds, "", texIndex, controls.size(), scale, render, this, anchored);
 		break;
 	}
@@ -94,11 +98,13 @@ void GuiManager::DestroyGuiControl(suint index)
 	controls.erase(controls.begin() + index);
 }
 
-void GuiManager::CreateTexture(const char* path)
+int GuiManager::CreateTexture(const char* path, GuiControlType type)
 {
 	Point dimensions = {};
 	SDL_Texture* tex = texture->Load(path, &dimensions);
-	textures.push_back(new Texture(tex, dimensions));
+	textures.push_back(new Texture(tex, dimensions, type));
+
+	return textures.size() - 1;
 }
 
 void GuiManager::DestroyTexture(suint index)
