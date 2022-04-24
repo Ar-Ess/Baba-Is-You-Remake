@@ -14,12 +14,12 @@ MainMenuScene::~MainMenuScene()
 
 bool MainMenuScene::Start()
 {
+	gui->CreateTexture("Assets/Textures/UI/button_set_1.png", GuiControlType::BUTTON);
 	gui->CreateTexture("Assets/Textures/UI/button_set_2.png", GuiControlType::BUTTON);
 	gui->CreateTexture("Assets/Textures/UI/button_set_3.png", GuiControlType::BUTTON);
-	gui->CreateTexture("Assets/Textures/UI/button_set_4.png", GuiControlType::BUTTON);
 	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 }).AddGuiString("PLAY", 0, {255, 255, 255, 255}).AlignTo(Align::CENTER);
 
-	gui->CreateGuiControl(GuiControlType::SLIDER, { 200, 200 }, {1, 1}, false, 1).AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::BOTTOM_LEFT);
+	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, {1, 1}, false, 1).AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::BOTTOM_LEFT);
 
 	return true;
 }

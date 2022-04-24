@@ -73,7 +73,7 @@ public:
 	bool Next()
 	{
 		suint size = textures->size();
-		uint index = -1;
+		int index = -1;
 		for (suint i = 0; i < size; ++i)
 		{
 			if (textures->at(i)->texture == control->texture)
@@ -107,7 +107,7 @@ public:
 	bool Prev()
 	{
 		suint size = textures->size();
-		suint index = -1;
+		int index = -1;
 		for (suint i = 0; i < size; ++i)
 		{
 			if (textures->at(i)->texture == control->texture)
@@ -121,7 +121,7 @@ public:
 
 		Texture* newTexture = textures->at(index);
 
-		for (uint i = index - 1; i != index; --i)
+		for (int i = index - 1; i != index; --i)
 		{
 			if (i == -1) i = size - 1;
 

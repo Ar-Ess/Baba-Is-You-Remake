@@ -2,6 +2,7 @@
 #define __COLLIDER_H__
 
 #include "Module.h"
+#include "Rect.h"
 #include "List.h"
 #include "SString.h"
 
@@ -55,6 +56,15 @@ public:
 	double Distance(int x1, int y1, int x2, int y2)
 	{
 		return sqrt(pow(double(x2 - x1), 2) + pow(double(y2 - y1), 2));
+	}
+
+	bool CheckCollision(Rect r1, Rect r2) const
+	{
+		if ((r1.x > r2.x + r2.w) || (r1.x + r1.w < r2.x) || (r1.y > r2.y + r2.h) || (r1.y + r1.h < r2.y))
+		{
+			return false;
+		}
+		return true;
 	}
 
 	bool CheckCollision(SDL_Rect r1, SDL_Rect r2) const

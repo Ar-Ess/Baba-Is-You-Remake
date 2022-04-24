@@ -3,6 +3,7 @@
 
 #include "GuiControl.h"
 #include "Point.h"
+#include "Collider.h"
 
 class GuiSlider : public GuiControl
 {
@@ -12,7 +13,7 @@ public:
     virtual ~GuiSlider();
 
     bool Update(float dt);
-    bool Draw(float scaleX = 1.0f, float scaleY = 1.0f, bool drawTexture = true, bool staticPos = true);
+    bool Draw(float dt) const;
     void Delete();
 
     void SetMinValue(int val);
@@ -21,43 +22,14 @@ public:
     void UpdateValue();
     void SetSliderValue();
 
-    int GetMinValue() const
-    {
-        return minValue;
-    }
-
-    int GetMaxValue() const
-    {
-        return maxValue;
-    }
-
-    int GetValue() const
-    {
-        return value;
-    }
-
-    float GetPercentValue() const
-    {
-        return percentValue * 100;
-    }
-
-    void SetSlider(SDL_Rect bounds);
-
-    bool sliderFocus = false;
-
 private:
-    void UpdateDimensions(Point magnitudes);
+    void SetDimensions(Point magnitudes);
 
 private:
 
-    SDL_Rect slider;
-    int value;
-    float percentValue;
-
-    int minValue;
-    int maxValue;
-
-    bool sliderClicked = false;
+    Rect slider;
+    Collision collisionUtils;
+    float value = 0;
 
     Point disabled = { 0, 0};
     Point normal = { 0, 0 };
