@@ -29,7 +29,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new Textures();
 	audio = new Audio();
 	guiManager = new GuiManager(input, render, audio, tex);
-	scene = new Scene(guiManager, render, input, tex, win);
+	scene = new Scene(guiManager, render, input, tex, win, audio);
 	transition = new Transition();
 	psystem = new ParticleSystem();
 

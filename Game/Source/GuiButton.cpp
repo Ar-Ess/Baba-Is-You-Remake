@@ -151,5 +151,5 @@ void GuiButton::SetDimensions(Point magnitude)
     focused = { 0.0f, 2 * bounds.h };
     pressed = { 0.0f, 3 * bounds.h };
 
-    if (text) Alignment(text, Point{ bounds.w, bounds.h }).AlignTo(text->GetAlignment());
+    if (text) Alignment(text, Point{ bounds.w, bounds.h }, nullptr).AlignTo(text->GetAlignment());
 }

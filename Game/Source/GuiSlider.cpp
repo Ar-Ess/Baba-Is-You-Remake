@@ -33,10 +33,12 @@ bool GuiSlider::Update(float dt)
     bool on = collisionUtils.CheckCollision(Rect{mouse, 1.0f, 1.0f }, slider);
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
     float res = 0;
+    GuiControlState prevState = state;
 
     if (!on && !click)
     {
         state = GuiControlState::NORMAL;
+        if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(value);
         return true;
     }
 
@@ -65,8 +67,11 @@ bool GuiSlider::Update(float dt)
         if (res > 100) res = 100;
         value = res;
         slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
+        if (rips) NotifyObserver(value);
         break;
     }
+
+    if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(value);
 
     return false;
 }
@@ -172,5 +177,5 @@ void GuiSlider::SetDimensions(Point magnitudes)
     focusedButton  =  { 0.0f, 6 * bounds.h };
     pressedButton =  { 0.0f, 7 * bounds.h };
 
-    if (text) Alignment(text, Point{ bounds.w, bounds.h }).AlignTo(text->GetAlignment());
+    if (text) Alignment(text, Point{ bounds.w, bounds.h }, nullptr).AlignTo(text->GetAlignment());
 }

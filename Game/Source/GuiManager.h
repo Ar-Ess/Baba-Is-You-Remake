@@ -4,11 +4,13 @@
 #include "Module.h"
 #include "GuiControl.h"
 #include "GuiString.h"
+#include "GuiSlider.h"
 #include "SDL/include/SDL_pixels.h"
 #include "AlignEnum.h"
 
 #include <vector>
 
+class ControlSettings;
 struct SDL_Texture;
 struct _TTF_Font;
 enum class GuiControlType;
@@ -30,14 +32,16 @@ struct Texture
 class Alignment
 {
 public:
-	Alignment(GuiString* text, Point dimensions)
+	Alignment(GuiControl* control, Point dimensions, ControlSettings* ret)
 	{
-		this->text = text;
+		this->control = control;
 		this->dimensions = dimensions;
+		this->ret = ret;
 	}
 
-	void AlignTo(Align align = TOP_LEFT)
+	ControlSettings* AlignTo(Align align = TOP_LEFT)
 	{
+		GuiString* text = control->text;
 		switch (align)
 		{
 		case CENTER:
@@ -46,11 +50,14 @@ public:
 		}
 
 		text->alignment = align;
+
+		return ret;
 	}
 
 private:
 
-	GuiString* text = nullptr;
+	GuiControl* control = nullptr;
+	ControlSettings* ret = nullptr;
 	Point dimensions = {};
 };
 
@@ -144,19 +151,37 @@ private:
 	std::vector<Texture*>* textures = {};
 };
 
-class ControlAddition
+class ControlSettings
 {
 public:
-	ControlAddition(GuiControl* control)
+	ControlSettings(GuiControl* control)
 	{
 		this->control = control;
 	}
 
 	Alignment AddGuiString(const char* text, suint fontIndex = 0, SDL_Color color = { 0, 0, 0, 255 })
 	{
+		// You already created a text for this Gui Control, no more that 1 text is allowed
+		assert(control->type != GuiControlType::TEXT && control->text == nullptr);
+
 		control->text = new GuiString(control->bounds, text, fontIndex, control->id, control->scale, control->render, control->gui, control->anchored, color);
 
-		return Alignment(control->text, Point{control->bounds.w, control->bounds.h});
+		return Alignment(control, Point{control->bounds.w, control->bounds.h}, this);
+	}
+
+	// SliderSettings function allows to modify some parts of the functionality of a slider:
+	//   - Initial Value: Set an initial value in which the slider will start
+	//   - Allow RIPS: this system stands for "Retrieve Information Pressed State". If this option is false, 
+	//                 the slider will retieve the value when the the click button is released. If the option
+	//                 it true, it will retrieve the value each frame that the slider is pressed.
+	void SliderSettings(float initialValue = 0.0f, bool allowRIPS = false)
+	{
+		// You tried to modify slider setting in another gui control. SliderSettings is only for Sliders
+		assert(control->type == GuiControlType::SLIDER);
+
+		GuiSlider* slider = (GuiSlider*)control;
+		slider->SetRIPS(allowRIPS);
+		slider->SetInitialValue(initialValue);
 	}
 
 private:
@@ -182,7 +207,7 @@ public:
 
 	bool CleanUp();
 
-	ControlAddition CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
+	ControlSettings CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
 
 	void DestroyGuiControl(suint index);
 

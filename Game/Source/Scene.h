@@ -22,7 +22,7 @@ class Scene : public Module
 {
 public:
 
-	Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window);
+	Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window, Audio* audio);
 
 	virtual ~Scene();
 
@@ -34,7 +34,7 @@ public:
 
 	bool CleanUp();
 
-	bool OnGuiMouseClickEvent(GuiControl* control);
+	bool OnGuiMouseClickEvent(GuiControl* control, float value);
 
 // SCENE MANAGER
 
@@ -70,6 +70,7 @@ private: // Variables
 	Input* input = nullptr;
 	Textures* texture = nullptr;
 	Window* window = nullptr;
+	Audio* audio = nullptr;
 
 	bool exit = false;
 	bool activeContinue = false;

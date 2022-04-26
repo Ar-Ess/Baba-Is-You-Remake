@@ -12,13 +12,14 @@
 #include "Defs.h"
 #include "Log.h"
 
-Scene::Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window) : Module()
+Scene::Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window, Audio* audio) : Module()
 {
 	this->gui = gui;
 	this->render = render;
 	this->input = input;
 	this->texture = texture;
 	this->window = window;
+	this->audio = audio;
 }
 
 Scene::~Scene()
@@ -188,16 +189,18 @@ bool Scene::UpdateLevelScene(float dt)
 
 // GUI CONTROLS
 
-bool Scene::OnGuiMouseClickEvent(GuiControl* control)
+bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value)
 {
 	switch (currScene)
 	{
 	case MAIN_MENU_SCENE:
 		switch (control->id)
 		{
-		case 0:
-			gui->ChangeTexture(control->id).Prev();
-			break;
+			// BUTTON
+		case 0: gui->ChangeTexture(control->id).Prev(); break;
+
+			// SLIDER
+		case 1: audio->ChangeVolumeMusic(value); break;
 		}
 		break;
 	}

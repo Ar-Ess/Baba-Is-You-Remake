@@ -16,6 +16,17 @@ public:
     bool Draw(float dt) const;
     void Delete();
 
+    void SetRIPS(bool allowRIPS)
+    {
+        rips = allowRIPS;
+    }
+
+    void SetInitialValue(float initialValue)
+    {
+        value = initialValue;
+        NotifyObserver(initialValue);
+    }
+
     void SetMinValue(int val);
     void SetMaxValue(int val);
     void SetValue(int val);
@@ -30,6 +41,8 @@ private:
     Rect slider;
     Collision collisionUtils;
     float value = 0;
+
+    bool rips = false;
 
     Point disabled = { 0, 0};
     Point normal = { 0, 0 };

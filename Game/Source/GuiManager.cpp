@@ -65,7 +65,7 @@ bool GuiManager::Draw(float dt)
 	return true;
 }
 
-ControlAddition GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
+ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
 {
 	GuiControl* control = nullptr;
 
@@ -90,7 +90,7 @@ ControlAddition GuiManager::CreateGuiControl(GuiControlType type, Point position
 
 	if (control != nullptr) controls.push_back(control);
 
-	return ControlAddition(control);
+	return ControlSettings(control);
 }
 
 void GuiManager::DestroyGuiControl(suint index)

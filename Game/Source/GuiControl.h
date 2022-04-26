@@ -83,9 +83,9 @@ public:
 
     virtual void SetDimensions(Point dimensions) {}
 
-    void NotifyObserver()
+    void NotifyObserver(float value = 0.0f)
     {
-        observer->OnGuiMouseClickEvent(this);
+        observer->OnGuiMouseClickEvent(this, value);
     }
 
 public:
