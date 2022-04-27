@@ -27,50 +27,45 @@ GuiButton::~GuiButton()
 
 bool GuiButton::Update(float dt)
 {
-    if (state != GuiControlState::DISABLED)
+    if (state == GuiControlState::DISABLED) return true;
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    GuiControlState prevState = state;
+
+
+    if (!on && !click)
     {
-        Point mouse = input->GetMousePosition();
-
-        if ((mouse.x > bounds.x) && (mouse.x < (bounds.x + bounds.w)) &&
-            (mouse.y > bounds.y) && (mouse.y < (bounds.y + bounds.h)))
-        {
-            if (state == GuiControlState::NORMAL)
-            {
-                audio->SetFx(Effect::BUTTON_FOCUSSED);
-            }
-            state = GuiControlState::FOCUSED;
-            if (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_REPEAT)
-            {
-                state = GuiControlState::PRESSED;
-            }
-
-            if (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_UP || input->GetControl(A) == KeyState::KEY_UP)
-            {
-                audio->SetFx(Effect::BUTTON_RELEASED);
-                NotifyObserver();
-            }
-        }
-        else if (buttonFocus)
-        {
-            if (state == GuiControlState::NORMAL)
-            {
-                audio->SetFx(Effect::BUTTON_FOCUSSED);
-            }
-            state = GuiControlState::FOCUSED;
-            if ((input->GetControl(A) == KeyState::KEY_REPEAT) || (input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_REPEAT))
-            {
-                state = GuiControlState::PRESSED;
-            }
-
-            if ((input->GetControl(A) == KeyState::KEY_UP) || (input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_UP))
-            {
-                audio->SetFx(Effect::BUTTON_RELEASED);
-                NotifyObserver();
-                //gui->idSelection = -1;
-            }
-        }
-        else state = GuiControlState::NORMAL;
+        if (prevState == GuiControlState::PRESSED) NotifyObserver();
+        state = GuiControlState::NORMAL;
+        prevState = state;
+        return true;
     }
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+        break;
+
+    case GuiControlState::PRESSED:
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        NotifyObserver();
+        break;
+    }
+
+    prevState = state;
+
     return true;
 }
 

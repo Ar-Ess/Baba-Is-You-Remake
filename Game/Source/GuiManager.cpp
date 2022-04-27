@@ -79,7 +79,7 @@ ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position
 	case GuiControlType::BUTTON:
 		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture); 
 		break;
-	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
+	case GuiControlType::CHECKBOX: control = new GuiCheckBox(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture); break;
 	case GuiControlType::SLIDER:
 		control = new GuiSlider(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture);
 		break;
@@ -153,15 +153,6 @@ FontSwitcher GuiManager::ChangeFont(suint controlIndex)
 	assert(controlIndex >= 0 && controlIndex < controls.size());
 
 	return FontSwitcher(controls.at(controlIndex), &fonts);
-}
-
-//TextureSwitcher GuiManager::ChangeFont(suint controlIndex)
-//{
-//	return FontSwitcher();
-//}
-
-void GuiManager::DestroyFont(suint index)
-{
 }
 
 TextureSwitcher GuiManager::ChangeTexture(suint controlIndex)

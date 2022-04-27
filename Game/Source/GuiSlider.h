@@ -21,18 +21,15 @@ public:
     {
         rips = allowRIPS;
     }
-
     void SetInitialValue(float initialValue)
     {
         value = initialValue;
         NotifyObserver(initialValue);
     }
-
-    void SetMinValue(int val);
-    void SetMaxValue(int val);
-    void SetValue(int val);
-    void UpdateValue();
-    void SetSliderValue();
+    void SetRange(Point range)
+    {
+        this->range = range;
+    }
 
 private:
     void SetDimensions(Point magnitudes);
@@ -40,7 +37,7 @@ private:
 private:
 
     Rect slider;
-    Collision collisionUtils;
+    Point range = {0, 100};
     float value = 0;
 
     bool rips = false;

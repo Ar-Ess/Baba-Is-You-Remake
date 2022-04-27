@@ -23,7 +23,7 @@ bool MainMenuScene::Start()
 
 	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, {1, 1}, false, 1)
 		.AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER_TOP)
-		->SliderSettings(50, true);
+		->SliderSettings(50, false);
 
 	return true;
 }

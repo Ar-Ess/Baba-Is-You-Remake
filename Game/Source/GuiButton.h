@@ -3,6 +3,7 @@
 
 #include "GuiControl.h"
 #include "Point.h"
+#include "Collider.h"
 
 class GuiButton : public GuiControl
 {
@@ -14,7 +15,6 @@ public:
     bool Update(float dt);
     bool Draw(float dt) const;
     void Delete();
-	bool buttonFocus = false;
 
 private:
     void SetDimensions(Point magnitudes);

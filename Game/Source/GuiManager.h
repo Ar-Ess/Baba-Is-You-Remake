@@ -273,9 +273,11 @@ public:
 	// SliderSettings function allows to modify some parts of the functionality of a slider:
 	//   - Initial Value: Set an initial value in which the slider will start
 	//   - Allow RIPS: this system stands for "Retrieve Information Pressed State". If this option is false, 
-	//                 the slider will retieve the value when the the click button is released. If the option
-	//                 it true, it will retrieve the value each frame that the slider is pressed.
-	void SliderSettings(float initialValue = 0.0f, bool allowRIPS = false)
+	//                    the slider will retieve the value when the the click button is released. If the option
+	//                    it true, it will retrieve the value each frame that the slider is pressed.
+	//   - Range: this variable allows to set the value given at the minimum position and the value given at the
+	//            maximum position of the slider. Point{minimum, maximum}
+	void SliderSettings(float initialValue = 0.0f, bool allowRIPS = false, Point range = {0, 100})
 	{
 		// You tried to modify slider setting in another gui control. SliderSettings is only for Sliders
 		assert(control->type == GuiControlType::SLIDER);
@@ -283,6 +285,7 @@ public:
 		GuiSlider* slider = (GuiSlider*)control;
 		slider->SetRIPS(allowRIPS);
 		slider->SetInitialValue(initialValue);
+		slider->SetRange(range);
 	}
 
 private:
@@ -323,8 +326,6 @@ public:
 	SDL_Texture* PrintFont(const char* text, SDL_Color color, suint fontIndex, int endLine = -1);
 
 	FontSwitcher ChangeFont(suint controlIndex);
-
-	void DestroyFont(suint index);
 
 	void DisableAllButtons();
 

@@ -29,8 +29,7 @@ GuiSlider::~GuiSlider()
 bool GuiSlider::Update(float dt)
 {
     if (state == GuiControlState::DISABLED) return true;
-    Point mouse;
-    mouse = input->GetMousePosition();
+    Point mouse = input->GetMousePosition();
     bool on = collisionUtils.CheckCollision(Rect{mouse, 1.0f, 1.0f }, slider);
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
     float res = 0;
@@ -39,7 +38,7 @@ bool GuiSlider::Update(float dt)
     if (!on && !click)
     {
         state = GuiControlState::NORMAL;
-        if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(value);
+        if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
         return true;
     }
 
@@ -68,13 +67,13 @@ bool GuiSlider::Update(float dt)
         if (res > 100) res = 100;
         value = res;
         slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
-        if (rips) NotifyObserver(value);
+        if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
         break;
     }
 
-    if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(value);
+    if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
 
-    return false;
+    return true;
 }
 
 bool GuiSlider::Draw(float dt) const

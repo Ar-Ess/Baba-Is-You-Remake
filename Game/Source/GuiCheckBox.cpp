@@ -1,181 +1,175 @@
-#include "App.h"
 #include "GuiCheckBox.h"
 #include "GuiManager.h"
-#include "Audio.h"
-#include "Textures.h"
 
-GuiCheckBox::GuiCheckBox(SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::CHECKBOX)
+GuiCheckBox::GuiCheckBox(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex) :
+    GuiControl(
+        bounds,
+        GuiControlType::CHECKBOX,
+        texture,
+        scale,
+        id,
+        anchored,
+        input,
+        render,
+        gui,
+        audio,
+        scene,
+        tex
+    )
 {
-    //this->bounds = bounds;
+    SetDimensions(Point{ bounds.w, bounds.h });
 }
 
 GuiCheckBox::~GuiCheckBox()
 {
-	observer = nullptr;
+
 }
 
 bool GuiCheckBox::Update(float dt)
 {
-    if (state != GuiControlState::DISABLED)
+    if (state == GuiControlState::DISABLED) return true;
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    GuiControlState prevState = state;
+
+
+    if (!on && !click)
     {
-        float mouseX, mouseY;
-        app->input->GetMousePosition(mouseX, mouseY);
-
-        if ((mouseX > bounds.x) && (mouseX < (bounds.x + bounds.w)) &&
-            (mouseY > bounds.y) && (mouseY < (bounds.y + bounds.h)))
+        if (prevState == GuiControlState::PRESSED)
         {
-            if (state == GuiControlState::NORMAL)
-            {
-                app->audio->SetFx(Effect::BUTTON_FOCUSSED);
-            }
-            state = GuiControlState::FOCUSED;
-
-            if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_REPEAT || app->input->GetControl(A) == KeyState::KEY_REPEAT)
-            {
-                state = GuiControlState::PRESSED;
-            }
-
-            if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_UP || app->input->GetControl(A) == KeyState::KEY_UP)
-            {
-                checked = !checked;
-                app->audio->SetFx(Effect::BUTTON_RELEASED);
-                NotifyObserver();
-            }
+            checked = !checked;
+            NotifyObserver(checked);
         }
-        else if (checkBoxFocus)
-        {
-            if (state == GuiControlState::NORMAL)
-            {
-                app->audio->SetFx(Effect::BUTTON_FOCUSSED);
-            }
-            state = GuiControlState::FOCUSED;
-
-            if ((app->input->GetControl(A) == KeyState::KEY_REPEAT) || (app->input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_REPEAT))
-            {
-                state = GuiControlState::PRESSED;
-            }
-
-            if ((app->input->GetControl(A) == KeyState::KEY_UP) || (app->input->GetKey(SDL_SCANCODE_RETURN) == KeyState::KEY_UP))
-            {
-                checked = !checked;
-                app->audio->SetFx(Effect::BUTTON_RELEASED);
-                NotifyObserver();
-            }
-        }
-        else state = GuiControlState::NORMAL;
+        state = GuiControlState::NORMAL;
+        prevState = state;
+        return true;
     }
 
-    return false;
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+        break;
+
+    case GuiControlState::PRESSED:
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        checked = !checked;
+        NotifyObserver();
+        break;
+    }
+
+    prevState = state;
+
+    return true;
 }
 
-bool GuiCheckBox::Draw(float scaleX, float scaleY, bool drawTexture, bool staticPos)
+bool GuiCheckBox::Draw(float dt) const
 {
-    if (drawTexture)
+    Rect section = { 0, 0, bounds.w, bounds.h };
+
+    switch (state)
     {
-        SDL_Rect section = { 0, 0, bounds.w, bounds.h };
+    case GuiControlState::DISABLED:
+        section.x = disabled.x;
+        section.y = disabled.y;
+        break;
 
-        switch (state)
+    case GuiControlState::NORMAL:
+        if (checked)
         {
-        case GuiControlState::DISABLED:
-            section.x = disabled.x;
-            section.y = disabled.y;
-            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-
-        case GuiControlState::NORMAL:
-            if (checked)
-            {
-                section.x = checkNormal.x;
-                section.y = checkNormal.y;
-            }
-            else
-            {
-                section.x = uncheckNormal.x;
-                section.y = uncheckNormal.y;
-            }
-            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-
-        case GuiControlState::FOCUSED:
-            if (checked)
-            {
-                section.x = checkFocused.x;
-                section.y = checkFocused.y;
-            }
-            else
-            {
-                section.x = uncheckFocused.x;
-                section.y = uncheckFocused.y;
-            }
-            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-
-        case GuiControlState::PRESSED:
-            if (checked)
-            {
-                section.x = checkPressed.x;
-                section.y = checkPressed.y;
-            }
-            else
-            {
-                section.x = uncheckPressed.x;
-                section.y = uncheckPressed.y;
-            }
-            app->render->DrawTexture(texture, bounds.x, bounds.y, scaleX, scaleY, &section, false, staticPos);
-            break;
-
-        default:
-            break;
+            section.x = checkNormal.x;
+            section.y = checkNormal.y;
         }
+        else
+        {
+            section.x = uncheckNormal.x;
+            section.y = uncheckNormal.y;
+        }
+        break;
+
+    case GuiControlState::FOCUSED:
+        if (checked)
+        {
+            section.x = checkFocused.x;
+            section.y = checkFocused.y;
+        }
+        else
+        {
+            section.x = uncheckFocused.x;
+            section.y = uncheckFocused.y;
+        }
+        break;
+
+    case GuiControlState::PRESSED:
+        if (checked)
+        {
+            section.x = checkPressed.x;
+            section.y = checkPressed.y;
+        }
+        else
+        {
+            section.x = uncheckPressed.x;
+            section.y = uncheckPressed.y;
+        }
+        break;
+
+    default:
+        break;
     }
 
-    if (app->guiManager->debug)
-    {
-        Rect buttonRect = bounds;
+    render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &section);
 
-        if (staticPos)
-        {
-            buttonRect.x += (int)app->render->camera.x;
-            buttonRect.y += (int)app->render->camera.y;
-        }
-        buttonRect.w *= scaleX;
-        buttonRect.h *= scaleY;
+    if (gui->debug) DebugDraw();
 
-        switch (state)
-        {
-        case GuiControlState::DISABLED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
-            break;
-        case GuiControlState::NORMAL: app->render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
-            break;
-        case GuiControlState::FOCUSED: app->render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
-            break;
-        case GuiControlState::PRESSED: app->render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
-            break;
-        default:
-            break;
-        }
-    }
-
-    return false;
+    return true;
 }
 
-void GuiCheckBox::SetTexture(const char* path, Point magnitude)
+void GuiCheckBox::DebugDraw() const
 {
-    app->tex->UnLoad(texture);
-    texture = nullptr;
-    texture = app->tex->Load(path);
+    Rect buttonRect = bounds;
 
-    UpdateDimensions(magnitude);
+    if (anchored)
+    {
+        buttonRect.x += (int)app->render->camera.x;
+        buttonRect.y += (int)app->render->camera.y;
+    }
+
+    buttonRect.w *= scale.x;
+    buttonRect.h *= scale.y;
+
+    switch (state)
+    {
+    case GuiControlState::DISABLED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
+        break;
+    case GuiControlState::NORMAL: app->render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
+        break;
+    case GuiControlState::FOCUSED: app->render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
+        break;
+    case GuiControlState::PRESSED: app->render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
+        break;
+    default:
+        break;
+    }
 }
 
 void GuiCheckBox::Delete()
 {
-    observer = nullptr;
-    app->tex->UnLoad(texture);
+    tex->UnLoad(texture);
     texture = nullptr;
 }
 
-void GuiCheckBox::UpdateDimensions(Point magnitude)
+void GuiCheckBox::SetDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
     bounds.h = magnitude.y;
