@@ -35,6 +35,7 @@ bool GuiManager::Start(Scene* scene)
 	CreateTexture("Assets/Textures/UI/button_default_set.png", GuiControlType::BUTTON);
 	CreateTexture("Assets/Textures/UI/slider_default_set.png", GuiControlType::SLIDER);
 	CreateFont("Fonts/manaspace.regular.ttf", 18);
+	CreateFont("Fonts/manaspace.regular.ttf", 32);
 
 	debug = false;
 	this->scene = scene;
@@ -76,15 +77,15 @@ ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position
 	switch (type)
 	{
 	case GuiControlType::BUTTON:
-		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene); 
+		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture); 
 		break;
 	case GuiControlType::CHECKBOX: control = new GuiCheckBox({ 0, 0, 0, 0 }, "0"); break;
 	case GuiControlType::SLIDER:
-		control = new GuiSlider(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene);
+		control = new GuiSlider(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture);
 		break;
 	case GuiControlType::TEXT: 
 		bounds.SetDimensions({0, 0});
-		control = new GuiString(bounds, "", texIndex, controls.size(), scale, render, this, anchored);
+		control = new GuiString(bounds, "", texIndex, controls.size(), scale, render, this, texture, anchored);
 		break;
 	}
 
@@ -145,6 +146,13 @@ SDL_Texture* GuiManager::PrintFont(const char* text, SDL_Color color, suint font
 	SDL_FreeSurface(surface);
 
 	return ret;
+}
+
+FontSwitcher GuiManager::ChangeFont(suint controlIndex)
+{
+	assert(controlIndex >= 0 && controlIndex < controls.size());
+
+	return FontSwitcher(controls.at(controlIndex), &fonts);
 }
 
 //TextureSwitcher GuiManager::ChangeFont(suint controlIndex)
@@ -251,4 +259,3 @@ bool GuiManager::CleanUp()
 
 	return true;
 }
-

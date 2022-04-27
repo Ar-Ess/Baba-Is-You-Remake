@@ -8,7 +8,7 @@ class GuiButton : public GuiControl
 {
 public:
 
-    GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene);
+    GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex);
     virtual ~GuiButton();
 
     bool Update(float dt);

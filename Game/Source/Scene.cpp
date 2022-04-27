@@ -197,7 +197,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value)
 		switch (control->id)
 		{
 			// BUTTON
-		case 0: gui->ChangeTexture(control->id).Prev(); break;
+		case 0: gui->ChangeFont(control->id).Prev(); break;
 
 			// SLIDER
 		case 1: audio->ChangeVolumeMusic(value); break;

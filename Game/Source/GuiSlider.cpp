@@ -2,7 +2,7 @@
 #include "GuiManager.h"
 #include "Collider.h"
 
-GuiSlider::GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) :
+GuiSlider::GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex) :
     GuiControl(
         bounds,
         GuiControlType::SLIDER,
@@ -14,7 +14,8 @@ GuiSlider::GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, b
         render,
         gui,
         audio,
-        scene
+        scene,
+        tex
     )
 {
     SetDimensions(Point{ bounds.w, bounds.h });
@@ -108,49 +109,55 @@ bool GuiSlider::Draw(float dt) const
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &bar);
     render->DrawTexture(texture, slider.GetPosition(), scale, anchored, &sldr);
 
-    if (gui->debug)
+    if (text) text->Draw(dt);
+
+    if (gui->debug) DebugDraw(dt);
+
+    return true;
+}
+
+bool GuiSlider::DebugDraw(float dt) const
+{
+    Rect barRect = bounds;
+    Rect sRect = slider;
+
+    if (anchored)
     {
-        Rect barRect = bounds;
-        Rect sRect = slider;
-
-        if (anchored)
-        {
-            barRect.x += render->camera.x;
-            barRect.y += render->camera.y;
-            sRect.x += render->camera.x;
-            sRect.y += render->camera.y;
-        }
-
-        barRect.w *= scale.x;
-        barRect.h *= scale.y;
-        sRect.w *= scale.x;
-        sRect.h *= scale.y;
-
-        switch (state)
-        {
-        case GuiControlState::DISABLED:
-            app->render->DrawRectangle(barRect, { 100, 100, 100, 80 });
-            app->render->DrawRectangle(slider, { 150, 100, 100, 80 });
-            break;
-
-        case GuiControlState::NORMAL:
-            app->render->DrawRectangle(barRect, { 0, 255, 0, 80 });
-            app->render->DrawRectangle(slider, { 0, 200, 0, 80 });
-            break;
-
-        case GuiControlState::FOCUSED:
-            app->render->DrawRectangle(barRect, { 255, 255, 0, 80 });
-            app->render->DrawRectangle(slider, { 255, 255, 0, 80 });
-            break;
-
-        case GuiControlState::PRESSED:
-            app->render->DrawRectangle(barRect, { 0, 255, 255, 80 });
-            app->render->DrawRectangle(slider, { 0, 200, 200, 80 });
-            break;
-        }
+        barRect.x += render->camera.x;
+        barRect.y += render->camera.y;
+        sRect.x += render->camera.x;
+        sRect.y += render->camera.y;
     }
 
-    return false;
+    barRect.w *= scale.x;
+    barRect.h *= scale.y;
+    sRect.w *= scale.x;
+    sRect.h *= scale.y;
+
+    switch (state)
+    {
+    case GuiControlState::DISABLED:
+        app->render->DrawRectangle(barRect, { 100, 100, 100, 80 });
+        app->render->DrawRectangle(slider, { 150, 100, 100, 80 });
+        break;
+
+    case GuiControlState::NORMAL:
+        app->render->DrawRectangle(barRect, { 0, 255, 0, 80 });
+        app->render->DrawRectangle(slider, { 0, 200, 0, 80 });
+        break;
+
+    case GuiControlState::FOCUSED:
+        app->render->DrawRectangle(barRect, { 255, 255, 0, 80 });
+        app->render->DrawRectangle(slider, { 255, 255, 0, 80 });
+        break;
+
+    case GuiControlState::PRESSED:
+        app->render->DrawRectangle(barRect, { 0, 255, 255, 80 });
+        app->render->DrawRectangle(slider, { 0, 200, 200, 80 });
+        break;
+    }
+
+    return true;
 }
 
 void GuiSlider::Delete()

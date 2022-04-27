@@ -109,13 +109,14 @@ bool Textures::UnLoad(SDL_Texture* texture)
 	{
 		if (texture == item->data)
 		{
-			SDL_DestroyTexture(item->data);
 			textures.Del(item);
-			return true;
+			break;
 		}
 	}
 
-	return false;
+	SDL_DestroyTexture(texture);
+
+	return true;
 }
 
 SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface, SDL_Texture* last)

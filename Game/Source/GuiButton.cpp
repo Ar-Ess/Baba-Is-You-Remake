@@ -1,7 +1,7 @@
 #include "GuiButton.h"
 #include "GuiManager.h"
 
-GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) : 
+GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex) :
     GuiControl(
         bounds,
         GuiControlType::BUTTON,
@@ -13,7 +13,8 @@ GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, b
         render, 
         gui, 
         audio,
-        scene
+        scene,
+        tex
     )
 {
     SetDimensions(Point{ bounds.w, bounds.h });
@@ -22,8 +23,6 @@ GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, b
 GuiButton::~GuiButton()
 {
 	observer = nullptr;
-    //text.Clear();
-    //text.~SString();
 }
 
 bool GuiButton::Update(float dt)
@@ -100,7 +99,7 @@ bool GuiButton::Draw(float dt) const
 
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &section);
 
-    if (text) text->Draw();
+    if (text) text->Draw(dt);
 
     if (gui->debug) DebugDraw();
 

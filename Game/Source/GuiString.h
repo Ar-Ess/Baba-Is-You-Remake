@@ -11,15 +11,15 @@ struct SDL_Texture;
 class GuiString : public GuiControl
 {
 public:
-	GuiString(Rect bounds, const char* text, suint fontIndex, suint id, Point scale, Render* render, GuiManager* gui, bool anchored = false, SDL_Color color = {0, 0, 0, 255});
+	GuiString(Rect bounds, const char* string, suint fontIndex, suint id, Point scale, Render* render, GuiManager* gui, Textures* tex, bool anchored = false, SDL_Color color = {0, 0, 0, 255});
 
 	virtual ~GuiString();
 
 public:
 
-	bool Draw() const;
+	bool Draw(float dt) const;
+	bool DebugDraw(float dt) const;
 	void Delete();
-	void CenterAlign();
 	Align GetAlignment() const
 	{
 		return alignment;
@@ -28,8 +28,12 @@ public:
 private:
 
 	friend class Alignment;
+	friend class FontSwitcher;
+	suint fontId = 0;
 	Align alignment = Align::CENTER;
 	Point offset = { 0, 0 };
+	SDL_Color color;
+	const char* string = nullptr;
 
 };
 

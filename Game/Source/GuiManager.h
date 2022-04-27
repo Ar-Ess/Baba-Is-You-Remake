@@ -39,7 +39,7 @@ public:
 		this->ret = ret;
 	}
 
-	ControlSettings* AlignTo(Align align = TOP_LEFT)
+	ControlSettings* AlignTo(Align align = TOP_LEFT, Point offset = {0, 0})
 	{
 		GuiString* text = control->text;
 		switch (align)
@@ -47,9 +47,43 @@ public:
 		case CENTER:
 			text->offset = {(dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
+
+		case BOTTOM_LEFT:
+			text->offset = {0.0f, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_LEFT:
+			text->offset = { 0.0f, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_LEFT:
+			text->offset = { 0.0f, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case BOTTOM_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case CENTER_TOP:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_BOTTOM:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - (0.25f * text->bounds.h) };
+			break;
 		}
 
 		text->alignment = align;
+
+		text->offset += offset;
 
 		return ret;
 	}
@@ -72,6 +106,7 @@ public:
 
 	void To(suint newTextureId)
 	{
+		assert(newTextureId > 0 && newTextureId < textures->size());
 		Texture* newTexture = textures->at(newTextureId);
 		control->texture = newTexture->texture;
 		control->SetDimensions(newTexture->dimensions);
@@ -151,6 +186,72 @@ private:
 	std::vector<Texture*>* textures = {};
 };
 
+class FontSwitcher
+{
+public:
+	FontSwitcher(GuiControl* control, std::vector<_TTF_Font*>* fonts)
+	{
+		this->control = control;
+		this->fonts = fonts;
+	}
+
+	void To(suint newFontId)
+	{
+		assert(newFontId >= 0 && newFontId < fonts->size());
+
+		GuiString* string = control->text;
+		Point position = control->GetPosition();
+		Align alignment = string->alignment;
+		GuiString* newString = new GuiString(string->bounds, string->string, newFontId, string->id, string->scale, string->render, string->gui, string->tex, string->anchored, string->color);
+		
+		RELEASE(string);
+		newString->SetPosition(position);
+		newString->alignment = alignment;
+		if (control->type != GuiControlType::TEXT) control->text = newString;
+		else control = newString;
+
+		Alignment align(control, control->bounds.GetDimensions(), nullptr);
+		align.AlignTo(alignment);
+	}
+
+	bool Next()
+	{
+		GuiString* str = nullptr;
+		if (control->type != GuiControlType::TEXT) str = control->text;
+		else str = (GuiString*)control;
+		short int newIndex = str->fontId;
+
+		if (str->fontId == fonts->size() - 1) newIndex = -1;
+
+		newIndex++;
+
+		To(newIndex);
+
+		return true;
+	}
+
+	bool Prev()
+	{
+		GuiString* str = nullptr;
+		if (control->type != GuiControlType::TEXT) str = control->text;
+		else str = (GuiString*)control;
+		short int newIndex = str->fontId;
+
+		if (str->fontId == 0) newIndex = fonts->size();
+
+		newIndex--;
+
+		To(newIndex);
+
+		return true;
+	}
+
+private:
+
+	GuiControl* control = nullptr;
+	std::vector<_TTF_Font*>* fonts = {};
+};
+
 class ControlSettings
 {
 public:
@@ -164,7 +265,7 @@ public:
 		// You already created a text for this Gui Control, no more that 1 text is allowed
 		assert(control->type != GuiControlType::TEXT && control->text == nullptr);
 
-		control->text = new GuiString(control->bounds, text, fontIndex, control->id, control->scale, control->render, control->gui, control->anchored, color);
+		control->text = new GuiString(control->bounds, text, fontIndex, control->id, control->scale, control->render, control->gui, control->tex, control->anchored, color);
 
 		return Alignment(control, Point{control->bounds.w, control->bounds.h}, this);
 	}
@@ -221,7 +322,7 @@ public:
 
 	SDL_Texture* PrintFont(const char* text, SDL_Color color, suint fontIndex, int endLine = -1);
 
-	TextureSwitcher ChangeFont(suint controlIndex);
+	FontSwitcher ChangeFont(suint controlIndex);
 
 	void DestroyFont(suint index);
 

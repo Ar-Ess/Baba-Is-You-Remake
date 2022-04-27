@@ -48,23 +48,30 @@ class GuiControl
 {
 public:
 
-    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene) : 
+    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex) : 
         bounds(bounds), type(type), 
         state(GuiControlState::NORMAL), 
         texture(texture), 
         scale(scale), 
         id(id),
         anchored(anchored), 
-        input(input), render(render), gui(gui), audio(audio), observer(scene) {}
+        input(input), 
+        render(render), 
+        gui(gui), 
+        audio(audio),
+        tex(tex),
+        observer(scene) {}
 
-    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, suint id, Point scale, bool anchored, Render* render, GuiManager* gui) :
+    GuiControl(Rect bounds, GuiControlType type, SDL_Texture* texture, suint id, Point scale, bool anchored, Render* render, GuiManager* gui, Textures* tex) :
         bounds(bounds),
         type(type),
         texture(texture),
         id(id),
         scale(scale),
         anchored(anchored),
-        render(render), gui(gui) {}
+        render(render), 
+        gui(gui),
+        tex(tex){}
 
     GuiControl(GuiControlType type) // Temp
     {
@@ -83,6 +90,16 @@ public:
 
     virtual void SetDimensions(Point dimensions) {}
 
+    Point GetPosition() const
+    {
+        return bounds.GetPosition();
+    }
+
+    void SetPosition(Point position)
+    {
+        bounds.SetPosition(position);
+    }
+
     void NotifyObserver(float value = 0.0f)
     {
         observer->OnGuiMouseClickEvent(this, value);
@@ -94,7 +111,8 @@ public:
     GuiManager* gui = nullptr;
     Audio* audio = nullptr;
     Scene* observer = nullptr;
-    GuiString* text;
+    Textures* tex = nullptr;
+    GuiString* text = nullptr;
 
     GuiControlType type;
     GuiControlState state;

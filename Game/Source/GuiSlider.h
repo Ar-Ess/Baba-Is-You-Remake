@@ -9,11 +9,12 @@ class GuiSlider : public GuiControl
 {
 public:
 
-    GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene);
+    GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex);
     virtual ~GuiSlider();
 
     bool Update(float dt);
     bool Draw(float dt) const;
+    bool DebugDraw(float dt) const;
     void Delete();
 
     void SetRIPS(bool allowRIPS)
