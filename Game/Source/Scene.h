@@ -34,7 +34,7 @@ public:
 
 	bool CleanUp();
 
-	bool OnGuiMouseClickEvent(GuiControl* control, float value);
+	bool OnGuiMouseClickEvent(GuiControl* control, float value, bool check);
 
 // SCENE MANAGER
 

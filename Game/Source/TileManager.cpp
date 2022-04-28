@@ -23,7 +23,7 @@ TileManager::TileManager(Render* render, Input* input, Textures* texture)
 
 bool TileManager::Update(float dt)
 {
-	if (input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) debug = !debug;
+	if (input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) debug = !debug;
 
 	suint size = tiles.size();
 	bool change = false;

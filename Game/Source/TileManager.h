@@ -68,7 +68,7 @@ private: // Variables
 	std::vector<Tile*> tiles;
 	std::vector<SDL_Texture*> textures;
 
-	bool debug = true;
+	bool debug = false;
 
 };
 

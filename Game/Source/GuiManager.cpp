@@ -34,6 +34,7 @@ bool GuiManager::Start(Scene* scene)
 
 	CreateTexture("Assets/Textures/UI/button_default_set.png", GuiControlType::BUTTON);
 	CreateTexture("Assets/Textures/UI/slider_default_set.png", GuiControlType::SLIDER);
+	CreateTexture("Assets/Textures/UI/checkbox_default_set.png", GuiControlType::CHECKBOX);
 	CreateFont("Fonts/manaspace.regular.ttf", 18);
 	CreateFont("Fonts/manaspace.regular.ttf", 32);
 
@@ -66,7 +67,7 @@ bool GuiManager::Draw(float dt)
 	return true;
 }
 
-ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position, Point scale, bool anchored, suint texIndex)
+ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position, suint texIndex, bool anchored, Point scale)
 {
 	GuiControl* control = nullptr;
 

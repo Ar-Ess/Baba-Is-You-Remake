@@ -189,7 +189,7 @@ bool Scene::UpdateLevelScene(float dt)
 
 // GUI CONTROLS
 
-bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value)
+bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value, bool check)
 {
 	switch (currScene)
 	{
@@ -201,6 +201,9 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value)
 
 			// SLIDER
 		case 1: audio->ChangeVolumeMusic(value); break;
+
+			// CHECKBOX
+		case 2: gui->debug = check;
 		}
 		break;
 	}

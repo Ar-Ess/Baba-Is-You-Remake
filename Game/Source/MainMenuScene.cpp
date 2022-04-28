@@ -21,9 +21,12 @@ bool MainMenuScene::Start()
 	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 })
 		.AddGuiString("PLAY", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER);
 
-	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, {1, 1}, false, 1)
+	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, 1, false, {1, 1})
 		.AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER_TOP)
 		->SliderSettings(50, false);
+
+	gui->CreateGuiControl(GuiControlType::CHECKBOX, { 800, 100 }, 2, false, { 1, 1 })
+		.AddGuiString("DEBUG", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER_TOP);
 
 	return true;
 }

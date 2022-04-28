@@ -42,14 +42,30 @@ public:
 	ControlSettings* AlignTo(Align align = TOP_LEFT, Point offset = {0, 0})
 	{
 		GuiString* text = control->text;
+		switch (control->type)
+		{
+		case GuiControlType::BUTTON: ButtonAlignment(text, align); break;
+		}
+
+		text->alignment = align;
+
+		text->offset += offset;
+
+		return ret;
+	}
+
+private:
+
+	void ButtonAlignment(GuiString* text, Align align)
+	{
 		switch (align)
 		{
 		case CENTER:
-			text->offset = {(dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_LEFT:
-			text->offset = {0.0f, dimensions.y - (0.25f * text->bounds.h) };
+			text->offset = { 0.0f, dimensions.y - (0.25f * text->bounds.h) };
 			break;
 
 		case TOP_LEFT:
@@ -80,12 +96,6 @@ public:
 			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - (0.25f * text->bounds.h) };
 			break;
 		}
-
-		text->alignment = align;
-
-		text->offset += offset;
-
-		return ret;
 	}
 
 private:
@@ -277,7 +287,7 @@ public:
 	//                    it true, it will retrieve the value each frame that the slider is pressed.
 	//   - Range: this variable allows to set the value given at the minimum position and the value given at the
 	//            maximum position of the slider. Point{minimum, maximum}
-	void SliderSettings(float initialValue = 0.0f, bool allowRIPS = false, Point range = {0, 100})
+	ControlSettings* SliderSettings(float initialValue = 0.0f, bool allowRIPS = false, Point range = {0, 100})
 	{
 		// You tried to modify slider setting in another gui control. SliderSettings is only for Sliders
 		assert(control->type == GuiControlType::SLIDER);
@@ -286,6 +296,8 @@ public:
 		slider->SetRIPS(allowRIPS);
 		slider->SetInitialValue(initialValue);
 		slider->SetRange(range);
+
+		return this;
 	}
 
 private:
@@ -311,7 +323,7 @@ public:
 
 	bool CleanUp();
 
-	ControlSettings CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, Point scale = { 1, 1 }, bool anchored = false, suint texIndex = 0);
+	ControlSettings CreateGuiControl(GuiControlType type, Point position = { 0, 0 }, suint texIndex = 0, bool anchored = false, Point scale = {1, 1});
 
 	void DestroyGuiControl(suint index);
 
@@ -360,71 +372,3 @@ private:
 };
 
 #endif // __GUI_MANAGER_H__
-
-//TEXT
-/*    IMPLEMENTATION
-//testText = (GuiString*)app->guiManager->CreateGuiControl(GuiControlType::TEXT);
-//testText->bounds = {400, 400, 0, 0};
-//testText->SetString("TEST");
-//testText->SetTextFont(app->fontTTF->defaultFont);
-
-//    UPDATING
-//testText->Draw();
-
-//    DELETING
-//testText->Delete();
-//app->guiManager->DestroyGuiControl(testText);
-//testText = nullptr;*/
-
-//BUTTON
-/*    IMPLEMENTATION
-//testButton = (GuiButton*)app->guiManager->CreateGuiControl(GuiControlType::BUTTON);
-//testButton->bounds = { 200, 200, 0, 0 };
-//testButton->SetTexture("Assets/Textures/UI/button_set_1.png", { 163, 62 });
-//testButton->SetObserver(this);
-//testButton->text = "test";
-
-//    UPDATING
-//testButton->Update(0.0f);
-//testButton->Draw();
-
-//    DELETING
-//testButton->Delete();
-//app->guiManager->DestroyGuiControl(testButton);
-//testButton = nullptr;*/
-
-//CHECKBOX
-/*    IMPLEMENTATION
-//testCheckBox = (GuiCheckBox*)app->guiManager->CreateGuiControl(GuiControlType::CHECKBOX);
-//testCheckBox->bounds = { 400, 400, 0, 0 };
-//testCheckBox->SetTexture("Assets/Textures/UI/checkbox_set_1.png", { 60, 64 });
-//testCheckBox->SetObserver(this);
-//testCheckBox->text = "test";
-
-//    UPDATING
-//testCheckBox->Update(0.0f);
-//testCheckBox->Draw();
-
-//    DELETING
-//testCheckBox->Delete();
-//app->guiManager->DestroyGuiControl(testCheckBox);
-//testCheckBox = nullptr;*/
-
-//SLIDER
-/*    IMPLEMENTATION
-//testSlider = (GuiSlider*)app->guiManager->CreateGuiControl(GuiControlType::SLIDER);
-//testSlider->bounds = { 700, 400, 0, 0 };
-//testSlider->SetMaxValue(128);
-//testSlider->SetMinValue(0);
-//testSlider->SetTexture("Assets/Textures/UI/slider_set_1.png", { 487, 22 }, { 60, 64 });
-//testSlider->SetObserver(this);
-//testSlider->text = "test";
-
-//    UPDATING
-//testSlider->Update(0.0f);
-//testSlider->Draw();
-
-//    DELETING
-//testString->Delete();
-//app->guiManager->DestroyGuiControl(testSlider);
-//testString = nullptr;*/

@@ -100,9 +100,9 @@ public:
         bounds.SetPosition(position);
     }
 
-    void NotifyObserver(float value = 0.0f)
+    void NotifyObserver(float value = 0.0f, bool check = false)
     {
-        observer->OnGuiMouseClickEvent(this, value);
+        observer->OnGuiMouseClickEvent(this, value, check);
     }
 
 public:

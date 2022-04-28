@@ -39,7 +39,7 @@ bool GuiCheckBox::Update(float dt)
         if (prevState == GuiControlState::PRESSED)
         {
             checked = !checked;
-            NotifyObserver(checked);
+            NotifyObserver(0.0f, checked);
         }
         state = GuiControlState::NORMAL;
         prevState = state;
@@ -65,7 +65,7 @@ bool GuiCheckBox::Update(float dt)
 
         state = GuiControlState::FOCUSED;
         checked = !checked;
-        NotifyObserver();
+        NotifyObserver(0.0f, checked);
         break;
     }
 
@@ -172,13 +172,13 @@ void GuiCheckBox::Delete()
 void GuiCheckBox::SetDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
-    bounds.h = magnitude.y;
+    bounds.h = magnitude.y / 7;
 
-    //disabled = { 0, 0 * bounds.h };
-    //checkNormal = { 0, 1 * bounds.h };
-    //checkFocused = { 0, 2 * bounds.h };
-    //checkPressed = { 0, 3 * bounds.h };
-    //uncheckNormal = { 0, 4 * bounds.h };
-    //uncheckFocused = { 0, 5 * bounds.h };
-    //uncheckPressed = { 0, 6 * bounds.h };
+    disabled = { 0.0f, 0 * bounds.h };
+    checkNormal = { 0.0f, 1 * bounds.h };
+    checkFocused = { 0.0f, 2 * bounds.h };
+    checkPressed = { 0.0f, 3 * bounds.h };
+    uncheckNormal = { 0.0f, 4 * bounds.h };
+    uncheckFocused = { 0.0f, 5 * bounds.h };
+    uncheckPressed = { 0.0f, 6 * bounds.h };
 }
