@@ -45,6 +45,8 @@ public:
 		switch (control->type)
 		{
 		case GuiControlType::BUTTON: ButtonAlignment(text, align); break;
+		case GuiControlType::SLIDER: SliderAlignment(text, align); break;
+		case GuiControlType::CHECKBOX: CheckboxAlignment(text, align); break;
 		}
 
 		text->alignment = align;
@@ -57,6 +59,90 @@ public:
 private:
 
 	void ButtonAlignment(GuiString* text, Align align)
+	{
+		switch (align)
+		{
+		case CENTER:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case BOTTOM_LEFT:
+			text->offset = { 0.0f, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_LEFT:
+			text->offset = { 0.0f, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_LEFT:
+			text->offset = { 0.0f, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case BOTTOM_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case CENTER_TOP:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_BOTTOM:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - (0.25f * text->bounds.h) };
+			break;
+		}
+	}
+
+	void SliderAlignment(GuiString* text, Align align)
+	{
+		switch (align)
+		{
+		case CENTER:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case BOTTOM_LEFT:
+			text->offset = { 0.0f, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_LEFT:
+			text->offset = { 0.0f, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_LEFT:
+			text->offset = { 0.0f, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case BOTTOM_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y - (0.25f * text->bounds.h) };
+			break;
+
+		case TOP_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_RIGHT:
+			text->offset = { dimensions.x - text->bounds.w, (dimensions.y / 2) - (text->bounds.h / 2) };
+			break;
+
+		case CENTER_TOP:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (-0.75f * text->bounds.h) };
+			break;
+
+		case CENTER_BOTTOM:
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - (0.25f * text->bounds.h) };
+			break;
+		}
+	}
+
+	void CheckboxAlignment(GuiString* text, Align align)
 	{
 		switch (align)
 		{

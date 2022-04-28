@@ -90,6 +90,9 @@
     <ClCompile Include="Source\MainMenuScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GuiImage.cpp">
+      <Filter>GuiControls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\App.h" />
@@ -230,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="Source\AlignEnum.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GuiImage.h">
+      <Filter>GuiControls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

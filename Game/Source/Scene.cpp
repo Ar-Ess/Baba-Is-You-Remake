@@ -197,13 +197,13 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value, bool check)
 		switch (control->id)
 		{
 			// BUTTON
-		case 0: gui->ChangeFont(control->id).Prev(); break;
+		case 1: gui->ChangeFont(control->id).Prev(); break;
 
 			// SLIDER
-		case 1: audio->ChangeVolumeMusic(value); break;
+		case 2: audio->ChangeVolumeMusic(value); break;
 
 			// CHECKBOX
-		case 2: gui->debug = check;
+		case 3: gui->debug = check;
 		}
 		break;
 	}

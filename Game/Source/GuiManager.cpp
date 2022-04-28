@@ -3,6 +3,7 @@
 #include "GuiButton.h"
 #include "GuiCheckBox.h"
 #include "GuiSlider.h"
+#include "GuiImage.h"
 #include "GuiString.h"
 
 #include "SDL_ttf/include/SDL_ttf.h"
@@ -35,6 +36,7 @@ bool GuiManager::Start(Scene* scene)
 	CreateTexture("Assets/Textures/UI/button_default_set.png", GuiControlType::BUTTON);
 	CreateTexture("Assets/Textures/UI/slider_default_set.png", GuiControlType::SLIDER);
 	CreateTexture("Assets/Textures/UI/checkbox_default_set.png", GuiControlType::CHECKBOX);
+	CreateTexture("Assets/Textures/UI/image_default_set.png", GuiControlType::IMAGE);
 	CreateFont("Fonts/manaspace.regular.ttf", 18);
 	CreateFont("Fonts/manaspace.regular.ttf", 32);
 
@@ -79,6 +81,9 @@ ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position
 	{
 	case GuiControlType::BUTTON:
 		control = new GuiButton(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture); 
+		break;
+	case GuiControlType::IMAGE:
+		control = new GuiImage(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture);
 		break;
 	case GuiControlType::CHECKBOX: control = new GuiCheckBox(bounds, tex->texture, scale, controls.size(), anchored, input, render, this, audio, scene, texture); break;
 	case GuiControlType::SLIDER:
