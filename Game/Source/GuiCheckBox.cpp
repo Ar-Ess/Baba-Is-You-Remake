@@ -130,6 +130,8 @@ bool GuiCheckBox::Draw(float dt) const
 
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored, &section);
 
+    if (text) text->Draw(dt);
+
     if (gui->debug) DebugDraw();
 
     return true;
@@ -181,4 +183,6 @@ void GuiCheckBox::SetDimensions(Point magnitude)
     uncheckNormal = { 0.0f, 4 * bounds.h };
     uncheckFocused = { 0.0f, 5 * bounds.h };
     uncheckPressed = { 0.0f, 6 * bounds.h };
+
+    if (text) Alignment(text, Point{ bounds.w, bounds.h }, nullptr).AlignTo(text->GetAlignment());
 }

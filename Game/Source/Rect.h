@@ -30,6 +30,14 @@ public:
 		this->h = h;
 	}
 
+	Rect(Point position, Point dimensions)
+	{
+		this->x = position.x;
+		this->y = position.y;
+		this->w = dimensions.x;
+		this->h = dimensions.y;
+	}
+
 	void SetPosition(Point position)
 	{
 		x = position.x;

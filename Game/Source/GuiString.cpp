@@ -43,7 +43,7 @@ bool GuiString::Draw(float dt) const
 
 bool GuiString::DebugDraw(float dt) const
 {
-	render->DrawRectangle(bounds, { 0, 255, 0, 80 });
+	render->DrawRectangle({ bounds.GetPosition().Apply(offset), bounds.GetDimensions()}, { 0, 255, 0, 80 });
 
 	return true;
 }

@@ -35,7 +35,7 @@ private:
     Point uncheckNormal = { 0, 0 };
     Point uncheckFocused = { 0, 0 };
     Point uncheckPressed = { 0, 0 };
-    Point disabled = {0, 0};
+    Point disabled = { 0, 0 };
 };
 
 #endif // __GUICHECKBOX_H__
