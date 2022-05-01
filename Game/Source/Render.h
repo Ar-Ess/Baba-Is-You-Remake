@@ -43,7 +43,7 @@ public:
 
 
 	bool DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled = true, bool useCamera = true) const;
-	bool DrawRectangle(Rect rect, SDL_Color color = { 255, 255, 255, 255 }, bool filled = true, bool useCamera = true) const;
+	bool DrawRectangle(Rect rect, SDL_Color color = { 255, 255, 255, 255 }, Point size = {1.0f, 1.0f}, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(float x1, float y1, float x2, float y2, SDL_Color color = { 255, 255, 255, 255}, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int radius, SDL_Color color, bool filled = false, bool useCamera = true) const;
 	bool DrawCircle(CircleCollider circle, SDL_Color color, bool filled = false, bool useCamera = true) const;

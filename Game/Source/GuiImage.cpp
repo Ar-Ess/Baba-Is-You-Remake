@@ -33,6 +33,8 @@ bool GuiImage::Draw(float dt) const
 {
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored);
 
+    if (state == GuiControlState::DISABLED) render->DrawRectangle(bounds, {255, 255, 255, 50}, scale, true, anchored);
+
     return false;
 }
 
@@ -48,4 +50,8 @@ void GuiImage::SetDimensions(Point magnitude)
 {
     bounds.w = magnitude.x;
     bounds.h = magnitude.y;
+}
+
+void GuiImage::Manipulate()
+{
 }

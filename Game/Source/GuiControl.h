@@ -106,6 +106,11 @@ public:
         observer->OnGuiMouseClickEvent(this, value, check);
     }
 
+    virtual void Manipulate()
+    {
+        return;
+    }
+
 public:
     Input* input = nullptr;
     Render* render = nullptr;

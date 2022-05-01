@@ -1,7 +1,7 @@
 #ifndef __GUI_MANAGER_H__
 #define __GUI_MANAGER_H__
 
-#include "Module.h"
+#include "Scene.h"
 #include "GuiControl.h"
 #include "GuiString.h"
 #include "GuiSlider.h"
@@ -68,11 +68,11 @@ private:
 			break;
 
 		case BOTTOM_LEFT:
-			text->offset = { 0.0f, dimensions.y - (0.25f * text->bounds.h) };
+			text->offset = { 0.0f, dimensions.y - text->bounds.h };
 			break;
 
 		case TOP_LEFT:
-			text->offset = { 0.0f, (-0.75f * text->bounds.h) };
+			text->offset = { 0.0f, 0.0f };
 			break;
 
 		case CENTER_LEFT:
@@ -80,11 +80,11 @@ private:
 			break;
 
 		case BOTTOM_RIGHT:
-			text->offset = { dimensions.x - text->bounds.w, dimensions.y - (0.25f * text->bounds.h) };
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y - text->bounds.h };
 			break;
 
 		case TOP_RIGHT:
-			text->offset = { dimensions.x - text->bounds.w, (-0.75f * text->bounds.h) };
+			text->offset = { dimensions.x - text->bounds.w, 0.0f };
 			break;
 
 		case CENTER_RIGHT:
@@ -92,11 +92,11 @@ private:
 			break;
 
 		case CENTER_TOP:
-			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (-0.75f * text->bounds.h) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), 0.0f };
 			break;
 
 		case CENTER_BOTTOM:
-			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - (0.25f * text->bounds.h) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - text->bounds.h };
 			break;
 		}
 	}
@@ -392,7 +392,7 @@ private:
 	GuiControl* control = nullptr;
 };
 
-class GuiManager : public Module
+class GuiManager
 {
 public:
 
@@ -400,13 +400,11 @@ public:
 
 	virtual ~GuiManager();
 
-	bool Awake(pugi::xml_node&);
-
 	bool Start(Scene* scene);
 
-	bool Update(float dt);
+	bool Update(float dt = 0.0f);
 
-	bool Draw(float dt);
+	bool Draw(float dt = 0.0f);
 
 	bool CleanUp();
 
@@ -426,8 +424,6 @@ public:
 
 	FontSwitcher ChangeFont(suint controlIndex);
 
-	void DisableAllButtons();
-
 private:
 	
 	friend class GuiString;
@@ -436,6 +432,8 @@ private:
 	bool InitializeFonts();
 
 	void SelectButtonsLogic();
+
+	void ActivateControls(bool active);
 
 public:
 

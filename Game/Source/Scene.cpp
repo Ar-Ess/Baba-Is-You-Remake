@@ -12,9 +12,9 @@
 #include "Defs.h"
 #include "Log.h"
 
-Scene::Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window, Audio* audio) : Module()
+Scene::Scene(Render* render, Input* input, Textures* texture, Window* window, Audio* audio) : Module()
 {
-	this->gui = gui;
+	this->gui = new GuiManager(input, render, audio, texture);
 	this->render = render;
 	this->input = input;
 	this->texture = texture;

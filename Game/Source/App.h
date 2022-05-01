@@ -25,7 +25,6 @@ class Render;
 class Textures;
 class Audio;
 class EntityManager;
-class GuiManager;
 class Scene;
 class DialogueManager;
 class Transition;
@@ -101,7 +100,6 @@ public:
 	Textures* tex;
 	Audio* audio;
 	EntityManager* entityManager;
-	GuiManager* guiManager;
 	Scene* scene;
 	DialogueManager* dialogueManager;
 	Transition* transition;

@@ -14,14 +14,10 @@ MainMenuScene::~MainMenuScene()
 
 bool MainMenuScene::Start()
 {
-	gui->CreateTexture("Assets/Textures/UI/button_set_1.png", GuiControlType::BUTTON);
-	gui->CreateTexture("Assets/Textures/UI/button_set_2.png", GuiControlType::BUTTON);
-	gui->CreateTexture("Assets/Textures/UI/button_set_3.png", GuiControlType::BUTTON);
-
 	gui->CreateGuiControl(GuiControlType::IMAGE, { 0, 0 }, 3, false, { 5, 5 });
 
 	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 })
-		.AddGuiString("PLAY", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER);
+		.AddGuiString("PLAY", 0, { 255, 255, 255, 255 }).AlignTo(Align::BOTTOM_LEFT);
 
 	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, 1, false, {1, 1})
 		.AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::TOP_RIGHT)
@@ -35,6 +31,7 @@ bool MainMenuScene::Start()
 
 bool MainMenuScene::Update(float dt)
 {
+	gui->Update(dt);
 	return true;
 }
 

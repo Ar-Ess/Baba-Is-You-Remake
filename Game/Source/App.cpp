@@ -5,7 +5,6 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Audio.h"
-#include "GuiManager.h"
 #include "AssetsManager.h"
 #include "Scene.h"
 #include "Transition.h"
@@ -28,8 +27,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	render = new Render();
 	tex = new Textures();
 	audio = new Audio();
-	guiManager = new GuiManager(input, render, audio, tex);
-	scene = new Scene(guiManager, render, input, tex, win, audio);
+	scene = new Scene(render, input, tex, win, audio);
 	transition = new Transition();
 	psystem = new ParticleSystem();
 
@@ -40,7 +38,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(assetsManager);
 	AddModule(tex);
 	AddModule(audio);
-	AddModule(guiManager);
 	AddModule(scene);
 	AddModule(transition);
 	AddModule(psystem);

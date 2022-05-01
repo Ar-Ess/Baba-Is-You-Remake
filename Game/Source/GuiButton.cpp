@@ -127,6 +127,11 @@ void GuiButton::DebugDraw() const
     }
 }
 
+void GuiButton::Manipulate()
+{
+    if (input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) NotifyObserver();
+}
+
 void GuiButton::Delete()
 {
     //observer = nullptr;

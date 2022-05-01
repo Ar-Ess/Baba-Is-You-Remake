@@ -21,6 +21,8 @@ private:
 
     void DebugDraw() const;
 
+    void Manipulate() override;
+
 private:
 
     //Texture sections

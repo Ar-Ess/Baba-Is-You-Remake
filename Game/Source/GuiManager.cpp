@@ -24,11 +24,6 @@ GuiManager::~GuiManager()
 {
 }
 
-bool GuiManager::Awake(pugi::xml_node&)
-{
-	return true;
-}
-
 bool GuiManager::Start(Scene* scene)
 {
 	InitializeFonts();
@@ -42,6 +37,7 @@ bool GuiManager::Start(Scene* scene)
 
 	debug = false;
 	this->scene = scene;
+	idSelection = -1;
 	return true;
 }
 
@@ -166,15 +162,6 @@ TextureSwitcher GuiManager::ChangeTexture(suint controlIndex)
 	return TextureSwitcher(controls.at(controlIndex), &textures);
 }
 
-void GuiManager::DisableAllButtons()
-{
-	suint size = controls.size();
-	for (suint i = 0; i < size; ++i)
-	{
-		controls[i]->state = GuiControlState::DISABLED;
-	}
-}
-
 bool GuiManager::CalculateSize(const char* text, suint fontIndex, Point* result) const
 {
 	int w, h;
@@ -203,41 +190,29 @@ bool GuiManager::InitializeFonts()
 
 void GuiManager::SelectButtonsLogic()
 {
-
-	if (app->input->GetKey(selectKey) == KEY_DOWN || app->input->GetControl(L3) == KEY_DOWN)
+	if (input->GetKey(selectKey) == KEY_DOWN)
 	{
-		idSelection++;
-		DisableAllButtons();
+		++idSelection;
+		if (idSelection == controls.size())
+		{
+			idSelection = -1;
+			ActivateControls(true);
+			return;
+		}
+
+		ActivateControls(false);
+		controls[idSelection]->state = GuiControlState::NORMAL;
 	}
 
-	/*switch (s->GetCurrScene())
-	{
-	case MAIN_MENU:
-		if (idSelection == 0) s->newGameButton->buttonFocus = true;
-		else if (idSelection == 1) s->continueButton->buttonFocus = true;
-		else if (idSelection == 2) s->optionsButton->buttonFocus = true;
-		else if (idSelection == 3) s->exitButton->buttonFocus = true;
-		else if (idSelection == 4) idSelection = -1;
-		break;
+	if (idSelection != -1) controls[idSelection]->Manipulate();
 
-	case PAUSE_MENU:
-		if (idSelection == 0) s->backToGameButton->buttonFocus = true;
-		else if (idSelection == 1) s->saveGameButton->buttonFocus = true;
-		else if (idSelection == 2) s->optionsPauseButton->buttonFocus = true;
-		else if (idSelection == 3) s->backToMenuButton->buttonFocus = true;
-		else if (idSelection == 4) idSelection = -1;
-		break;
+	return;
+}
 
-	case OPTIONS_MENU:
-		if (idSelection == 0) s->optionsMenu->dFullScreenCheckBox->checkBoxFocus = true;
-		else if (idSelection == 1) s->optionsMenu->fullScreenCheckBox->checkBoxFocus = true;
-		else if (idSelection == 2) s->optionsMenu->vSyncCheckBox->checkBoxFocus = true;
-		else if (idSelection == 3) s->optionsMenu->musicVolumeSlider->sliderFocus = true;
-		else if (idSelection == 4) s->optionsMenu->fxVolumeSlider->sliderFocus = true;
-		else if (idSelection == 5) s->optionsMenu->returnMenuButton->buttonFocus = true;
-		else if (idSelection == 6) idSelection = -1;
-		break;
-	}*/
+void GuiManager::ActivateControls(bool active)
+{
+	suint size = controls.size();
+	for (suint i = 0; i < size; ++i) !active ? controls[i]->state = GuiControlState::DISABLED : controls[i]->state = GuiControlState::NORMAL;
 }
 
 bool GuiManager::CleanUp()

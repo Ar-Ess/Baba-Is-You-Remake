@@ -24,6 +24,7 @@ public:
     void SetInitialValue(float initialValue)
     {
         value = initialValue;
+        slider.x = (bounds.w * value / 100) + bounds.x - (slider.w / 2);
         NotifyObserver(initialValue);
     }
     void SetRange(Point range)
@@ -33,6 +34,8 @@ public:
 
 private:
     void SetDimensions(Point magnitudes);
+
+    void Manipulate() override;
 
 private:
 

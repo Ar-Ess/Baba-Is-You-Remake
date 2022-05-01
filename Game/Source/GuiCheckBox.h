@@ -26,6 +26,8 @@ private:
         return checked;
     }
 
+    void Manipulate() override;
+
 private:
     bool checked = false;
 

@@ -165,6 +165,15 @@ void GuiCheckBox::DebugDraw() const
     }
 }
 
+void GuiCheckBox::Manipulate()
+{
+    if (input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+    {
+        checked = !checked;
+        NotifyObserver(0.0f, checked);
+    }
+}
+
 void GuiCheckBox::Delete()
 {
     tex->UnLoad(texture);

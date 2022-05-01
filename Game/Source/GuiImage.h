@@ -18,6 +18,8 @@ public:
 private:
     void SetDimensions(Point magnitudes);
 
+    void Manipulate() override;
+
 private:
 
 };

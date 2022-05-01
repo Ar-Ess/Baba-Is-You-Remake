@@ -185,3 +185,34 @@ void GuiSlider::SetDimensions(Point magnitudes)
 
     if (text) Alignment(text, Point{ bounds.w, bounds.h }, nullptr).AlignTo(text->GetAlignment());
 }
+
+void GuiSlider::Manipulate()
+{
+    if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+    {
+        suint substract = 5;
+        if (input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) substract = 1;
+
+        if (value - substract < 0) value = 0;
+        else
+            value -= substract;
+        slider.x = (bounds.w * value / 100) + bounds.x - (slider.w / 2);
+        NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+
+        return;
+    }
+
+    if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+    {
+        suint add = 5;
+        if (input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) add = 1;
+
+        if (value + add > 100) value = 100;
+        else
+            value += add;
+        slider.x = (bounds.w * value / 100) + bounds.x - (slider.w / 2);
+        NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+
+        return;
+    }
+}

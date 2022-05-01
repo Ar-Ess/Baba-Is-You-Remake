@@ -9,6 +9,7 @@
 class LevelScene;
 class MainMenuScene;
 class GuiControl;
+class GuiManager;
 
 enum Scenes
 {
@@ -22,7 +23,7 @@ class Scene : public Module
 {
 public:
 
-	Scene(GuiManager* gui, Render* render, Input* input, Textures* texture, Window* window, Audio* audio);
+	Scene(Render* render, Input* input, Textures* texture, Window* window, Audio* audio);
 
 	virtual ~Scene();
 

@@ -238,7 +238,7 @@ bool Render::DrawRectangle(const SDL_Rect& rect, SDL_Color color, bool filled, b
 	return ret;
 }
 
-bool Render::DrawRectangle(Rect rect, SDL_Color color, bool filled, bool useCamera) const
+bool Render::DrawRectangle(Rect rect, SDL_Color color, Point size, bool filled, bool anchored) const
 {
 	bool ret = true;
 
@@ -246,14 +246,15 @@ bool Render::DrawRectangle(Rect rect, SDL_Color color, bool filled, bool useCame
 	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
 	Rect rec(rect);
-	if (useCamera)
+
+	if (anchored)
 	{
-		rec.x = camera.x + rect.x;
-		rec.y = camera.y + rect.y;
+		rect.x += (int)camera.x;
+		rect.y += (int)camera.y;
 	}
 
-	rec.w *= scale;
-	rec.h *= scale;
+	rec.w *= size.x;
+	rec.h *= size.y;
 
 	SDL_Rect rectangle = {(int)rec.x, (int)rec.y, (int)rec.w, (int)rec.h};
 
