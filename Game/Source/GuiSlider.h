@@ -12,7 +12,7 @@ public:
     GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex);
     virtual ~GuiSlider();
 
-    bool Update(float dt);
+    bool Update(float dt, bool DGSO = true, bool MGS = true);
     bool Draw(float dt) const;
     bool DebugDraw(float dt) const;
     void Delete();
@@ -31,11 +31,21 @@ public:
     {
         this->range = range;
     }
+    void SetKeys(suint lessKey = 80, suint moreKey = 79, suint slowKey = 225)
+    {
+        this->lessKey = lessKey;
+        this->moreKey = moreKey;
+        this->slowKey = slowKey;
+    }
 
 private:
+
     void SetDimensions(Point magnitudes);
 
     void Manipulate() override;
+
+    bool NormalUpdate();
+    bool DGSOUpdate(bool MGS);
 
 private:
 
@@ -54,6 +64,10 @@ private:
     Point normalButton = { 0, 0 };
     Point focusedButton = { 0, 0 };
     Point pressedButton = { 0, 0 };
+
+    suint lessKey = 80;
+    suint moreKey = 79;
+    suint slowKey = 225;
 };
 
 #endif // __GUISLIDER_H__

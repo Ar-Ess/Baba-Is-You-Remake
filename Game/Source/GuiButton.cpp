@@ -25,7 +25,7 @@ GuiButton::~GuiButton()
 	observer = nullptr;
 }
 
-bool GuiButton::Update(float dt)
+bool GuiButton::Update(float dt, bool DGSO, bool MGS)
 {
     if (state == GuiControlState::DISABLED) return true;
     Point mouse = input->GetMousePosition();

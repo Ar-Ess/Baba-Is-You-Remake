@@ -12,7 +12,7 @@ public:
     GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, bool anchored, Input* input, Render* render, GuiManager* gui, Audio* audio, Scene* scene, Textures* tex);
     virtual ~GuiButton();
 
-    bool Update(float dt);
+    bool Update(float dt, bool DGSO = true, bool MGS = true);
     bool Draw(float dt) const;
     void Delete();
 

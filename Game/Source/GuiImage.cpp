@@ -24,11 +24,6 @@ GuiImage::~GuiImage()
 {
 }
 
-bool GuiImage::Update(float dt)
-{
-    return true;
-}
-
 bool GuiImage::Draw(float dt) const
 {
     render->DrawTexture(texture, bounds.GetPosition(), scale, anchored);

@@ -26,54 +26,17 @@ GuiSlider::~GuiSlider()
     app->tex->UnLoad(texture);
 }
 
-bool GuiSlider::Update(float dt)
+bool GuiSlider::Update(float dt, bool DGSO, bool MGS)
 {
     if (state == GuiControlState::DISABLED) return true;
-    Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{mouse, 1.0f, 1.0f }, slider);
-    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
-    float res = 0;
-    GuiControlState prevState = state;
+    bool ret = true;
 
-    if (!on && !click)
-    {
-        state = GuiControlState::NORMAL;
-        if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
-        return true;
-    }
+    if (DGSO)
+        ret = DGSOUpdate(MGS);
+    else
+        ret = NormalUpdate();
 
-    switch (state)
-    {
-    case GuiControlState::NORMAL:
-        state = GuiControlState::NORMAL;
-        if (!on) break;
-        audio->SetFx(Effect::BUTTON_FOCUSSED);
-        state = GuiControlState::FOCUSED;
-
-    case GuiControlState::FOCUSED:
-        if (!click) break;
-        state = GuiControlState::PRESSED;
-        audio->SetFx(Effect::BUTTON_RELEASED);
-        break;
-
-    case GuiControlState::PRESSED:
-        if (!click)
-        {
-            state = GuiControlState::FOCUSED;
-            break;
-        }
-        res = (mouse.x - bounds.x) * 100 / bounds.w;
-        if (res < 0) res = 0;
-        if (res > 100) res = 100;
-        value = res;
-        slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
-        if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
-        break;
-    }
-
-    if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
-
-    return true;
+    return ret;
 }
 
 bool GuiSlider::Draw(float dt) const
@@ -188,10 +151,10 @@ void GuiSlider::SetDimensions(Point magnitudes)
 
 void GuiSlider::Manipulate()
 {
-    if (input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+    if (input->GetKey(lessKey) == KEY_DOWN)
     {
         suint substract = 5;
-        if (input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) substract = 1;
+        if (input->GetKey(slowKey) == KEY_REPEAT) substract = 1;
 
         if (value - substract < 0) value = 0;
         else
@@ -202,10 +165,10 @@ void GuiSlider::Manipulate()
         return;
     }
 
-    if (input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+    if (input->GetKey(moreKey) == KEY_DOWN)
     {
         suint add = 5;
-        if (input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) add = 1;
+        if (input->GetKey(slowKey) == KEY_REPEAT) add = 1;
 
         if (value + add > 100) value = 100;
         else
@@ -215,4 +178,98 @@ void GuiSlider::Manipulate()
 
         return;
     }
+}
+
+bool GuiSlider::NormalUpdate()
+{
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, slider);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    bool release = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP);
+    float res = 0;
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+
+    case GuiControlState::PRESSED:
+        if (!click && on)
+        {
+            state = GuiControlState::FOCUSED;
+            break;
+        }
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
+        res = (mouse.x - bounds.x) * 100 / bounds.w;
+        if (res < 0) res = 0;
+        if (res > 100) res = 100;
+        value = res;
+        slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
+        if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+        break;
+    }
+
+    if (!rips && release) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+
+    return true;
+}
+
+bool GuiSlider::DGSOUpdate(bool MGS)
+{
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, slider);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    float res = 0;
+    GuiControlState prevState = state;
+
+    if (!on && !click)
+    {
+        state = GuiControlState::NORMAL;
+        if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+        return true;
+    }
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+        break;
+
+    case GuiControlState::PRESSED:
+        if (!click)
+        {
+            state = GuiControlState::FOCUSED;
+            break;
+        }
+        res = (mouse.x - bounds.x) * 100 / bounds.w;
+        if (res < 0) res = 0;
+        if (res > 100) res = 100;
+        value = res;
+        slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
+        if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+        break;
+    }
+
+    if (!rips && prevState == GuiControlState::PRESSED && state != GuiControlState::PRESSED) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
+
 }

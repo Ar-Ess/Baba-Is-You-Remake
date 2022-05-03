@@ -25,7 +25,7 @@ GuiCheckBox::~GuiCheckBox()
 
 }
 
-bool GuiCheckBox::Update(float dt)
+bool GuiCheckBox::Update(float dt, bool DGSO, bool MGS)
 {
     if (state == GuiControlState::DISABLED) return true;
     Point mouse = input->GetMousePosition();

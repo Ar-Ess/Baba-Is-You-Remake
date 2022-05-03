@@ -374,15 +374,17 @@ public:
 	//                    it true, it will retrieve the value each frame that the slider is pressed.
 	//   - Range: this variable allows to set the value given at the minimum position and the value given at the
 	//            maximum position of the slider. Point{minimum, maximum}
-	ControlSettings* SliderSettings(float initialValue = 0.0f, bool allowRIPS = false, Point range = {0, 100})
+	//   - Keys: 
+	ControlSettings* SliderSettings(float initValue = 0.0f, bool allowRIPS = false, Point range = {0, 100}, suint subsKey = 80, suint addKey = 79, suint slowKey = 225)
 	{
 		// You tried to modify slider setting in another gui control. SliderSettings is only for Sliders
 		assert(control->type == GuiControlType::SLIDER);
 
 		GuiSlider* slider = (GuiSlider*)control;
 		slider->SetRIPS(allowRIPS);
-		slider->SetInitialValue(initialValue);
+		slider->SetInitialValue(initValue);
 		slider->SetRange(range);
+		slider->SetKeys(subsKey, addKey, slowKey);
 
 		return this;
 	}
@@ -396,7 +398,7 @@ class GuiManager
 {
 public:
 
-	GuiManager(Input* input, Render* Render, Audio* audio, Textures* texture, int selectKey = 43);
+	GuiManager(Input* input, Render* Render, Audio* audio, Textures* texture);
 
 	virtual ~GuiManager();
 
@@ -423,6 +425,21 @@ public:
 	SDL_Texture* PrintFont(const char* text, SDL_Color color, suint fontIndex, int endLine = -1);
 
 	FontSwitcher ChangeFont(suint controlIndex);
+
+	/*
+	GuiSettings function allows to modify some parts of the functionality of the gui :
+	   - Allow Gui Navigation (allowGuiNav) allows user to navigate through controls using keyboard.
+	   - Navigation Key (navKey) sets the key to navigate through controls. Default key = Tab Button. Using SDL_SCANCODE enum. "allowGuiNav" required to be allowed.
+	   - Allow Drag Gui State Out (allowDGSO) allows user to mantain press state of a control when mouse is outside bounding box. Allows to do click action outside the control collision.
+	   - Allow Multiple Gui Selection (allowMGS) allows user to select various gui controls to modify them at the same time. Mantaining one control pressed, user can move mouse towards other controls to modify them toghether. It is required that "allowDGSO" is allowed.
+	*/
+	void GuiSettings(bool allowGuiNav = true, suint navKey = 43, bool allowDGSO = false, bool allowMGS = false)
+	{
+		this->allowGuiNav = allowGuiNav;
+		this->navKey = navKey;
+		this->allowDGSO = allowDGSO;
+		this->allowDGSO ? this->allowMGS = allowMGS : this->allowMGS = false;
+	}
 
 private:
 	
@@ -451,8 +468,12 @@ private:
 	std::vector<Texture*> textures;
 	std::vector<_TTF_Font*> fonts;
 	
-	int selectKey = 43;
+	suint navKey = 43;
 	int idSelection = -1;
+
+	bool allowGuiNav = true;
+	bool allowDGSO = false;
+	bool allowMGS = false;
 
 };
 

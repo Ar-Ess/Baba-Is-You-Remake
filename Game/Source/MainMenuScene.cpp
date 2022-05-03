@@ -14,6 +14,7 @@ MainMenuScene::~MainMenuScene()
 
 bool MainMenuScene::Start()
 {
+	gui->GuiSettings(true, SDL_SCANCODE_0, true, false);
 	gui->CreateGuiControl(GuiControlType::IMAGE, { 0, 0 }, 3, false, { 5, 5 });
 
 	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 })

@@ -11,9 +11,8 @@
 
 #include "Log.h"
 
-GuiManager::GuiManager(Input* input, Render* render, Audio* audio, Textures* texture, int selectKey)
+GuiManager::GuiManager(Input* input, Render* render, Audio* audio, Textures* texture)
 {
-	this->selectKey = selectKey;
 	this->texture = texture;
 	this->input = input;
 	this->render = render;
@@ -46,10 +45,10 @@ bool GuiManager::Update(float dt)
 	suint size = controls.size();
 	for (suint i = 0; i < size; ++i)
 	{
-		controls[i]->Update(dt);
+		controls[i]->Update(dt, allowDGSO, allowMGS);
 	}
 
-	SelectButtonsLogic();
+	if (allowGuiNav) SelectButtonsLogic();
 
 	return true;
 }
@@ -190,7 +189,7 @@ bool GuiManager::InitializeFonts()
 
 void GuiManager::SelectButtonsLogic()
 {
-	if (input->GetKey(selectKey) == KEY_DOWN)
+	if (input->GetKey(navKey) == KEY_DOWN)
 	{
 		++idSelection;
 		if (idSelection == controls.size())
