@@ -17,6 +17,10 @@ public:
     void Delete();
 
 private:
+
+    bool NormalUpdate();
+    bool DGSOUpdate(bool MGS);
+
     void SetDimensions(Point magnitudes);
 
     void DebugDraw() const;

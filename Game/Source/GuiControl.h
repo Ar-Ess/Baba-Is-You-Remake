@@ -79,6 +79,8 @@ public:
 
     }
 
+    virtual ~GuiControl() {}
+
     virtual bool Update(float dt, bool DGSO = true, bool MGS = true)
     {
         return true;

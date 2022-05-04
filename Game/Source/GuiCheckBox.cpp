@@ -28,50 +28,14 @@ GuiCheckBox::~GuiCheckBox()
 bool GuiCheckBox::Update(float dt, bool DGSO, bool MGS)
 {
     if (state == GuiControlState::DISABLED) return true;
-    Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
-    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
-    GuiControlState prevState = state;
+    bool ret = true;
 
+    if (DGSO)
+        ret = DGSOUpdate(MGS);
+    else
+        ret = NormalUpdate();
 
-    if (!on && !click)
-    {
-        if (prevState == GuiControlState::PRESSED)
-        {
-            checked = !checked;
-            NotifyObserver(0.0f, checked);
-        }
-        state = GuiControlState::NORMAL;
-        prevState = state;
-        return true;
-    }
-
-    switch (state)
-    {
-    case GuiControlState::NORMAL:
-        state = GuiControlState::NORMAL;
-        if (!on) break;
-        audio->SetFx(Effect::BUTTON_FOCUSSED);
-        state = GuiControlState::FOCUSED;
-
-    case GuiControlState::FOCUSED:
-        if (!click) break;
-        state = GuiControlState::PRESSED;
-        audio->SetFx(Effect::BUTTON_RELEASED);
-        break;
-
-    case GuiControlState::PRESSED:
-        if (click) break;
-
-        state = GuiControlState::FOCUSED;
-        checked = !checked;
-        NotifyObserver(0.0f, checked);
-        break;
-    }
-
-    prevState = state;
-
-    return true;
+    return ret;
 }
 
 bool GuiCheckBox::Draw(float dt) const
@@ -178,6 +142,93 @@ void GuiCheckBox::Delete()
 {
     tex->UnLoad(texture);
     texture = nullptr;
+}
+
+bool GuiCheckBox::NormalUpdate()
+{
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+
+    case GuiControlState::PRESSED:
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        checked = !checked;
+        NotifyObserver(0.0f, checked);
+        break;
+    }
+
+    return true;
+}
+
+bool GuiCheckBox::DGSOUpdate(bool MGS)
+{
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    GuiControlState prevState = state;
+
+    if (!on && !click)
+    {
+        if (prevState == GuiControlState::PRESSED)
+        {
+            checked = !checked;
+            NotifyObserver(0.0f, checked);
+        }
+        state = GuiControlState::NORMAL;
+        prevState = state;
+        return true;
+    }
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on || MGS) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+        break;
+
+    case GuiControlState::PRESSED:
+        if (MGS)
+        {
+            state = GuiControlState::NORMAL;
+        }
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        checked = !checked;
+        NotifyObserver(0.0f, checked);
+        break;
+    }
+
+    prevState = state;
+
+    return true;
 }
 
 void GuiCheckBox::SetDimensions(Point magnitude)

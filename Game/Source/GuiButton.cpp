@@ -22,51 +22,31 @@ GuiButton::GuiButton(Rect bounds, SDL_Texture* texture, Point scale, suint id, b
 
 GuiButton::~GuiButton()
 {
-	observer = nullptr;
+    this->audio = nullptr;
+    this->gui = nullptr;
+    this->input = nullptr;
+    this->observer = nullptr;
+    this->render = nullptr;
+    this->tex->UnLoad(this->texture);
+    this->texture = nullptr;
+    this->tex = nullptr;
+
+    if (!this->text) return;
+    RELEASE(this->text);
+    this->text = nullptr;
 }
 
 bool GuiButton::Update(float dt, bool DGSO, bool MGS)
 {
     if (state == GuiControlState::DISABLED) return true;
-    Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
-    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
-    GuiControlState prevState = state;
+    bool ret = true;
 
+    if (DGSO)
+        ret = DGSOUpdate(MGS);
+    else
+        ret = NormalUpdate();
 
-    if (!on && !click)
-    {
-        if (prevState == GuiControlState::PRESSED) NotifyObserver();
-        state = GuiControlState::NORMAL;
-        prevState = state;
-        return true;
-    }
-
-    switch (state)
-    {
-    case GuiControlState::NORMAL:
-        state = GuiControlState::NORMAL;
-        if (!on) break;
-        audio->SetFx(Effect::BUTTON_FOCUSSED);
-        state = GuiControlState::FOCUSED;
-
-    case GuiControlState::FOCUSED:
-        if (!click) break;
-        state = GuiControlState::PRESSED;
-        audio->SetFx(Effect::BUTTON_RELEASED);
-        break;
-
-    case GuiControlState::PRESSED:
-        if (click) break;
-
-        state = GuiControlState::FOCUSED;
-        NotifyObserver();
-        break;
-    }
-
-    prevState = state;
-
-    return true;
+    return ret;
 }
 
 bool GuiButton::Draw(float dt) const
@@ -132,12 +112,91 @@ void GuiButton::Manipulate()
     if (input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) NotifyObserver();
 }
 
-void GuiButton::Delete()
+bool GuiButton::NormalUpdate()
 {
-    //observer = nullptr;
-    //app->tex->UnLoad(spritesheet);
-    //spritesheet = nullptr;
-    //text.Clear();
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    bool release = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP);
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+
+    case GuiControlState::PRESSED:
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        NotifyObserver();
+        break;
+    }
+
+    return true;
+}
+
+bool GuiButton::DGSOUpdate(bool MGS)
+{
+    Point mouse = input->GetMousePosition();
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
+    GuiControlState prevState = state;
+
+
+    if (!on && !click)
+    {
+        if (prevState == GuiControlState::PRESSED) NotifyObserver();
+        state = GuiControlState::NORMAL;
+        prevState = state;
+        return true;
+    }
+
+    switch (state)
+    {
+    case GuiControlState::NORMAL:
+        state = GuiControlState::NORMAL;
+        if (!on || MGS) break;
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        state = GuiControlState::FOCUSED;
+
+    case GuiControlState::FOCUSED:
+        if (!click) break;
+        state = GuiControlState::PRESSED;
+        audio->SetFx(Effect::BUTTON_RELEASED);
+        break;
+
+    case GuiControlState::PRESSED:
+        if (MGS)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
+        if (click) break;
+
+        state = GuiControlState::FOCUSED;
+        NotifyObserver();
+        break;
+    }
+
+    prevState = state;
 }
 
 void GuiButton::SetDimensions(Point magnitude)

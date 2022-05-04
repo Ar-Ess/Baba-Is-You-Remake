@@ -14,9 +14,12 @@ public:
 
     bool Update(float dt, bool DGSO = true, bool MGS = true);
     bool Draw(float dt) const;
-    void Delete();
 
 private:
+
+    bool NormalUpdate();
+    bool DGSOUpdate(bool MGS);
+
     void SetDimensions(Point magnitudes);
 
     void DebugDraw() const;

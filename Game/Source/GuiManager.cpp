@@ -43,9 +43,27 @@ bool GuiManager::Start(Scene* scene)
 bool GuiManager::Update(float dt)
 {
 	suint size = controls.size();
+	bool MGS = false;
+	suint index = 0;
+
+	if (!allowMGS)
+	{
+		for (suint i = 0; i < size; ++i)
+		{
+			if (controls[i]->state == GuiControlState::PRESSED)
+			{
+				MGS = true;
+				index = i;
+				break;
+			}
+		}
+	}
+
 	for (suint i = 0; i < size; ++i)
 	{
-		controls[i]->Update(dt, allowDGSO, allowMGS);
+		bool active = MGS;
+		if (i == index) active = false;
+		controls[i]->Update(dt, allowDGSO, active);
 	}
 
 	if (allowGuiNav) SelectButtonsLogic();
@@ -97,6 +115,7 @@ ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position
 
 void GuiManager::DestroyGuiControl(suint index)
 {
+	RELEASE(controls.at(index));
 	controls.erase(controls.begin() + index);
 }
 
