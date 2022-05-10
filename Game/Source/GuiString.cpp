@@ -20,8 +20,6 @@ GuiString::GuiString(Rect bounds, const char* string, suint fontIndex, suint id,
 	gui->CalculateSize(string, fontIndex, &result);
 	this->bounds.w = result.x;
 	this->bounds.h = result.y;
-	this->color = color;
-	this->string = string;
 	this->fontId = fontIndex;
 }
 
@@ -43,7 +41,7 @@ bool GuiString::Draw(float dt) const
 
 bool GuiString::DebugDraw(float dt) const
 {
-	render->DrawRectangle({ bounds.GetPosition().Apply(offset), bounds.GetDimensions()}, { 0, 255, 0, 80 });
+	render->DrawRectangle({ bounds.GetPosition().Apply(offset), bounds.GetDimensions().Multiply(scale)}, { 0, 255, 0, 80 });
 
 	return true;
 }
@@ -52,4 +50,10 @@ void GuiString::Delete()
 {
 	app->tex->UnLoad(texture);
 	texture = nullptr;
+}
+
+void GuiString::SetString(const char* text, SDL_Color color)
+{
+	this->~GuiString();
+	this->texture = gui->PrintFont(text, color, fontId);
 }

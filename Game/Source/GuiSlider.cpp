@@ -100,22 +100,22 @@ bool GuiSlider::DebugDraw(float dt) const
     {
     case GuiControlState::DISABLED:
         app->render->DrawRectangle(barRect, { 100, 100, 100, 80 });
-        app->render->DrawRectangle(slider, { 150, 100, 100, 80 });
+        app->render->DrawRectangle(sRect, { 150, 100, 100, 80 });
         break;
 
     case GuiControlState::NORMAL:
         app->render->DrawRectangle(barRect, { 0, 255, 0, 80 });
-        app->render->DrawRectangle(slider, { 0, 200, 0, 80 });
+        app->render->DrawRectangle(sRect, { 0, 200, 0, 80 });
         break;
 
     case GuiControlState::FOCUSED:
         app->render->DrawRectangle(barRect, { 255, 255, 0, 80 });
-        app->render->DrawRectangle(slider, { 255, 255, 0, 80 });
+        app->render->DrawRectangle(sRect, { 255, 255, 0, 80 });
         break;
 
     case GuiControlState::PRESSED:
         app->render->DrawRectangle(barRect, { 0, 255, 255, 80 });
-        app->render->DrawRectangle(slider, { 0, 200, 200, 80 });
+        app->render->DrawRectangle(sRect, { 0, 200, 200, 80 });
         break;
     }
 
@@ -183,8 +183,8 @@ void GuiSlider::Manipulate()
 bool GuiSlider::NormalUpdate()
 {
     Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, slider);
-    bool onTrail = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, { slider.GetPosition(), slider.GetDimensions().Multiply(scale) });
+    bool onTrail = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, { bounds.GetPosition(), bounds.GetDimensions().Multiply(scale) });
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
     bool release = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP);
     float res = 0;
@@ -218,11 +218,11 @@ bool GuiSlider::NormalUpdate()
             state = GuiControlState::NORMAL;
             break;
         }
-        res = (mouse.x - bounds.x) * 100 / bounds.w;
+        res = (mouse.x - bounds.x) * 100 / (bounds.w * scale.x);
         if (res < 0) res = 0;
         if (res > 100) res = 100;
         value = res;
-        slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
+        slider.x = (bounds.w * scale.x * res / 100) + (bounds.x * scale.x) - (slider.w * scale.x / 2);
         if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
         break;
     }
@@ -235,7 +235,7 @@ bool GuiSlider::NormalUpdate()
 bool GuiSlider::DGSOUpdate(bool MGS)
 {
     Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, slider);
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, { slider.GetPosition(), slider.GetDimensions().Multiply(scale) });
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
     float res = 0;
     GuiControlState prevState = state;
@@ -272,11 +272,11 @@ bool GuiSlider::DGSOUpdate(bool MGS)
             state = GuiControlState::FOCUSED;
             break;
         }
-        res = (mouse.x - bounds.x) * 100 / bounds.w;
+        res = (mouse.x - bounds.x) * 100 / (bounds.w * scale.x);
         if (res < 0) res = 0;
         if (res > 100) res = 100;
         value = res;
-        slider.x = (bounds.w * res / 100) + bounds.x - (slider.w / 2);
+        slider.x = (bounds.w * scale.x * res / 100) + (bounds.x * scale.x) - (slider.w * scale.x / 2);
         if (rips) NotifyObserver(((range.y - range.x) * value / 100) + range.x);
         break;
     }

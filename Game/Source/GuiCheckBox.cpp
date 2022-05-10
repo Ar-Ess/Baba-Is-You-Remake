@@ -147,7 +147,7 @@ void GuiCheckBox::Delete()
 bool GuiCheckBox::NormalUpdate()
 {
     Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, { bounds.GetPosition(), bounds.GetDimensions().Multiply(scale) });
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
 
     switch (state)
@@ -159,6 +159,11 @@ bool GuiCheckBox::NormalUpdate()
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
         if (!click) break;
         state = GuiControlState::PRESSED;
         audio->SetFx(Effect::BUTTON_RELEASED);
@@ -183,7 +188,7 @@ bool GuiCheckBox::NormalUpdate()
 bool GuiCheckBox::DGSOUpdate(bool MGS)
 {
     Point mouse = input->GetMousePosition();
-    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, bounds);
+    bool on = collisionUtils.CheckCollision(Rect{ mouse, 1.0f, 1.0f }, { bounds.GetPosition(), bounds.GetDimensions().Multiply(scale) });
     bool click = (input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT);
     GuiControlState prevState = state;
 
@@ -208,6 +213,11 @@ bool GuiCheckBox::DGSOUpdate(bool MGS)
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
+        if (!on)
+        {
+            state = GuiControlState::NORMAL;
+            break;
+        }
         if (!click) break;
         state = GuiControlState::PRESSED;
         audio->SetFx(Effect::BUTTON_RELEASED);

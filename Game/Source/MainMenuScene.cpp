@@ -18,15 +18,17 @@ bool MainMenuScene::Start()
 
 	gui->CreateGuiControl(GuiControlType::IMAGE, { 0, 0 }, 3, false, { 5, 5 });
 
-	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 })
+	gui->CreateGuiControl(GuiControlType::BUTTON, { 200, 200 }, 0, false, {1, 1})
 		.AddGuiString("PLAY", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER);
 
-	gui->CreateGuiControl(GuiControlType::SLIDER, { 500, 400 }, 1, false, {1, 1})
+	gui->CreateGuiControl(GuiControlType::SLIDER, { 0, 400 }, 1, false, { 1, 1 })
 		.AddGuiString("VOLUME", 0, { 255, 255, 255, 255 }).AlignTo(Align::TOP_RIGHT)
 		->SliderSettings(50, false);
 
 	gui->CreateGuiControl(GuiControlType::CHECKBOX, { 800, 100 }, 2, false, { 1, 1 })
 		.AddGuiString("DEBUG", 0, { 255, 255, 255, 255 }).AlignTo(Align::CENTER_TOP);
+
+	gui->CreateGuiControl(GuiControlType::TEXT, {0, 0}, 0).TextSettings("Test");
 
 	return true;
 }
