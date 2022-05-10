@@ -53,6 +53,7 @@ public:
 		text->alignment = align;
 
 		text->offset += offset;
+		text->offset *= text->scale;
 
 		return ret;
 	}
@@ -389,6 +390,18 @@ public:
 
 		return this;
 	}
+
+	ControlSettings* TextSettings(const char* text = "", SDL_Color color = {255, 255, 255, 255})
+	{
+		// You tried to modify slider setting in another gui control. SliderSettings is only for Sliders
+		assert(control->type == GuiControlType::TEXT);
+
+		GuiString* string = (GuiString*)control;
+		string->SetString(text, color);
+
+		return this;
+	}
+
 
 private:
 

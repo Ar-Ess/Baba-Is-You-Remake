@@ -86,6 +86,23 @@ struct Point
 		return Point{ this->x + float(x), this->y + float(y) };
 	}
 
+	Point Multiply(Point multi) const
+	{
+		return Point{ this->x * multi.x, this->y * multi.y };
+	}
+	Point Multiply(float x, float y) const
+	{
+		return Point{ this->x * x, this->y * y };
+	}
+	Point Multiply(double x, double y) const
+	{
+		return Point{ this->x * x, this->y * y };
+	}
+	Point Multiply(int x, int y) const
+	{
+		return Point{ this->x * float(x), this->y * float(y) };
+	}
+
 	float GetMax()
 	{
 		return fmax(x, y);

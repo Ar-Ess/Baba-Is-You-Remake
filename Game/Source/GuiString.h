@@ -19,6 +19,8 @@ public:
 	bool Draw(float dt) const;
 	bool DebugDraw(float dt) const;
 	void Delete();
+	void SetString(const char* text, SDL_Color color);
+
 	Align GetAlignment() const
 	{
 		return alignment;
