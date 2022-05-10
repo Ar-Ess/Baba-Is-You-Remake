@@ -7,23 +7,22 @@
 #include "Log.h"
 
 #include "SDL_image/include/SDL_image.h"
-//#pragma comment(lib, "../Game/Source/External/SDL_image/libx86/SDL2_image.lib")
 
-Textures::Textures() : Module()
+Textures::Textures(Render* render, AssetsManager* assets) : Module()
 {
-	name.Create("textures");
+	this->render = render;
+	this->assets = assets;
 }
 
 Textures::~Textures()
 {
 }
 
-bool Textures::Awake(pugi::xml_node& config)
+bool Textures::Start()
 {
-	LOG("Init Image library");
+	LOG("start textures");
 	bool ret = true;
 
-	// Load support for the PNG image format
 	int flags = IMG_INIT_PNG;
 	int init = IMG_Init(flags);
 
@@ -36,47 +35,23 @@ bool Textures::Awake(pugi::xml_node& config)
 	return ret;
 }
 
-bool Textures::Start()
-{
-	LOG("start textures");
-	bool ret = true;
-	return ret;
-}
-
 bool Textures::CleanUp()
 {
 	LOG("Freeing textures and Image library");
-	ListItem<SDL_Texture*>* item;
 
-	for (item = textures.start; item != NULL; item = item->next)
-	{
-		SDL_DestroyTexture(item->data);
-	}
+	suint size = textures.size();
+	for (suint i = 0; i < size; ++i) SDL_DestroyTexture(textures[i]);
 
-	textures.Clear();
+	textures.clear();
 	IMG_Quit();
 	return true;
 }
 
-SDL_Texture* const Textures::Load(const char* path, Point* dimensions)
+SDL_Texture* const Textures::Load(const char* path, Point* size)
 {
-	SString a(path);
-
-	a.Cut(0, 6);
-
 	SDL_Texture* texture = nullptr;
-	/*SDL_Surface* surface = IMG_Load(path);
-	if (surface == NULL)
-	{
-		LOG("Could not load surface with path: %s. IMG_Load: %s", path, IMG_GetError());
-	}
-	else
-	{
-		texture = LoadSurface(surface);
-		SDL_FreeSurface(surface);
-	}*/
 
-	SDL_RWops* rW = app->assetsManager->LoadAsset(a.GetString());
+	SDL_RWops* rW = assets->LoadAsset(path);
 	SDL_Surface* surface = IMG_Load_RW(rW, 0);
 
 	if (surface == NULL)
@@ -86,52 +61,48 @@ SDL_Texture* const Textures::Load(const char* path, Point* dimensions)
 	else
 	{
 		texture = LoadSurface(surface);
-		if (dimensions)
+		if (size)
 		{
-			dimensions->x = surface->w;
-			dimensions->y = surface->h;
+			size->x = surface->w;
+			size->y = surface->h;
 		}
 		SDL_FreeSurface(surface);
 	}
 
 	if (rW) SDL_RWclose(rW);
 
-	a.Clear();
-
 	return texture;
 }
 
 bool Textures::UnLoad(SDL_Texture* texture)
 {
-	ListItem<SDL_Texture*>* item;
+	suint size = textures.size();
 
-	for (item = textures.start; item != NULL; item = item->next)
+	for (suint i = 0; i < size; ++i)
 	{
-		if (texture == item->data)
+		if (texture == textures[i])
 		{
-			textures.Del(item);
+			textures.erase(textures.begin() + i);
 			break;
 		}
 	}
 
 	SDL_DestroyTexture(texture);
+	texture = nullptr;
 
 	return true;
 }
 
 SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface, SDL_Texture* last)
 {
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(app->render->renderer, surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(render->renderer, surface);
 
-	if (texture == NULL)
-	{
+	if (!texture) 
 		LOG("Unable to create texture from surface! SDL Error: %s\n", SDL_GetError());
-	}
 	else
-	{
-		textures.Add(texture);
-	}
-	if (last != nullptr)
+		textures.push_back(texture);
+
+	if (last)
 	{
 		UnLoad(last);
 		last = nullptr;
@@ -140,7 +111,10 @@ SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface, SDL_Texture* last
 	return texture;
 }
 
-void Textures::GetSize(const SDL_Texture* texture, uint& width, uint& height) const
+Point Textures::GetSize(const SDL_Texture* texture) const
 {
-	SDL_QueryTexture((SDL_Texture*)texture, NULL, NULL, (int*)&width, (int*)&height);
+	int width, height;
+	SDL_QueryTexture((SDL_Texture*)texture, NULL, NULL, &width, &height);
+
+	return Point{ width, height };
 }

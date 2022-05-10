@@ -3,15 +3,20 @@
 
 #include "Point.h"
 #include "PerfTimer.h"
+#include "ParticleSystem.h"
 #include "SDL/include/SDL.h"
+#include "Render.h"
 
 struct SDL_Texture;
 struct EmitterData;
+class ParticleSystem;
 
 class Emitter
 {
 private:
 	friend class ParticlePool;
+
+	ParticleSystem* particles = nullptr;
 
 	// Particles size and movement
 	Point pos = { 0.0f, 0.0f };
@@ -63,7 +68,7 @@ private:
 
 public:
 
-	Emitter(Point pos, EmitterData data);
+	Emitter(Point pos, EmitterData data, ParticleSystem* particles);
 	// fPoint pos, uint emitNumber, uint emitVariance, uint maxParticleLife, fPoint angleRange, double rotSpeed, float maxSpeed, float startSize, float endSize, SDL_Rect textureRect, SDL_Color startColor = { 0, 0, 0, 0 }, SDL_Color endColor = { 0, 0, 0, 0 }, SDL_BlendMode blendMode = SDL_BlendMode::SDL_BLENDMODE_NONE, double lifetime = -1.0f
 	virtual ~Emitter();
 

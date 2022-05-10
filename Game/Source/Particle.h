@@ -4,10 +4,14 @@
 #include "Point.h"
 #include "Defs.h"
 #include "SDL/include/SDL.h"
+//#include "ParticleSystem.h"
+//#include "Render.h"
 
 #define MIN_LIFE_TO_INTERPOLATE 15
 
 struct SDL_Texture;
+class ParticleSystem;
+class Render;
 
 class Particle
 {
@@ -61,9 +65,13 @@ private:
 		ParticleInfo() {}
 	} pState;
 
+	Render* render = nullptr;
+
+	ParticleSystem* particles = nullptr;
+
 public:
 
-	Particle();
+	Particle(Render* render, ParticleSystem* particle);
 
 	// Initializes new generated particle
 	void Init(Point pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive);

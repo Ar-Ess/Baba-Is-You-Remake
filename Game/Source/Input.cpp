@@ -1,9 +1,4 @@
-#include "App.h"
 #include "Input.h"
-#include "Window.h"
-
-#include "Defs.h"
-#include "Log.h"
 
 #include "SDL/include/SDL.h"
 
@@ -13,8 +8,6 @@
 
 Input::Input(Window* window) : Module()
 {
-	name.Create("input");
-
 	keyboard = new KeyState[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(KeyState) * MAX_KEYS);
 	memset(mouseButtons, KEY_IDLE, sizeof(KeyState) * NUM_MOUSE_BUTTONS);
@@ -37,7 +30,7 @@ Input::~Input()
 	delete[] mouseButtons;
 }
 
-bool Input::Awake(pugi::xml_node& config)
+bool Input::Start()
 {
 	LOG("Init SDL input event system");
 	bool ret = true;
@@ -58,16 +51,13 @@ bool Input::Awake(pugi::xml_node& config)
 		LOG("SDL_INIT_HAPTIC could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
+
+	SDL_StopTextInput();
+
 	return ret;
 }
 
-bool Input::Start()
-{
-	SDL_StopTextInput();
-	return true;
-}
-
-bool Input::PreUpdate()
+bool Input::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
 	static SDL_Event event;

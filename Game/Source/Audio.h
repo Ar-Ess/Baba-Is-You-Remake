@@ -2,9 +2,11 @@
 #define __AUDIO_H__
 
 #include "Module.h"
+#include "AssetsManager.h"
 
 #include "Point.h"
-#include "List.h"
+
+#include <vector>
 
 #define MAX_CHANNELS			360.0f
 #define MAX_FX					100.0f
@@ -19,17 +21,19 @@
 
 #define DEFAULT_MUSIC_FADE_TIME 1.0f
 
+#define Y_AXIS {0, 1}
+
 struct _Mix_Music;
 struct Mix_Chunk;
 
-enum SoundTrack
+enum Track
 {
-	NO_TRACK = 0,
+	NO_TRACK = -1,
 };
 
-enum Effect
+enum Sfx
 {
-	NO_FX = -1,
+	NO_SFX = -1,
 	BUTTON_FOCUSSED,
 	BUTTON_RELEASED,
 	SKIP_DIALOGUE
@@ -39,52 +43,44 @@ class Audio : public Module
 {
 public:
 
-	Audio();
+	Audio(AssetsManager* assets);
 
 	virtual ~Audio();
 
-	bool Awake(pugi::xml_node&);
+	bool Start();
 
 	bool CleanUp();
 
-	void SetMusic(SoundTrack sc, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
-	void SetFx(Effect fx);
+	bool LoadTrack(const char* path);
+	bool LoadSfx(const char* path);
+	bool PlayTrack(Track track, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
+	bool PlaySfx(Sfx fx);
 
 	//Tools
 	uint GetAngle(Point player, Point enemy);
 	uint GetVolumeFromDistance(Point player, Point enemy);
 	void SetChannelAngles();
-	void TransitionVolumeMusic();
-	void ChangeVolumeMusic(int volume);
-	void ChangeVolumeFx(int volume);
+	void ChangeVolumeMusic(suint volume);
+	void ChangeVolumeFx(suint index, suint volume);
 	void TogglePauseMusic();
 	void StopMusic();
 	int ValueToVolume(int value, int maxPercent = 100);
 	int VolumeToValue(int volume, int maxPercent = 100);
 
 	// GETTERS
-	SoundTrack GetPlayingMusic() const
-	{
-		return st;
-	}
 	int GetMusicVolume();
-	int GetFxVolume();
+	int GetFxVolume(suint index);
 
 private:
 
-	void LoadAllFx(pugi::xml_node& fx_node);
-	unsigned int LoadFx(const char* path);
-	SoundTrack st = NO_TRACK;
-	bool PlayMusic(const char* path, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
-	bool PlayFx(unsigned int fx, int repeat = 0);
 	bool PlayFxOnChannel(uint id, uint channel, uint distance = 1, int repeat = 0);
 
 private:
 
-	const Point yAxis = { 0, 1 };
+	std::vector<_Mix_Music*> music;
+	std::vector<Mix_Chunk*> sfx;
 
-	_Mix_Music* music;
-	List<Mix_Chunk *> fx;
+	AssetsManager* assets = nullptr;
 };
 
 #endif // __AUDIO_H__

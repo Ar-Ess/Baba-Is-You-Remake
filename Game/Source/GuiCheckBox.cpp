@@ -107,8 +107,8 @@ void GuiCheckBox::DebugDraw() const
 
     if (anchored)
     {
-        buttonRect.x += (int)app->render->camera.x;
-        buttonRect.y += (int)app->render->camera.y;
+        buttonRect.x += (int)render->camera.x;
+        buttonRect.y += (int)render->camera.y;
     }
 
     buttonRect.w *= scale.x;
@@ -116,13 +116,13 @@ void GuiCheckBox::DebugDraw() const
 
     switch (state)
     {
-    case GuiControlState::DISABLED: app->render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
+    case GuiControlState::DISABLED: render->DrawRectangle(buttonRect, { 100, 100, 100, 80 });
         break;
-    case GuiControlState::NORMAL: app->render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
+    case GuiControlState::NORMAL: render->DrawRectangle(buttonRect, { 0, 255, 0, 80 });
         break;
-    case GuiControlState::FOCUSED: app->render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
+    case GuiControlState::FOCUSED: render->DrawRectangle(buttonRect, { 255, 255, 0, 80 });
         break;
-    case GuiControlState::PRESSED: app->render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
+    case GuiControlState::PRESSED: render->DrawRectangle(buttonRect, { 0, 255, 255, 80 });
         break;
     default:
         break;
@@ -155,13 +155,13 @@ bool GuiCheckBox::NormalUpdate()
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on) break;
-        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->SetFx(Effect::BUTTON_RELEASED);
+        audio->PlaySfx(Sfx::BUTTON_RELEASED);
 
     case GuiControlState::PRESSED:
         if (!on)
@@ -204,13 +204,13 @@ bool GuiCheckBox::DGSOUpdate(bool MGS)
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on || MGS) break;
-        audio->SetFx(Effect::BUTTON_FOCUSSED);
+        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->SetFx(Effect::BUTTON_RELEASED);
+        audio->PlaySfx(Sfx::BUTTON_RELEASED);
         break;
 
     case GuiControlState::PRESSED:

@@ -9,7 +9,6 @@
 
 AssetsManager::AssetsManager() : Module()
 {
-	name.Create("assetsManager");
 }
 
 // Destructor
@@ -18,7 +17,7 @@ AssetsManager::~AssetsManager()
 }
 
 // Called before Assets Manager is available
-bool AssetsManager::Awake(pugi::xml_node& config)
+bool AssetsManager::Start()
 {
 	LOG("Loading Assets Manager");
 	bool ret = true;

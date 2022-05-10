@@ -7,8 +7,7 @@
 #include "Audio.h"
 #include "AssetsManager.h"
 #include "Scene.h"
-#include "Transition.h"
-#include "ParticleSystem.h"
+
 #include <time.h>
 
 #include "Defs.h"
@@ -24,25 +23,17 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	win = new Window();
 	input = new Input(win);
 	assetsManager = new AssetsManager();
-	render = new Render();
-	tex = new Textures();
-	audio = new Audio();
+	render = new Render(win);
+	tex = new Textures(render, assetsManager);
+	audio = new Audio(assetsManager);
 	scene = new Scene(render, input, tex, win, audio);
-	transition = new Transition();
-	psystem = new ParticleSystem();
 
-	// Ordered for awake / Start / Update
-	// Reverse order of CleanUp
 	AddModule(win);
 	AddModule(input);
 	AddModule(assetsManager);
 	AddModule(tex);
 	AddModule(audio);
 	AddModule(scene);
-	AddModule(transition);
-	AddModule(psystem);
-
-	// Render last to swap buffer
 	AddModule(render);
 	
 	PERF_PEEK(ptimer);
@@ -50,128 +41,74 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 
 App::~App()
 {
-	// Release modules
-	/*ListItem<Module*>* item = modules.end;
-
-	while(item != NULL)
+	suint size = modules.size();
+	for (suint i = 0; i < size; ++i)
 	{
-		RELEASE(item->data);
-		item = item->prev;
-	}*/
-	modules.RClear();
+		Module* m = modules[i];
+		RELEASE(m);
+	}
+
+	modules.shrink_to_fit();
+	modules.clear();
 }
 
 void App::AddModule(Module* module)
 {
-	module->Init();
-	modules.Add(module);
-}
-
-bool App::Awake()
-{
-	PERF_START(ptimer);
-
-	pugi::xml_document configFile;
-	pugi::xml_node config;
-	pugi::xml_node configApp;
-
-	bool ret = false;
-
-	config = LoadConfig(configFile);
-
-	if (config.empty() == false)
-	{
-		ret = true;
-		configApp = config.child("app");
-
-		title.Create(configApp.child("title").child_value());
-		organization.Create(configApp.child("organization").child_value());
-
-		int cap = configApp.attribute("framerate_cap").as_int(-1);
-		if (cap > 0) cappedMs = 1000 / cap;
-	}
-
-	if (ret == true)
-	{
-		ListItem<Module*>* item;
-		item = modules.start;
-
-		while ((item != NULL) && (ret == true))
-		{
-			ret = item->data->Awake(config.child(item->data->name.GetString()));
-			item = item->next;
-		}
-	}
-	
-	PERF_PEEK(ptimer);
-
-	configFile.reset();
-
-	return ret;
+	modules.push_back(module);
 }
 
 bool App::Start()
 {
-	PERF_START(ptimer);
-	
 	bool ret = true;
-	ListItem<Module*>* item;
-	item = modules.start;
+	PERF_START(ptimer);
 
-	while(item != NULL && ret == true)
-	{
-		ret = item->data->Start();
-		item = item->next;
-	}
+	suint size = modules.size();
+	for (suint i = 0; i < size; ++i) ret = modules[i]->Start();
 	
 	PERF_PEEK(ptimer);
-
-	return ret;
-}
-
-bool App::Update()
-{
-	bool ret = true;
-	PrepareUpdate();
-
-	if(input->GetWindowEvent(WE_QUIT) == true)
-		ret = false;
-
-	if(ret == true)
-		ret = PreUpdate();
-
-	if(ret == true)
-		ret = DoUpdate();
-
-	if(ret == true)
-		ret = PostUpdate();
-
-	FinishUpdate();
 
 	srand(time(NULL));
 
 	return ret;
 }
 
-pugi::xml_node App::LoadConfig(pugi::xml_document& configFile) const
-{
-	pugi::xml_node ret;
-
-	pugi::xml_parse_result result = configFile.load_file(CONFIG_FILENAME);
-
-	if (result == NULL) LOG("Could not load xml file: %s. pugi error: %s", CONFIG_FILENAME, result.description());
-	else ret = configFile.child("config");
-
-	return ret;
-}
-
 void App::PrepareUpdate()
 {
-    frameCount++;
-    lastSecFrameCount++;
+	frameCount++;
+	lastSecFrameCount++;
 
 	dt = frameTime.ReadSec();
 	frameTime.Start();
+}
+
+bool App::Update()
+{
+	bool ret = true;
+
+	PrepareUpdate();
+
+	if (input->GetWindowEvent(WE_QUIT)) ret = false;
+
+	suint size = modules.size();
+	for (suint i = 0; i < size; ++i)
+	{
+		Module* m = modules[i];
+		if (!m->active) continue;
+
+		if (!m->PreUpdate(dt)) ret = false;
+	}
+
+	for (suint i = 0; i < size; ++i)
+	{
+		Module* m = modules[i];
+		if (!m->active) continue;
+
+		if (!m->Update(dt)) ret = false;
+	}
+
+	FinishUpdate();
+
+	return ret;
 }
 
 void App::FinishUpdate()
@@ -195,7 +132,7 @@ void App::FinishUpdate()
 	sprintf_s(title, 256, "Av.FPS: %.2f Last Frame Ms: %02u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %I64u ",
 			  averageFps, lastFrameMs, framesOnLastUpdate, dt, secondsSinceStartup, frameCount);
 
-	app->win->SetTitle(title);
+	win->SetTitle(title);
 
 	if (frameDelay > lastFrameMs)
 	{
@@ -203,78 +140,16 @@ void App::FinishUpdate()
 	}
 }
 
-bool App::PreUpdate()
-{
-	bool ret = true;
-
-	ListItem<Module*>* item;
-	Module* pModule = NULL;
-
-	for(item = modules.start; item != NULL && ret == true; item = item->next)
-	{
-		pModule = item->data;
-
-		if(pModule->active == false) {
-			continue;
-		}
-
-		ret = item->data->PreUpdate();
-	}
-
-	return ret;
-}
-
-bool App::DoUpdate()
-{
-	bool ret = true;
-	ListItem<Module*>* item;
-	item = modules.start;
-	Module* pModule = NULL;
-
-	for(item = modules.start; item != NULL && ret == true; item = item->next)
-	{
-		pModule = item->data;
-
-		if(pModule->active == false) {
-			continue;
-		}
-
-		ret = item->data->Update(dt);
-	}
-
-	return ret;
-}
-
-bool App::PostUpdate()
-{
-	bool ret = true;
-	ListItem<Module*>* item;
-	Module* pModule = NULL;
-
-	for(item = modules.start; item != NULL && ret == true; item = item->next)
-	{
-		pModule = item->data;
-
-		if(pModule->active == false) {
-			continue;
-		}
-
-		ret = item->data->PostUpdate();
-	}
-
-	return ret;
-}
-
 bool App::CleanUp()
 {
 	bool ret = true;
-	ListItem<Module*>* item;
-	item = modules.end;
 
-	while(item != NULL && ret == true)
+	suint size = modules.size();
+	for (suint i = 0; i < size; ++i)
 	{
-		ret = item->data->CleanUp();
-		item = item->prev;
+		Module* m = modules[i];
+
+		modules[i]->CleanUp();
 	}
 
 	return ret;
@@ -293,16 +168,6 @@ const char* App::GetArgv(int index) const
 		return NULL;
 }
 
-const char* App::GetTitle() const
-{
-	return title.GetString();
-}
-
-const char* App::GetOrganization() const
-{
-	return organization.GetString();
-}
-
 void App::LoadGameRequest()
 {
 	loadGameRequested = true;
@@ -317,58 +182,12 @@ bool App::LoadGame()
 {
 	bool ret = true;
 
-	pugi::xml_document data;
-	pugi::xml_parse_result doc = data.load_file("save_game.xml");
-	pugi::xml_node playerInfo;
-
-	if (doc == NULL)
-	{
-		LOG("There was an arror trying to load the game, take care of save_game.xml file. %s", doc.description());
-		ret = false;
-	}
-	else
-	{
-		playerInfo = data.child("saveState").child("Player_Information");
-		pugi::xml_node pos = playerInfo.child("Position");
-
-		LOG("Loading finished...");
-	}
-
-	loadGameRequested = false;
-
-	data.reset();
-
 	return ret;
 }
 
 bool App::SaveGame() const
 {
 	bool ret = true;
-
-	pugi::xml_document saveDoc;
-	pugi::xml_node root = saveDoc.append_child("saveState");
-	pugi::xml_node saveNode;
-	pugi::xml_node playerInfo;
-	
-
-	if (root != NULL)
-	{
-		//PLAYER INFO
-		saveNode = root.append_child("Player_Information");
-		playerInfo = saveNode.append_child("Position");
-
-		saveDoc.save_file("save_game.xml");
-		LOG("Game saved correctly");
-	}
-	else
-	{
-		LOG("Error on append child of the save_game.xml file");
-		ret = false;
-	}
-
-	saveDoc.reset();
-
-	saveGameRequested = false;
 
 	return ret;
 }

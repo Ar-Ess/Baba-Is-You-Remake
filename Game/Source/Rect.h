@@ -30,12 +30,12 @@ public:
 		this->h = h;
 	}
 
-	Rect(Point position, Point dimensions)
+	Rect(Point position, Point size)
 	{
 		this->x = position.x;
 		this->y = position.y;
-		this->w = dimensions.x;
-		this->h = dimensions.y;
+		this->w = size.x;
+		this->h = size.y;
 	}
 
 	void SetPosition(Point position)
@@ -55,7 +55,7 @@ public:
 		return Point{x, y};
 	}
 
-	Point GetDimensions() const
+	Point GetSize() const
 	{
 		return Point{ w, h };
 	}

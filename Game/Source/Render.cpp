@@ -5,11 +5,10 @@
 #include "Defs.h"
 #include "Log.h"
 
-#define VSYNC false
 
-Render::Render() : Module()
+Render::Render(Window* win) : Module()
 {
-	name.Create("renderer");
+	this->win = win;
 	background.r = 0;
 	background.g = 0;
 	background.b = 0;
@@ -20,65 +19,45 @@ Render::~Render()
 {
 }
 
-bool Render::Awake(pugi::xml_node& config)
-{
-	LOG("Create SDL rendering context");
-	bool ret = true;
-
-	uint32 flags = SDL_RENDERER_ACCELERATED;
-
-	if (config.child("vsync").attribute("value").as_bool(true) == true)
-	{
-		flags |= SDL_RENDERER_PRESENTVSYNC;
-		LOG("Using vsync");
-	}
-
-	renderer = SDL_CreateRenderer(app->win->window, -1, flags);
-
-	if (renderer == NULL)
-	{
-		LOG("Could not create the renderer! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
-	}
-	else
-	{
-		camera.w = app->win->screenSurface->w;
-		camera.h = app->win->screenSurface->h;
-		camera.x = 0;
-		camera.y = 0;
-	}
-
-	vSync = VSYNC;
-
-	return ret;
-}
-
 bool Render::Start()
 {
 	LOG("render start");
 	// back background
+
+	uint32 flags = SDL_RENDERER_ACCELERATED;
+	flags |= SDL_RENDERER_PRESENTVSYNC;
+
+	renderer = SDL_CreateRenderer(win->window, -1, flags);
+
+	if (!renderer)
+		return false;
+	else
+	{
+		camera.w = win->screenSurface->w;
+		camera.h = win->screenSurface->h;
+		camera.x = 0;
+		camera.y = 0;
+	}
+
 	SDL_RenderGetViewport(renderer, &viewport);
 
-	SetVSync(vSync);
+	SetVSync(true);
 
 	return true;
 }
 
-bool Render::PreUpdate()
+bool Render::PreUpdate(float dt)
 {
 	SDL_RenderClear(renderer);
+
 	return true;
 }
 
 bool Render::Update(float dt)
 {
-	return true;
-}
-
-bool Render::PostUpdate()
-{
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
+
 	return true;
 }
 
@@ -86,26 +65,6 @@ bool Render::CleanUp()
 {
 	LOG("Destroying SDL render");
 	SDL_DestroyRenderer(renderer);
-	return true;
-}
-
-bool Render::Load(pugi::xml_node& load)
-{
-	camera.x = load.child("camera").attribute("x").as_int();
-	camera.y = load.child("camera").attribute("y").as_int();
-
-	LOG("X: %d", camera.x);
-
-	return true;
-}
-
-bool Render::Save(pugi::xml_node& saveNode) const
-{
-	pugi::xml_node cam = saveNode.append_child("camera");
-
-	cam.append_attribute("x").set_value(camera.x);
-	cam.append_attribute("y").set_value(camera.y);
-
 	return true;
 }
 
@@ -273,7 +232,7 @@ bool Render::DrawRectangle(Rect rect, SDL_Color color, Point size, bool filled, 
 bool Render::DrawLine(float x1, float y1, float x2, float y2, SDL_Color color, bool useCamera) const
 {
 	bool ret = true;
-	uint scale = app->win->GetScale();
+	uint scale = win->GetScale();
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
@@ -403,7 +362,7 @@ bool Render::DrawCircle(CircleCollider circle, SDL_Color color, bool filled, boo
 bool Render::BlitParticle(SDL_Texture* texture, int x, int y, const SDL_Rect* section, const SDL_Rect* rectSize, SDL_Color color, SDL_BlendMode blendMode, float speed, double angle, int pivot_x, int pivot_y) const
 {
 	bool ret = true;
-	uint scale = app->win->GetScale();
+	uint scale = win->GetScale();
 
 	SDL_Rect rect;
 	rect.x = (int)(camera.x * speed) + x * scale;
