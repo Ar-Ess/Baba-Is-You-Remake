@@ -24,7 +24,7 @@ public:
     void SetInitialValue(float initialValue)
     {
         value = initialValue;
-        slider.x = (bounds.w * scale.x * value / 100) + (bounds.x * scale.x) - (slider.w * scale.x / 2);
+        slider.x = (bounds.w * value / 100) + bounds.x - (slider.w / 2);
         NotifyObserver(initialValue);
     }
     void SetRange(Point range)
