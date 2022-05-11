@@ -1,10 +1,18 @@
 #include "Scene.h"
+#include "Input.h"
+#include "Textures.h"
+#include "Audio.h"
+#include "Render.h"
+#include "Window.h"
+
+#include "LevelScene.h"
+#include "MainMenuScene.h"
 #include "GuiManager.h"
 
 #include "Defs.h"
 #include "Log.h"
 
-Scene::Scene(Render* render, Input* input, Textures* texture, Window* window, Audio* audio)
+Scene::Scene(Render* render, Input* input, Textures* texture, Window* window, Audio* audio) : Module()
 {
 	this->gui = new GuiManager(input, render, audio, texture);
 	this->render = render;
@@ -16,6 +24,13 @@ Scene::Scene(Render* render, Input* input, Textures* texture, Window* window, Au
 
 Scene::~Scene()
 {}
+
+bool Scene::Awake()
+{
+	LOG("Loading Scene");
+	bool ret = true;
+	return ret;
+}
 
 bool Scene::Start()
 {
@@ -33,7 +48,11 @@ bool Scene::Start()
 		activeContinue = true;
 	}*/
 
-	render->SetScale(1); //Qui toqui aquesta linia de codi, la 72, i m'entero, no viu un dia més :) <3
+	//SPLINE
+	pugi::xml_document doc;
+	spline.LoadSplines(doc);
+
+	render->scale = 1; //Qui toqui aquesta linia de codi, la 72, i m'entero, no viu un dia més :) <3
 
 	return true;
 }
@@ -50,6 +69,10 @@ bool Scene::Update(float dt)
 
 	case MAIN_MENU_SCENE:
 		ret = UpdateMainMenuScene(dt);
+		break;
+
+	case LEVEL_SCENE:
+		ret = UpdateLevelScene(dt);
 		break;
 	}
 
@@ -68,6 +91,15 @@ bool Scene::CleanUp()
 		break;
 
 	case MAIN_MENU_SCENE:
+		menu->CleanUp();
+		delete menu;
+		menu = nullptr;
+		break;
+
+	case LEVEL_SCENE:
+		level->CleanUp();
+		delete level;
+		level = nullptr;
 		break;
 	}
 
@@ -93,9 +125,13 @@ bool Scene::SetScene(Scenes scene)
 	case MAIN_MENU_SCENE:
 		ret = SetMainMenuScene();
 		break;
+
+	case LEVEL_SCENE:
+		ret = SetLevelScene();
+		break;
 	}
 
-	//easing.ResetIterations();
+	easing.ResetIterations();
 
 	return ret;
 }
@@ -107,14 +143,22 @@ bool Scene::SetLogoScene()
 
 bool Scene::SetMainMenuScene()
 {
+	menu = new MainMenuScene(render, input, gui);
+	menu->Start();
 	return true;
+}
+
+bool Scene::SetLevelScene()
+{
+	level = new LevelScene(render, input, texture, window->GetWindowSize(), lvl);
+	return level->Start();
 }
 
 bool Scene::UpdateLogoScene(float dt)
 {
 	bool ret = true;
 
-	if (input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) ret = SetScene(Scenes::MAIN_MENU_SCENE);
+	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) ret = SetScene(Scenes::MAIN_MENU_SCENE);
 
 	return ret;
 }
@@ -123,7 +167,24 @@ bool Scene::UpdateMainMenuScene(float dt)
 {
 	bool ret = true;
 
+	if (!menu->Update(dt)) return false;
+	if (!menu->Draw(dt)) return false;
+
+	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	{
+		lvl = 1;
+		ret = SetScene(Scenes::LEVEL_SCENE);
+	}
+
 	return ret;
+}
+
+bool Scene::UpdateLevelScene(float dt)
+{
+	if (!level->Update(dt)) return false;
+	if (!level->Draw(dt)) return false;
+
+	return true;
 }
 
 // GUI CONTROLS
@@ -135,7 +196,14 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value, bool check)
 	case MAIN_MENU_SCENE:
 		switch (control->id)
 		{
-			break;
+			// BUTTON
+		case 1: gui->DestroyGuiControl(control->id); break;
+
+			// SLIDER
+		case 2: audio->ChangeVolumeMusic(value); break;
+
+			// CHECKBOX
+		case 3: gui->debug = check;
 		}
 		break;
 	}
@@ -145,9 +213,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control, float value, bool check)
 
 void Scene::DebugCommands()
 {
-	if (input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) gui->debug = !gui->debug;
-
-	if (input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) window->SetWinFullScreen(!window->fullScreen);
+	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) gui->debug = !gui->debug;
 
 	switch (currScene)
 	{

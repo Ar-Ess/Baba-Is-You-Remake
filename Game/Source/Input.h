@@ -3,7 +3,6 @@
 
 #include "Module.h"
 #include "Window.h"
-
 #include "Point.h"
 
 //#define NUM_KEYS 352
@@ -78,9 +77,11 @@ public:
 
 	virtual ~Input();
 
+	bool Awake(pugi::xml_node&);
+
 	bool Start();
 
-	bool PreUpdate(float dt);
+	bool PreUpdate();
 
 	void UpdateKeyboardInput();
 

@@ -124,7 +124,7 @@ bool GuiButton::NormalUpdate()
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on) break;
-        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
@@ -135,7 +135,7 @@ bool GuiButton::NormalUpdate()
         }
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->PlaySfx(Sfx::BUTTON_RELEASED);
+        audio->SetFx(Effect::BUTTON_RELEASED);
 
     case GuiControlState::PRESSED:
         if (!on)
@@ -174,13 +174,13 @@ bool GuiButton::DGSOUpdate(bool MGS)
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on || MGS) break;
-        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->PlaySfx(Sfx::BUTTON_RELEASED);
+        audio->SetFx(Effect::BUTTON_RELEASED);
         break;
 
     case GuiControlState::PRESSED:

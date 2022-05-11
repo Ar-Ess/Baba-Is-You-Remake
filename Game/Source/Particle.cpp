@@ -5,11 +5,7 @@
 #include "Defs.h"
 
 
-Particle::Particle(Render* render, ParticleSystem* particles) : life(0) 
-{
-	this->render = render;
-	this->particles = particles;
-}
+Particle::Particle() : life(0) { }
 
 void Particle::Init(Point pos, float startSpeed, float endSpeed, float angle, double rotSpeed, float startSize, float endSize, uint life, SDL_Rect textureRect, SDL_Color startColor, SDL_Color endColor, SDL_BlendMode blendMode, bool vortexSensitive)
 {
@@ -84,7 +80,7 @@ bool Particle::Draw()
 		resColor = RgbInterpolation(pState.pLive.startColor, pState.pLive.t, pState.pLive.endColor);
 
 	// Blitting particle on screen
-	ret = render->BlitParticle(particles->GetParticleAtlas(), (int)centerX, (int)centerY, &pState.pLive.pRect,
+	ret = app->render->BlitParticle(app->psystem->GetParticleAtlas(), (int)centerX, (int)centerY, &pState.pLive.pRect,
 		&pState.pLive.rectSize, resColor, pState.pLive.blendMode, 1.0f, pState.pLive.currentRotSpeed);
 
 	// Calculating new rotation according to rotation speed

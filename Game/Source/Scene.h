@@ -2,11 +2,12 @@
 #define __SCENE_H__
 
 #include "Module.h"
-#include "Input.h"
-#include "Window.h"
-#include "Audio.h"
-#include "Textures.h"
 
+#include "Spline.h"
+#include "EasingFunctions.h"
+
+class LevelScene;
+class MainMenuScene;
 class GuiControl;
 class GuiManager;
 
@@ -15,6 +16,7 @@ enum Scenes
 	NO_SCENE = -1,
 	LOGO_SCENE,
 	MAIN_MENU_SCENE,
+	LEVEL_SCENE,
 };
 
 class Scene : public Module
@@ -24,6 +26,8 @@ public:
 	Scene(Render* render, Input* input, Textures* texture, Window* window, Audio* audio);
 
 	virtual ~Scene();
+
+	bool Awake();
 
 	bool Start();
 
@@ -49,10 +53,12 @@ private:
 	//Setters
 	bool SetLogoScene();
 	bool SetMainMenuScene();
+	bool SetLevelScene();
 
 	//Updaters
 	bool UpdateLogoScene(float dt);
 	bool UpdateMainMenuScene(float dt);
+	bool UpdateLevelScene(float dt);
 
 private: // Methods
 
@@ -71,6 +77,13 @@ private: // Variables
 	bool activeContinue = false;
 
 	suint lvl = 0;
+
+	MainMenuScene* menu = nullptr;
+	LevelScene* level = nullptr;
+
+	Spline spline;
+	EasingFunctions easing;
+
 };
 
 #endif // __SCENE_H__

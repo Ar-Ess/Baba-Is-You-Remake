@@ -2,12 +2,9 @@
 #define __TEXTURES_H__
 
 #include "Module.h"
-#include "Render.h"
-#include "AssetsManager.h"
 
+#include "List.h"
 #include "Point.h"
-#include <vector>
-#include <string>
 
 struct SDL_Texture;
 struct SDL_Surface;
@@ -16,25 +13,24 @@ class Textures : public Module
 {
 public:
 
-	Textures(Render* render, AssetsManager* assets);
+	Textures();
 
 	virtual ~Textures();
+
+	bool Awake(pugi::xml_node&);
 
 	bool Start();
 
 	bool CleanUp();
 
-	SDL_Texture* const Load(const char* path, Point* size = nullptr);
+	SDL_Texture* const Load(const char* path, Point* dimensions = nullptr);
 	SDL_Texture* const LoadSurface(SDL_Surface* surface, SDL_Texture* last = nullptr);
 	bool UnLoad(SDL_Texture* texture);
-	Point GetSize(const SDL_Texture* texture) const;
+	void GetSize(const SDL_Texture* texture, uint& width, uint& height) const;
 
-private:
+public:
 
-	AssetsManager* assets = nullptr;
-	Render* render = nullptr;
-
-	std::vector<SDL_Texture*> textures;
+	List<SDL_Texture*> textures;
 };
 
 

@@ -11,10 +11,13 @@ public:
 
 	AssetsManager();
 
+	// Destructor
 	virtual ~AssetsManager();
 
-	bool Start();
+	// Called before Assets Manager is available
+	bool Awake(pugi::xml_node&);
 
+	// Called before quitting
 	bool Cleanup();
 
 	SDL_RWops* LoadAsset(const char* path);

@@ -2,11 +2,9 @@
 #define __AUDIO_H__
 
 #include "Module.h"
-#include "AssetsManager.h"
 
 #include "Point.h"
-
-#include <vector>
+#include "List.h"
 
 #define MAX_CHANNELS			360.0f
 #define MAX_FX					100.0f
@@ -21,19 +19,17 @@
 
 #define DEFAULT_MUSIC_FADE_TIME 1.0f
 
-#define Y_AXIS {0, 1}
-
 struct _Mix_Music;
 struct Mix_Chunk;
 
-enum Track
+enum SoundTrack
 {
-	NO_TRACK = -1,
+	NO_TRACK = 0,
 };
 
-enum Sfx
+enum Effect
 {
-	NO_SFX = -1,
+	NO_FX = -1,
 	BUTTON_FOCUSSED,
 	BUTTON_RELEASED,
 	SKIP_DIALOGUE
@@ -43,44 +39,52 @@ class Audio : public Module
 {
 public:
 
-	Audio(AssetsManager* assets);
+	Audio();
 
 	virtual ~Audio();
 
-	bool Start();
+	bool Awake(pugi::xml_node&);
 
 	bool CleanUp();
 
-	bool LoadTrack(const char* path);
-	bool LoadSfx(const char* path);
-	bool PlayTrack(Track track, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
-	bool PlaySfx(Sfx fx);
+	void SetMusic(SoundTrack sc, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
+	void SetFx(Effect fx);
 
 	//Tools
 	uint GetAngle(Point player, Point enemy);
 	uint GetVolumeFromDistance(Point player, Point enemy);
 	void SetChannelAngles();
-	void ChangeVolumeMusic(suint volume);
-	void ChangeVolumeFx(suint index, suint volume);
+	void TransitionVolumeMusic();
+	void ChangeVolumeMusic(int volume);
+	void ChangeVolumeFx(int volume);
 	void TogglePauseMusic();
 	void StopMusic();
 	int ValueToVolume(int value, int maxPercent = 100);
 	int VolumeToValue(int volume, int maxPercent = 100);
 
 	// GETTERS
+	SoundTrack GetPlayingMusic() const
+	{
+		return st;
+	}
 	int GetMusicVolume();
-	int GetFxVolume(suint index);
+	int GetFxVolume();
 
 private:
 
+	void LoadAllFx(pugi::xml_node& fx_node);
+	unsigned int LoadFx(const char* path);
+	SoundTrack st = NO_TRACK;
+	bool PlayMusic(const char* path, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
+	bool PlayFx(unsigned int fx, int repeat = 0);
 	bool PlayFxOnChannel(uint id, uint channel, uint distance = 1, int repeat = 0);
 
 private:
 
-	std::vector<_Mix_Music*> music;
-	std::vector<Mix_Chunk*> sfx;
+	const Point yAxis = { 0, 1 };
 
-	AssetsManager* assets = nullptr;
+	_Mix_Music* music;
+	List<Mix_Chunk *> fx;
 };
 
 #endif // __AUDIO_H__

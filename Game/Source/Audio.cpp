@@ -1,17 +1,23 @@
+#include "App.h"
 #include "Audio.h"
+#include "AssetsManager.h"
+
+#include "Defs.h"
+#include "Log.h"
 
 #include "SDL/include/SDL.h"
 #include "SDL_mixer/include/SDL_mixer.h"
 
-Audio::Audio(AssetsManager* assets) : Module()
+Audio::Audio() : Module()
 {
-	this->assets = assets;
+	music = NULL;
+	name.Create("audio");
 }
 
 Audio::~Audio()
 {}
 
-bool Audio::Start()
+bool Audio::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Audio Mixer");
 	bool ret = true;
@@ -43,6 +49,10 @@ bool Audio::Start()
 		ret = true;
 	}
 
+	//LOADING ALL SFX
+	pugi::xml_node sFx = config.child("fx");
+	LoadAllFx(sFx);
+
 	Mix_AllocateChannels(360);
 	SetChannelAngles();
 
@@ -53,19 +63,21 @@ bool Audio::Start()
 
 bool Audio::CleanUp()
 {
-	if(!active) return true;
+	if(!active)
+		return true;
 
 	LOG("Freeing sound FX, closing Mixer and Audio subsystem");
 
-	suint size = music.size();
-	for (suint i = 0; i < size; ++i)
-		Mix_FreeMusic(music[i]);
+	if(music != NULL)
+	{
+		Mix_FreeMusic(music);
+	}
 
-	size = sfx.size();
-	for(suint i = 0; i < size; ++i)
-		Mix_FreeChunk(sfx[i]);
+	ListItem<Mix_Chunk*>* item;
+	for(item = fx.start; item != NULL; item = item->next)
+		Mix_FreeChunk(item->data);
 
-	sfx.clear();
+	fx.Clear();
 
 	Mix_CloseAudio();
 	Mix_Quit();
@@ -74,64 +86,32 @@ bool Audio::CleanUp()
 	return true;
 }
 
-bool Audio::LoadTrack(const char* path)
+void Audio::SetMusic(SoundTrack sc, float fadeTime)
 {
-	if (!active) return false;
-
-	SDL_RWops* rW = assets->LoadAsset(path);
-	Mix_Music* track = Mix_LoadMUS_RW(rW, 0);
-
-	if (!track)
-		LOG("Cannot load wav %s. Mix_GetError(): %s", path, Mix_GetError());
-	else
-		music.push_back(track);
-
-	return true;
-}
-
-bool Audio::LoadSfx(const char* path)
-{
-	if (!active) return false;
-
-	SDL_RWops* rW = assets->LoadAsset(path);
-	Mix_Chunk* chunk = Mix_LoadWAV_RW(rW, 0);
-
-	if (!chunk) 
-		LOG("Cannot load wav %s. Mix_GetError(): %s", path, Mix_GetError());
-	else
-		sfx.push_back(chunk);
-
-	return true;
-}
-
-bool Audio::PlayTrack(Track track, float fadeTime)
-{
-	bool ret = true;
-	if (!active || track == Track::NO_TRACK) return false;
-	Mix_Music* m = music[track];
-
-	if (Mix_PlayingMusic())
+	if (sc == NO_TRACK)
 	{
-		if (fadeTime > 0.0f)
-			Mix_FadeOutMusic(int(fadeTime * 1000.0f));
-		else
-			Mix_HaltMusic();
+		st = sc;
+		return; //STOP MUSIC
 	}
+	/*else if (sc == MAINMENU_TRACK)
+	{
+		if (st != sc) PlayMusic("MUSIC", fadeTime);
+	}*/
 
-	if (fadeTime > 0.0f) 
-		if (Mix_FadeInMusic(m, -1, (int)(fadeTime * 1000.0f)) < 0) ret = false;
-	else
-		if (Mix_PlayMusic(m, -1) < 0) ret = false;
-
-	return ret;
+	st = sc;
 }
 
-uint Audio::GetAngle(Point p1, Point p2)
+void Audio::SetFx(Effect fx)
 {
-	Point vec(p2.x - p1.x, p2.y - p1.y);
+	PlayFx(((int)fx) + 1);
+}
 
-	float dot = (0 * vec.x) + (1 * vec.y);
-	float det = (0 * vec.y) - (1 * vec.x);
+uint Audio::GetAngle(Point player, Point enemy)
+{
+	Point vec(enemy.x - player.x, enemy.y - player.y);
+
+	float dot = (yAxis.x * vec.x) + (yAxis.y * vec.y);
+	float det = (yAxis.x * vec.y) - (yAxis.y * vec.x);
 
 	double angle = atan2(det, dot) * RADS_TO_DEG;
 	angle += 180.0f;
@@ -139,21 +119,21 @@ uint Audio::GetAngle(Point p1, Point p2)
 	if (angle < 0)
 		angle += 180.0f;
 
-	uint ret = static_cast<uint>(angle);
+	uint a_ret = static_cast<uint>(angle);
 
-	return ret;
+	return a_ret;
 }
 
-uint Audio::GetVolumeFromDistance(Point p1, Point p2)
+uint Audio::GetVolumeFromDistance(Point player, Point enemy)
 {
-	Point vec(p2.x - p1.x, p2.y - p1.y);
-	float screenDist = sqrt(pow(vec.x, 2) + pow(vec.y, 2));
+	Point vec(enemy.x - player.x, enemy.y - player.y);
+	float screen_dist = sqrt(pow(vec.x, 2) + pow(vec.y, 2));
 
-	if (screenDist >= MUTE_DISTANCE)
+	if (screen_dist >= MUTE_DISTANCE)
 		return uint(MUTE_DISTANCE_VOL);
 
-	float scaledDist = screenDist * (MUTE_DISTANCE_VOL / MAX_DISTANCE);
-	uint volume = static_cast<uint>(scaledDist);
+	float scaled_dist = screen_dist * (MUTE_DISTANCE_VOL / MAX_DISTANCE);
+	uint volume = static_cast<uint>(scaled_dist);
 
 	if (volume > MAX_DISTANCE_VOL)
 		volume = MAX_DISTANCE_VOL;
@@ -163,8 +143,7 @@ uint Audio::GetVolumeFromDistance(Point p1, Point p2)
 
 void Audio::SetChannelAngles()
 {
-	for (suint i = 0; i <= 360; i++) 
-	{
+	for (int i = 0; i <= 360; i++) {
 		Mix_SetPosition(i, i, 1);
 	}
 }
@@ -174,12 +153,20 @@ int Audio::GetMusicVolume()
 	return Mix_VolumeMusic(-1);
 }
 
-int Audio::GetFxVolume(suint index)
+int Audio::GetFxVolume()
 {
-	return Mix_VolumeChunk(sfx[index], -1);
+	return Mix_VolumeChunk(fx[0], -1);
 }
 
-void Audio::ChangeVolumeMusic(suint volume)
+void Audio::TransitionVolumeMusic()
+{
+	if (Mix_VolumeMusic(-1) == MIX_MAX_VOLUME)
+		Mix_VolumeMusic(MIX_MAX_VOLUME / 3);
+	else
+		Mix_VolumeMusic(MIX_MAX_VOLUME);
+}
+
+void Audio::ChangeVolumeMusic(int volume)
 {
 	volume = ValueToVolume(volume);
 
@@ -189,16 +176,14 @@ void Audio::ChangeVolumeMusic(suint volume)
 	Mix_VolumeMusic(volume);
 }
 
-void Audio::ChangeVolumeFx(suint index, suint volume)
+void Audio::ChangeVolumeFx(int volume)
 {
-	if (index >= sfx.size()) return;
-
 	volume = ValueToVolume(volume);
 
 	if (volume < 0) volume = 0;
 	else if (volume > 128) volume = 128;
-	
-	Mix_VolumeChunk(sfx[index], volume);
+
+	for (int i = 0; i < fx.Count(); i++) Mix_VolumeChunk(fx[i], volume);
 }
 
 int Audio::ValueToVolume(int value, int maxPercent)
@@ -224,25 +209,131 @@ void Audio::StopMusic()
 	Mix_HaltMusic();
 }
 
-bool Audio::PlaySfx(Sfx fx)
+bool Audio::PlayMusic(const char* path, float fadeTime)
 {
-	bool ret = false;
+	bool ret = true;
 
-	if(!active || fx == NO_SFX) return false;
-	
-	
-	Mix_PlayChannel(-1, sfx[fx], 0);
+	if(!active)
+		return false;
+
+	if(music != NULL)
+	{
+		if(fadeTime > 0.0f)
+		{
+			Mix_FadeOutMusic(int(fadeTime * 1000.0f));
+		}
+		else
+		{
+			Mix_HaltMusic();
+		}
+
+		// this call blocks until fade out is done
+		Mix_FreeMusic(music);
+	}
+
+	SString a(path);
+
+	a.Cut(0, 6);
+
+	SDL_RWops* rW = app->assetsManager->LoadAsset(a.GetString());
+	music = Mix_LoadMUS_RW(rW, 0);
+
+	if(music == NULL)
+	{
+		LOG("Cannot load music %s. Mix_GetError(): %s\n", path, Mix_GetError());
+		ret = false;
+	}
+	else
+	{
+		if(fadeTime > 0.0f)
+		{
+			if(Mix_FadeInMusic(music, -1, (int) (fadeTime * 1000.0f)) < 0)
+			{
+				LOG("Cannot fade in music %s. Mix_GetError(): %s", path, Mix_GetError());
+				ret = false;
+			}
+		}
+		else
+		{
+			if(Mix_PlayMusic(music, -1) < 0)
+			{
+				LOG("Cannot play in music %s. Mix_GetError(): %s", path, Mix_GetError());
+				ret = false;
+			}
+		}
+	}
+
+	a.Clear();
+
+	LOG("Successfully playing %s", path);
+	return ret;
+}
+
+void Audio::LoadAllFx(pugi::xml_node& fx_node)
+{
+	for (pugi::xml_node sound = fx_node.child("sound");
+		sound != nullptr; sound = sound.next_sibling("sound"))
+	{
+		const char* path = sound.child_value();
+		LoadFx(path);
+	}
+
+	for (int i = 0; i < fx.Count(); i++) Mix_VolumeChunk(fx[i], 128);
+}
+
+unsigned int Audio::LoadFx(const char* path)
+{
+	SString a(path);
+
+	a.Cut(0, 6);
+
+	unsigned int ret = 0;
+
+	if(!active)
+		return 0;
+
+	SDL_RWops* rW = app->assetsManager->LoadAsset(a.GetString());
+	Mix_Chunk* chunk = Mix_LoadWAV_RW(rW, 0);
+
+	if(chunk == NULL)
+	{
+		LOG("Cannot load wav %s. Mix_GetError(): %s", path, Mix_GetError());
+	}
+	else
+	{
+		fx.Add(chunk);
+		ret = fx.Count();
+	}
+
+	a.Clear();
 
 	return ret;
 }
 
-bool Audio::PlayFxOnChannel(uint index, uint channel, uint distance, int repeat)
+bool Audio::PlayFx(unsigned int id, int repeat)
+{
+	bool ret = false;
+
+	if(!active)
+		return false;
+
+	if(id > 0 && id <= fx.Count())
+	{
+		Mix_VolumeChunk(fx[id - 1], 40);
+		Mix_PlayChannel(-1, fx[id - 1], repeat);
+	}
+
+	return ret;
+}
+
+bool Audio::PlayFxOnChannel(uint id, uint channel, uint distance, int repeat)
 {
 	bool ret = true;
 
-	if (!active) return false;
+	if (!active)
+		return ret;
 
-	if (sfx[index])
+	if (fx.At(id - 1) != nullptr)
 	{
 		while (Mix_Playing(channel))
 		{
@@ -252,7 +343,7 @@ bool Audio::PlayFxOnChannel(uint index, uint channel, uint distance, int repeat)
 		}
 
 		Mix_SetPosition(channel, channel, distance);
-		Mix_PlayChannel(channel, sfx[index], repeat);
+		Mix_PlayChannel(channel, fx[id - 1], repeat);
 	}
 	else
 		ret = false;

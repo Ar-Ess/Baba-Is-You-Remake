@@ -1,13 +1,13 @@
 #include "Emitter.h"
+#include "ParticleSystem.h"
 #include "ParticlePool.h"
+#include "App.h"
 #include <time.h>
 
 
-Emitter::Emitter(Point pos, EmitterData data, ParticleSystem* particles)
+Emitter::Emitter(Point pos, EmitterData data)
 {
 	srand(time(NULL));
-
-	this->particles = particles;
 
 	// Particles size and movement
 	this->angleRange = data.angleRange;
@@ -26,7 +26,7 @@ Emitter::Emitter(Point pos, EmitterData data, ParticleSystem* particles)
 
 	// Pool size calculations
 	poolSize = maxParticlesPerFrame * (maxParticleLife + 1);
-	emitterPool = new ParticlePool(this, particles->render);
+	emitterPool = new ParticlePool(this);
 
 	// Color and render properties
 	this->textureRect = data.textureRect;
@@ -123,7 +123,7 @@ bool Emitter::Draw()
 	/* NOTE: if lifetime is 0 and last particles have been updated
 	then the emitter is automatically destroyed */
 	if (emitterPool->Update() == ParticleState::PARTICLE_DEAD && lifetime == 0.0f)
-		particles->RemoveEmitter(this);
+		app->psystem->RemoveEmitter(this);
 	else if (emitterPool->Update() == ParticleState::PARTICLE_ALIVE_NOT_DRAWN)
 		ret = false;
 

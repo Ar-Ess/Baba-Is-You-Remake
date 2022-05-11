@@ -2,6 +2,7 @@
 #define _GUISTRING_H_
 
 #include "GuiControl.h"
+#include "FontTTF.h"
 #include "AlignEnum.h"
 
 struct _TTF_Font;

@@ -5,7 +5,6 @@
 #include "Emitter.h"
 #include "Point.h"
 #include <vector>
-#include "Render.h"
 
 enum ParticleState
 {
@@ -21,11 +20,11 @@ private:
 
 	int poolSize = 0;
 	Particle* firstAvailable;
-	std::vector<Particle*> particleArray;
+	Particle* particleArray = nullptr;
 
 public:
 
-	ParticlePool(Emitter* emitter, Render* render);
+	ParticlePool(Emitter* emitter);
 	virtual ~ParticlePool();
 
 	// Generates a new particle each time it's called

@@ -23,7 +23,7 @@ GuiSlider::GuiSlider(Rect bounds, SDL_Texture* texture, Point scale, suint id, b
 
 GuiSlider::~GuiSlider()
 {
-    tex->UnLoad(texture);
+    app->tex->UnLoad(texture);
 }
 
 bool GuiSlider::Update(float dt, bool DGSO, bool MGS)
@@ -43,8 +43,8 @@ bool GuiSlider::Draw(float dt) const
 {
     Rect bar = { 0 };
     Rect sldr = { 0 };
-    bar.SetDimensions(bounds.GetSize());
-    sldr.SetDimensions(slider.GetSize());
+    bar.SetDimensions(bounds.GetDimensions());
+    sldr.SetDimensions(slider.GetDimensions());
 
     switch (state)
     {
@@ -99,23 +99,23 @@ bool GuiSlider::DebugDraw(float dt) const
     switch (state)
     {
     case GuiControlState::DISABLED:
-        render->DrawRectangle(barRect, { 100, 100, 100, 80 });
-        render->DrawRectangle(slider, { 150, 100, 100, 80 });
+        app->render->DrawRectangle(barRect, { 100, 100, 100, 80 });
+        app->render->DrawRectangle(slider, { 150, 100, 100, 80 });
         break;
 
     case GuiControlState::NORMAL:
-        render->DrawRectangle(barRect, { 0, 255, 0, 80 });
-        render->DrawRectangle(slider, { 0, 200, 0, 80 });
+        app->render->DrawRectangle(barRect, { 0, 255, 0, 80 });
+        app->render->DrawRectangle(slider, { 0, 200, 0, 80 });
         break;
 
     case GuiControlState::FOCUSED:
-        render->DrawRectangle(barRect, { 255, 255, 0, 80 });
-        render->DrawRectangle(slider, { 255, 255, 0, 80 });
+        app->render->DrawRectangle(barRect, { 255, 255, 0, 80 });
+        app->render->DrawRectangle(slider, { 255, 255, 0, 80 });
         break;
 
     case GuiControlState::PRESSED:
-        render->DrawRectangle(barRect, { 0, 255, 255, 80 });
-        render->DrawRectangle(slider, { 0, 200, 200, 80 });
+        app->render->DrawRectangle(barRect, { 0, 255, 255, 80 });
+        app->render->DrawRectangle(slider, { 0, 200, 200, 80 });
         break;
     }
 
@@ -125,7 +125,7 @@ bool GuiSlider::DebugDraw(float dt) const
 void GuiSlider::Delete()
 {
     observer = nullptr;
-    tex->UnLoad(texture);
+    app->tex->UnLoad(texture);
     texture = nullptr;
 }
 
@@ -194,7 +194,7 @@ bool GuiSlider::NormalUpdate()
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on) break;
-        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
@@ -205,7 +205,7 @@ bool GuiSlider::NormalUpdate()
         }
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->PlaySfx(Sfx::BUTTON_RELEASED);
+        audio->SetFx(Effect::BUTTON_RELEASED);
 
     case GuiControlState::PRESSED:
         if (!click && on)
@@ -252,13 +252,13 @@ bool GuiSlider::DGSOUpdate(bool MGS)
     case GuiControlState::NORMAL:
         state = GuiControlState::NORMAL;
         if (!on || MGS) break;
-        audio->PlaySfx(Sfx::BUTTON_FOCUSSED);
+        audio->SetFx(Effect::BUTTON_FOCUSSED);
         state = GuiControlState::FOCUSED;
 
     case GuiControlState::FOCUSED:
         if (!click) break;
         state = GuiControlState::PRESSED;
-        audio->PlaySfx(Sfx::BUTTON_RELEASED);
+        audio->SetFx(Effect::BUTTON_RELEASED);
         break;
 
     case GuiControlState::PRESSED:

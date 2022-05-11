@@ -88,7 +88,7 @@ ControlSettings GuiManager::CreateGuiControl(GuiControlType type, Point position
 
 	if (textures.size() <= texIndex) texIndex = 0;
 	Texture* tex = textures.at(texIndex);
-	Rect bounds = { position.x, position.y, tex->size.x, tex->size.y };
+	Rect bounds = { position.x, position.y, tex->dimensions.x, tex->dimensions.y };
 
 	switch (type)
 	{
@@ -121,9 +121,9 @@ void GuiManager::DestroyGuiControl(suint index)
 
 int GuiManager::CreateTexture(const char* path, GuiControlType type)
 {
-	Point size = {};
-	SDL_Texture* tex = texture->Load(path, &size);
-	textures.push_back(new Texture(tex, size, type));
+	Point dimensions = {};
+	SDL_Texture* tex = texture->Load(path, &dimensions);
+	textures.push_back(new Texture(tex, dimensions, type));
 
 	return textures.size() - 1;
 }
@@ -237,8 +237,12 @@ bool GuiManager::CleanUp()
 {
 	LOG("Freeing True Type fonts and library");
 
+	ListItem<_TTF_Font*>* item;
 	suint size = fonts.size();
-	for (suint i = 0; i < size; ++i) TTF_CloseFont(fonts.at(i));
+	for (suint i = 0; i < size; ++i)
+	{
+		TTF_CloseFont(fonts.at(i));
+	}
 	fonts.shrink_to_fit();
 	fonts.clear();
 	TTF_Quit();

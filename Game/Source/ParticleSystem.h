@@ -1,12 +1,10 @@
 #ifndef __PARTICLE_SYSTEM_H__
 #define __PARTICLE_SYSTEM_H__
 
-#include "Module.h"
-
 #include "Point.h"
+#include "Module.h"
 #include "Emitter.h"
-#include "Render.h"
-#include <vector>
+#include <list>
 #include <string>
 #include "SDL/include/SDL.h"
 
@@ -62,45 +60,50 @@ struct EmitterData
 
 class ParticleSystem : public Module
 {
-public:
-
-	ParticleSystem(Render* render);
-
-	// Destructor
-	virtual ~ParticleSystem();
-
-	// Call before first frame
-	bool Start();
-
-	// Called each loop iteration
-	bool Update(float dt);
-
-	// Will be inexistent
-	void PostUpdate();
-
-	// Called before quitting
-	bool CleanUp();
-
-	// Emitter methods
-	//pugi::xml_node LoadEmitters(pugi::xml_document& psystem_file);
-	Emitter* AddEmiter(Point pos, EmitterType type);
-	bool RemoveEmitter(Emitter* emitter);
-	bool RemoveAllEmitters();
-
-	SDL_Texture* GetParticleAtlas() const;
-	//void LoadEmitterData(pugi::xml_node& config, EmitterType type);
-
-	Render* render = nullptr;
 
 private:
 
-	std::vector<Emitter*> emittersList;
-	std::vector<Emitter*> emittersToDestroy;
+	std::list<Emitter*> emittersList;
+	std::list<Emitter*> emittersToDestroy;
 	SDL_Texture* particleAtlas = nullptr;
 	std::string nameParticleAtlas;
 
 	// Static array that stores all the data of emitters
 	EmitterData vecEmitterData[MAX_NUM_EMITTERS_TYPE];
+
+public:
+
+	ParticleSystem();
+
+	// Destructor
+	virtual ~ParticleSystem();
+
+	// Called when before render is available
+	bool Awake(pugi::xml_node& config);
+
+	// Call before first frame
+	bool Start();
+
+	// Called before all Updates
+	bool PreUpdate();
+
+	// Called each loop iteration
+	bool Update(float dt);
+
+	// Called after all Updates
+	bool PostUpdate();
+
+	// Called before quitting
+	bool CleanUp();
+
+	// Emitter methods
+	pugi::xml_node LoadEmitters(pugi::xml_document& psystem_file);
+	Emitter* AddEmiter(Point pos, EmitterType type);
+	bool RemoveEmitter(Emitter* emitter);
+	bool RemoveAllEmitters();
+
+	SDL_Texture* GetParticleAtlas() const;
+	void LoadEmitterData(pugi::xml_node& config, EmitterType type);
 };
 
 #endif // __PARTICLE_SYSTEM_H__

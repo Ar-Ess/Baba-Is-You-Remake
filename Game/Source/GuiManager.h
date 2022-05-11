@@ -9,7 +9,6 @@
 #include "AlignEnum.h"
 
 #include <vector>
-#include <assert.h>
 
 class ControlSettings;
 struct SDL_Texture;
@@ -18,25 +17,25 @@ enum class GuiControlType;
 
 struct Texture
 {
-	Texture(SDL_Texture* texture, Point size, GuiControlType guiType)
+	Texture(SDL_Texture* texture, Point dimensions, GuiControlType guiType)
 	{
 		this->texture = texture;
-		this->size = size;
+		this->dimensions = dimensions;
 		this->type = guiType;
 	}
 
 	SDL_Texture* texture = nullptr;
-	Point size = {};
+	Point dimensions = {};
 	GuiControlType type;
 };
 
 class Alignment
 {
 public:
-	Alignment(GuiControl* control, Point size, ControlSettings* ret)
+	Alignment(GuiControl* control, Point dimensions, ControlSettings* ret)
 	{
 		this->control = control;
-		this->size = size;
+		this->dimensions = dimensions;
 		this->ret = ret;
 	}
 
@@ -65,11 +64,11 @@ private:
 		switch (align)
 		{
 		case CENTER:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_LEFT:
-			text->offset = { 0.0f, size.y - text->bounds.h };
+			text->offset = { 0.0f, dimensions.y - text->bounds.h };
 			break;
 
 		case TOP_LEFT:
@@ -77,27 +76,27 @@ private:
 			break;
 
 		case CENTER_LEFT:
-			text->offset = { 0.0f, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { 0.0f, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_RIGHT:
-			text->offset = { size.x - text->bounds.w, size.y - text->bounds.h };
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y - text->bounds.h };
 			break;
 
 		case TOP_RIGHT:
-			text->offset = { size.x - text->bounds.w, 0.0f };
+			text->offset = { dimensions.x - text->bounds.w, 0.0f };
 			break;
 
 		case CENTER_RIGHT:
-			text->offset = { size.x - text->bounds.w, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { dimensions.x - text->bounds.w, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case CENTER_TOP:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), 0.0f };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), 0.0f };
 			break;
 
 		case CENTER_BOTTOM:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), size.y - text->bounds.h };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y - text->bounds.h };
 			break;
 		}
 	}
@@ -107,11 +106,11 @@ private:
 		switch (align)
 		{
 		case CENTER:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_LEFT:
-			text->offset = { 0.0f, size.y };
+			text->offset = { 0.0f, dimensions.y };
 			break;
 
 		case TOP_LEFT:
@@ -119,27 +118,27 @@ private:
 			break;
 
 		case CENTER_LEFT:
-			text->offset = { -text->bounds.w, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { -text->bounds.w, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_RIGHT:
-			text->offset = { size.x - text->bounds.w, size.y };
+			text->offset = { dimensions.x - text->bounds.w, dimensions.y };
 			break;
 
 		case TOP_RIGHT:
-			text->offset = { size.x - text->bounds.w, -text->bounds.h };
+			text->offset = { dimensions.x - text->bounds.w, -text->bounds.h };
 			break;
 
 		case CENTER_RIGHT:
-			text->offset = { size.x, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { dimensions.x, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case CENTER_TOP:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), -text->bounds.h };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), -text->bounds.h };
 			break;
 
 		case CENTER_BOTTOM:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), size.y };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), dimensions.y };
 			break;
 		}
 	}
@@ -149,39 +148,39 @@ private:
 		switch (align)
 		{
 		case CENTER:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case CENTER_LEFT:
-			text->offset = { -size.x, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { -dimensions.x, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case BOTTOM_LEFT:
-			text->offset = { -size.x, size.y };
+			text->offset = { -dimensions.x, dimensions.y };
 			break;
 
 		case TOP_LEFT:
-			text->offset = { -size.x, -text->bounds.h };
+			text->offset = { -dimensions.x, -text->bounds.h };
 			break;
 
 		case BOTTOM_RIGHT:
-			text->offset = { size.x,  size.y };
+			text->offset = { dimensions.x,  dimensions.y };
 			break;
 
 		case TOP_RIGHT:
-			text->offset = { size.x, -text->bounds.h };
+			text->offset = { dimensions.x, -text->bounds.h };
 			break;
 
 		case CENTER_RIGHT:
-			text->offset = { size.x, (size.y / 2) - (text->bounds.h / 2) };
+			text->offset = { dimensions.x, (dimensions.y / 2) - (text->bounds.h / 2) };
 			break;
 
 		case CENTER_TOP:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2), -text->bounds.h };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2), -text->bounds.h };
 			break;
 
 		case CENTER_BOTTOM:
-			text->offset = { (size.x / 2) - (text->bounds.w / 2),  size.y };
+			text->offset = { (dimensions.x / 2) - (text->bounds.w / 2),  dimensions.y };
 			break;
 		}
 	}
@@ -190,7 +189,7 @@ private:
 
 	GuiControl* control = nullptr;
 	ControlSettings* ret = nullptr;
-	Point size = {};
+	Point dimensions = {};
 };
 
 class TextureSwitcher
@@ -207,7 +206,7 @@ public:
 		assert(newTextureId > 0 && newTextureId < textures->size());
 		Texture* newTexture = textures->at(newTextureId);
 		control->texture = newTexture->texture;
-		control->SetDimensions(newTexture->size);
+		control->SetDimensions(newTexture->dimensions);
 	}
 
 	bool Next()
@@ -239,7 +238,7 @@ public:
 		}
 
 		control->texture = newTexture->texture;
-		control->SetDimensions(newTexture->size);
+		control->SetDimensions(newTexture->dimensions);
 
 		return true;
 	}
@@ -273,7 +272,7 @@ public:
 		}
 
 		control->texture = newTexture->texture;
-		control->SetDimensions(newTexture->size);
+		control->SetDimensions(newTexture->dimensions);
 
 		return true;
 	}
@@ -308,7 +307,7 @@ public:
 		if (control->type != GuiControlType::TEXT) control->text = newString;
 		else control = newString;
 
-		Alignment align(control, control->bounds.GetSize(), nullptr);
+		Alignment align(control, control->bounds.GetDimensions(), nullptr);
 		align.AlignTo(alignment);
 	}
 

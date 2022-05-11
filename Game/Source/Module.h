@@ -1,18 +1,31 @@
 #ifndef __MODULE_H__
 #define __MODULE_H__
 
-#include "Log.h"
-#include "Defs.h"
+#include "PugiXml/src/pugixml.hpp"
+
+#include "SString.h"
+
+class App;
 
 class Module
 {
 public:
 
-	Module() : active(true)
+	Module() : active(false)
 	{}
 
 	virtual ~Module()
 	{
+	}
+
+	void Init()
+	{
+		active = true;
+	}
+
+	virtual bool Awake(pugi::xml_node&)
+	{
+		return true;
 	}
 
 	virtual bool Start()
@@ -20,7 +33,7 @@ public:
 		return true;
 	}
 
-	virtual bool PreUpdate(float dt)
+	virtual bool PreUpdate()
 	{
 		return true;
 	}
@@ -30,32 +43,48 @@ public:
 		return true;
 	}
 
+	virtual bool PostUpdate()
+	{
+		return true;
+	}
+
 	virtual bool CleanUp()
 	{
 		return true;
 	}
 
-	void Disable()
+	virtual bool LoadState(pugi::xml_node&)
 	{
-		if (this && active)
-		{
-			active = false;
-			CleanUp();
+		return true;
+	}
+
+	virtual bool SaveState(pugi::xml_node&) const
+	{
+		return true;
+	}
+
+	void Disable() {
+		if (this != nullptr) {
+			if (active == true) {
+				active = false;
+				CleanUp();
+			}
 		}
 	}
 
-	void Enable()
-	{
-		if (this && !active)
-		{
-			active = true;
-			Start();
+	void Enable() {
+		if (this != nullptr) {
+			if (active == false) {
+				active = true;
+				Start();
+			}
 		}
 	}
 
 public:
 
-	bool active = true;
+	SString name;
+	bool active;
 
 };
 

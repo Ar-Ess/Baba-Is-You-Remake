@@ -1,8 +1,52 @@
 #ifndef __COLLIDER_H__
 #define __COLLIDER_H__
 
+#include "Module.h"
 #include "Rect.h"
-#include "Circle.h"
+#include "List.h"
+#include "SString.h"
+
+#include "SDL/include/SDL_rect.h"
+
+struct SDL_Rect;
+
+struct CircleCollider
+{
+public:
+
+	CircleCollider() {}
+	CircleCollider(float x_, float y_, float radius_) : x(x_), y(y_), radius(radius_) {}
+	float x = 0.0f, y = 0.0f;
+	float radius = 0.0f;
+
+	void SetPos(int x_, int y_)
+	{
+		x = x_;
+		y = y_;
+	}
+
+	void SetRadius(int radius_)
+	{
+		radius = radius_;
+	}
+
+	void SetCircle(int x_, int y_, int radius_)
+	{
+		x = x_;
+		y = y_;
+		radius = radius_;
+	}
+
+	float GetDiameter() const
+	{
+		return (radius * 2.0f);
+	}
+
+	Point GetAltLeftPosition() const
+	{
+		return {x - radius, y - radius};
+	}
+};
 
 class Collision
 {
@@ -16,11 +60,23 @@ public:
 
 	bool CheckCollision(Rect r1, Rect r2) const
 	{
-		if ((r1.x > r2.x + r2.w) || (r1.x + r1.w < r2.x) || (r1.y > r2.y + r2.h) || (r1.y + r1.h < r2.y)) return false;
+		if ((r1.x > r2.x + r2.w) || (r1.x + r1.w < r2.x) || (r1.y > r2.y + r2.h) || (r1.y + r1.h < r2.y))
+		{
+			return false;
+		}
 		return true;
 	}
 
-	bool CheckCollision(CircleCollider& a, Rect& b)
+	bool CheckCollision(SDL_Rect r1, SDL_Rect r2) const
+	{
+		if ((r1.x > r2.x + r2.w) || (r1.x + r1.w < r2.x) || (r1.y > r2.y + r2.h) || (r1.y + r1.h < r2.y))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	bool CheckCollision(CircleCollider& a, SDL_Rect& b)
 	{
 		//Closest point on collision box
 		int cX, cY;
@@ -64,7 +120,7 @@ public:
 		return false;
 	}
 
-	bool CheckCollision(Rect& b, CircleCollider& a)
+	bool CheckCollision(SDL_Rect& b, CircleCollider& a)
 	{
 		//Closest point on collision box
 		int cX, cY;

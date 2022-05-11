@@ -2,7 +2,6 @@
 #define __WINDOW_H__
 
 #include "Module.h"
-
 #include "Point.h"
 
 struct SDL_Window;
@@ -16,27 +15,27 @@ public:
 
 	virtual ~Window();
 
-	bool Start();
+	bool Awake(pugi::xml_node&);
+
+	bool FullScreenLogic();
 
 	bool CleanUp();
 
-// Getters & Setters
-
 	void SetTitle(const char* title);
 
-	suint GetScale() const
-	{
-		return scale;
-	}
+	Point GetWindowSize() const;
+
+	void GetWindowSize(uint& width, uint& height) const;
+
+	uint GetScale() const;
 
 	void SetWinFullScreen(bool fullScreen);
 
 	void SetWinDFullScreen(bool fullScreen);
 
-	Point GetSize() const { return size; }
+	int GetWidth() { return width; }
 
 public:
-
 	SDL_Window* window;
 
 	SDL_Surface* screenSurface;
@@ -45,9 +44,10 @@ public:
 	bool dFullScreen = false;
 
 private:
-
-	Point size;
-	suint scale = 1;
+	SString title;
+	uint width;
+	uint height;
+	uint scale;
 };
 
 #endif // __WINDOW_H__

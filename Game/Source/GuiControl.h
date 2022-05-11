@@ -91,7 +91,7 @@ public:
         return true;
     }
 
-    virtual void SetDimensions(Point size) {}
+    virtual void SetDimensions(Point dimensions) {}
 
     Point GetPosition() const
     {

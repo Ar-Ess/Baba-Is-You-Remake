@@ -4,35 +4,38 @@
 #include "Module.h"
 
 #include "Point.h"
+
 #include "SDL/include/SDL.h"
 #include "Collider.h"
 #include "Rect.h"
-#include "Window.h"
 
 class Render : public Module
 {
 public:
 
-	Render(Window* win);
+	Render();
 
 	virtual ~Render();
 
+	bool Awake(pugi::xml_node&);
+
 	bool Start();
 
-	bool PreUpdate(float dt);
-
+	bool PreUpdate();
 	bool Update(float dt);
+	bool PostUpdate();
 
 	bool CleanUp();
 
 public:
 	// Load / Save
-	bool Load();
-	bool Save() const;
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&) const;
 
 	// Utils
 	void SetViewPort(const SDL_Rect& rect);
 	void ResetViewPort();
+	Point ScreenToWorld(int x, int y) const;
 
 	// Drawing
 	bool DrawTexture(SDL_Texture* texture, int x, int y, float sX, float sY, SDL_Rect* section = NULL, bool scaleModCoords = false, bool staticPos = true, double angle = 0, SDL_RendererFlip flip = SDL_FLIP_NONE) const;
@@ -51,13 +54,8 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
-	// VSYNC Functions
-	bool GetVSync() const { return vSync; }
+	//VSYNC Funcrion
 	void SetVSync(bool vSync);
-
-	// Size Functions
-	suint GetScale() const { return scale; };
-	void SetScale(suint scale) { this->scale = scale; }
 
 public:
 
@@ -66,12 +64,9 @@ public:
 	SDL_Rect viewport;
 	SDL_Color background;
 
-private:
-
-	Window* win = nullptr;
-
 	bool vSync = true;
-	suint scale;
+
+	uint scale;
 };
 
 #endif // __RENDER_H__
